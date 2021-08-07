@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Q_in_O</title>
+        <!-- <script src="jatos.js"></script> -->
+        <script src="jquery/jquery.min.js"></script>
+        <script src="jspsych-6.1.0/jspsych.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-preRNG.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-battleships.js"></script>
+        <!-- <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-disc.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-p5vs_yn.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-p5text.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script> -->
+        <script src="p5/p5.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Corben&family=Quicksand&display=swap" rel="stylesheet">
+        <link href="style.css" rel="stylesheet" type="text/css"></link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+        <script src="mersenne-twister.js"></script>
+    </head>
+    <body></body>
+    <script>
+
+
+    function makeTimeline() {
+
+      timeline = [];
+
+       // timeline.push({
+       //   type: 'fullscreen',
+       //   fullscreen_mode: true
+       // });
+
+
+       var game = {
+           type: "Battleships"
+         };
+       timeline.push(game);
+
+
+          return timeline
+        };
+
+
+        function hexToBytes(hex) {
+            for (var bytes = [], c = 0; c < hex.length; c += 2)
+            bytes.push(parseInt(hex.substr(c, 2), 16));
+            return bytes;
+        }
+
+
+timeline=makeTimeline()
+  jsPsych.init({
+      timeline: timeline,
+      on_finish: function() {
+          jsPsych.data.addProperties({followed_instructions: window.followed_instructions});
+          var resultJson = jsPsych.data.get().json();
+          jsPsych.data.get().localSave('csv','mydata.csv');
+      }
+});
+
+
+    </script>
+</html>
