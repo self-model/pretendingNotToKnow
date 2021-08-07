@@ -37,7 +37,8 @@
 
 
        var game = {
-           type: "Battleships"
+           type: "Battleships",
+           cheat: true
          };
        timeline.push(game);
 
@@ -57,9 +58,8 @@ timeline=makeTimeline()
   jsPsych.init({
       timeline: timeline,
       on_finish: function() {
-          jsPsych.data.addProperties({followed_instructions: window.followed_instructions});
           var resultJson = jsPsych.data.get().json();
-          jsPsych.data.get().localSave('csv','mydata.csv');
+          jsPsych.data.get().localSave('csv','mydata.json');
       }
 });
 
