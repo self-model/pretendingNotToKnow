@@ -94,7 +94,7 @@ and two 2-square patrol boats.`,
 		}
 
 		function msToTime(duration) {
-		  var milliseconds = Math.floor((duration % 1000) / 100),
+		  var milliseconds = Math.floor((duration % 1000) / 10),
 		    seconds = Math.floor((duration / 1000) % 60),
 		    minutes = Math.floor((duration / (1000 * 60)) % 60),
 		    hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
