@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Q_in_O</title>
+        <title>Battleships</title>
         <!-- <script src="jatos.js"></script> -->
         <script src="jquery/jquery.min.js"></script>
         <script src="jspsych-6.1.0/jspsych.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-preRNG.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-battleships.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
         <!-- <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-disc.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-p5vs_yn.js"></script>
@@ -30,11 +31,48 @@
 
       timeline = [];
 
-       // timeline.push({
-       //   type: 'fullscreen',
-       //   fullscreen_mode: true
-       // });
+       timeline.push({
+         type: 'fullscreen',
+         fullscreen_mode: true
+       });
 
+       var instructions = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: [
+`<p>In this experiment you will play two rounds of the game Battleships.
+Your task is to sink all ships with as few clicks as possible. To sink a ship,
+you need to click on all squares in it. In the first practice round, there will
+be two patrol boats of size 2 in the water. Good luck!</p>`]
+       }
+       timeline.push(instructions);
+
+       var practice = {
+           type: "Battleships",
+           cheat: false,
+           grid: [
+   					['0','0','0','0'],
+            ['A','0','B','B'],
+            ['A','0','0','0'],
+            ['0','0','0','0']
+          ],
+          text: `Overall you need to sink one two 2-square patrol boats.`
+        };
+       timeline.push(practice);
+
+       var instructions = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: [
+`<p>Great. In the next game you will sink one 3-square submarine and two 2-square
+patrol boats.</p>`,
+`<p>However, this time your goal is different. In this round, we marked
+the ship locations with a cross for half of the participants only (including you).
+The other group of participants will play this game as normal. Your task is to trick an independent judge
+into thinking that you are one of the participants who was not shown where the ships are.
+You will receive a bonus if you succeed.`]
+       }
+       timeline.push(instructions);
 
        var game = {
            type: "Battleships",
@@ -42,7 +80,13 @@
          };
        timeline.push(game);
 
-
+       var instructions = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: [
+       `<p>Thank you for your participation!</p>`]
+       }
+       timeline.push(instructions);
           return timeline
         };
 
@@ -59,7 +103,7 @@ timeline=makeTimeline()
       timeline: timeline,
       on_finish: function() {
           var resultJson = jsPsych.data.get().json();
-          jsPsych.data.get().localSave('csv','mydata.json');
+          jsPsych.data.get().localSave('json','mydata.json');
       }
 });
 

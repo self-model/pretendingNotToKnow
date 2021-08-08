@@ -10,25 +10,34 @@ jsPsych.plugins["Battleships"] = (function() {
 				type: jsPsych.plugins.parameterType.INT,
 				pretty_name: "Grid",
 				default: [
-					['J','J','0','0','0','0','0','0','0','0'],
-					['0','0','0','F','F','F','0','0','C','0'],
-					['0','0','0','0','0','0','0','0','C','0'],
-					['B','B','B','B','0','0','I','0','C','0'],
-					['0','0','0','0','A','0','I','0','C','0'],
-					['G','G','0','0','A','0','0','0','0','0'],
-					['0','0','0','0','A','0','0','0','H','0'],
-					['0','D','0','0','A','0','0','0','H','0'],
-					['0','D','0','0','A','0','0','0','0','0'],
-					['0','D','0','0','0','0','0','E','E','E'],
+					['0','0','0','0','0'],
+					['A','A','A','0','0'],
+					['0','0','0','0','0'],
+					['0','0','0','B','0'],
+					['C','C','0','B','0']
 				],
-				description: "Grid"
+				description: "Grid. 0 means water, everything else is a ship."
 			},
 			cheat: {
 				type: jsPsych.plugins.parameterType.BOOL,
 				pretty_name:'cheat',
 				default: false,
-				description: 'Cheat'
-			}
+				description: 'When true, participants see the position of the ships.'
+			},
+			end_screen_time: {
+				type: jsPsych.plugins.parameterType.INT,
+				pretty_name:'end screen time',
+				default: 2000,
+				description: 'For how many milliseconds is the end screen presented?'
+			},
+		 text: {
+			 type: jsPsych.plugins.parameterType.STRING,
+			 pretty_name:'text',
+			 default:
+`Overall you need to sink one 3-square submarine
+and two 2-square patrol boats.`,
+			 description: 'Text to display on top of grid.'
+		 }
 		}
 	}
 
@@ -39,7 +48,7 @@ jsPsych.plugins["Battleships"] = (function() {
 		//open a p5 sketch
 		let sketch = function(p) {
 
-		const du = p.min([window.innerWidth, window.innerHeight], 600)*7/10 //drawing unit
+		const du = p.min([window.innerWidth, window.innerHeight, 600])*7/10 //drawing unit
 		const left_margin = p.round((window.innerWidth-du)/2);
 		const top_margin = p.round((window.innerHeight-du)/2);
 		const square_size = Math.floor(du/trial.grid.length);
@@ -50,8 +59,10 @@ jsPsych.plugins["Battleships"] = (function() {
 		}
 		var grid_state = trial.grid.map(([...rest]) => rest.map(x => 'unknown'));
 		var click_log = {i:[],j:[],t:[],hit:[]};
-		const num_ones = trial.grid.flat().reduce((a,b)=>a+b,0);
-		var ships_hit = 0;;
+		const num_nonzero = trial.grid.flat().reduce((a,b)=>a+(b=='0'? 0 : 1),0);
+		var hits = 0;;
+		var last_click_time = p.millis()
+
 
 		function grid_coordinates_to_screen_coordinates(i,j) {
 			x=left_margin+j*square_size+Math.round(square_size/2);
@@ -79,7 +90,7 @@ jsPsych.plugins["Battleships"] = (function() {
 
 			p.background(255);
 
-			// if (ships_hit<num_ones) {
+			if (hits<num_nonzero | p.millis()-last_click_time<trial.end_screen_time) {
 
 				for (var i=0; i<trial.grid.length; i++) {
 					for (var j=0; j<trial.grid.length; j++) {
@@ -106,45 +117,84 @@ jsPsych.plugins["Battleships"] = (function() {
 					}
 				}
 
-				var text = `
-You clicked on ${click_log.t.length} squares.
-Overall you need to drown one 5-square carrier, two 4-square battleships,
-three 3-square submarines, and four 2-square patrol boats.`
+				if (hits<num_nonzero) {
+					var text =
+	`You clicked on ${click_log.t.length} squares.
+${trial.text}`
+					p.textSize(15)
+					p.push()
+					p.textAlign(p.Left, p.TOP)
+					p.fill(0);
+					p.strokeWeight(0)
+					p.text(text,left_margin,top_margin-70)
+					p.pop()
+			} else {
+
+
+				for (var i=0; i<trial.grid.length; i++) {
+					for (var j=0; j<trial.grid.length; j++) {
+						if (trial.grid[i][j]!='0') {
+							xy = grid_coordinates_to_screen_coordinates(i,j);
+							water_height = square_size*
+								(p.millis()-last_click_time)/trial.end_screen_time;
+								p.push()
+								p.rectMode(p.CORNERS)
+								p.fill(colors['sea'])
+								p.rect(xy.x-square_size/2,
+									xy.y+square_size/2-water_height,
+									xy.x+square_size/2,
+									xy.y+square_size/2);
+								p.pop()
+						}
+					}
+				}
+				text = 'All ships are down!'
+				p.textSize(25);
 				p.push()
-				p.textAlign(p.Left, p.TOP)
-				p.textSize(15)
+				p.textAlign(p.CENTER, p.CENTER)
 				p.fill(0);
 				p.strokeWeight(0)
-				p.text(text,left_margin,top_margin-70)
+				p.text(text,window.innerWidth/2,window.innerHeight/2)
 				p.pop()
-				// } else { //trial ended
-				// 	p.remove()
-				// 	// data saving
-				// 	var trial_data = {
-				// 		grid: trial.grid,
-				//    click_log: click_log
-				// 	};
-				// 	console.log(trial_data)
-				// 	// end trial
-				// 	jsPsych.finishTrial(trial_data);
-				// }
+			}
+			}
+
+		else { //trial ended
+					p.remove()
+					// data saving
+					var trial_data = {
+						grid: trial.grid,
+				    click_log: click_log
+					};
+					console.log(trial_data)
+					// end trial
+					jsPsych.finishTrial(trial_data);
+				}
 			}
 
 			p.mouseClicked = function() {
 				ij = screen_coordinates_to_grid_coordinates(p.mouseX,p.mouseY)
 				// make sure click is on the board
-				if (ij.i>=0 & ij.i<trial.grid.length & ij.j>=0 & ij.j<trial.grid.length) {
+				if (ij.i>=0 &
+					ij.i<trial.grid.length &
+					ij.j>=0 &
+					ij.j<trial.grid.length &
+					hits<num_nonzero &
+					grid_state[ij.i][ij.j]=='unknown'
+				) {
 					if (trial.grid[ij.i][ij.j]=='0') {
 						grid_state[ij.i][ij.j]='sea'
 					} else {
 						grid_state[ij.i][ij.j]='ship';
-						ships_hit+=1
+						hits+= 1;
 					}
 
 					click_log.i.push(ij.i);
 					click_log.j.push(ij.j);
 					click_log.t.push(p.millis())
 					click_log.hit.push((trial.grid[ij.i][ij.j]))
+					last_click_time = p.millis();
+
 				}
 			}
 
