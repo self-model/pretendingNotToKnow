@@ -48,9 +48,9 @@ and two 2-square patrol boats.`,
 		//open a p5 sketch
 		let sketch = function(p) {
 
-		const du = p.min([window.innerWidth, window.innerHeight, 600])*7/10 //drawing unit
+		const du = p.min([window.innerWidth, window.innerHeight, 500])*7/10 //drawing unit
 		const left_margin = p.round((window.innerWidth-du)/2);
-		const top_margin = p.round((window.innerHeight-du)/2);
+		const top_margin = p.round((window.innerHeight-du)/3);
 		const square_size = Math.floor(du/trial.grid.length);
 		const colors = {
 			'sea':p.color(100,155,200),
