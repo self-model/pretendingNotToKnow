@@ -43,9 +43,11 @@
          show_clickable_nav: true,
          pages: [
 `<p>In this experiment you will play a round of the game Battleship, and then
-make a judgment about the games of other players. In the first part, your task is
-to sink all ships with as few clicks as possible. To sink a ship, you need to
-click on all squares in it. In the first practice round, there will
+make a judgment about the games of other players. In the first part, your task
+is to sink all ships located in a grid with as few clicks as possible. To sink
+a ship, you need to click on all of the squares it is located in. If you hit a
+ship, the square will turn red. If there is no ship in the square, it will turn
+blue.</p><p>In this first practice round, there will
 be two patrol boats of size 2 in the water. Good luck!</p>`]
        }
        timeline.push(instructions1);
@@ -59,7 +61,7 @@ be two patrol boats of size 2 in the water. Good luck!</p>`]
             ['A','0','0','0'],
             ['0','0','0','0']
           ],
-          text: `Overall you need to sink one two 2-square patrol boats.`
+          text: `To win, you need to sink one 2-square patrol boats.`
         };
        timeline.push(practice);
 
@@ -73,12 +75,14 @@ to the interesting part. </p>`,
 the two patrol boats there will be a 3-square submarine in the water too.</p>`,
 `<p>More imporantly, this time your task is not to play the game, but to watch the games
 of two other participants. One of them played normally, trying to sink all ships
-with as few clicks as possible. But the other participant knew where the ships were,
-and his or her task was to trick you into thinking they played fairly.</p>
-<p>This player will be given a bonus if they manage to trick you. If they fail, you get the bonus instead.
-So concentrate, because after watching the two games you will decide who pretended
-and who played fair.</p>`,
-`<p>We start with Player 1</p>.`]
+with as few clicks as possible. But the other participant knew where the ships were
+(we marked them on their grid) and his or her task was to trick you into thinking
+they played fairly.</p>
+<p>This player will be given a bonus if they manage to trick you. If he or she
+fails, you get the bonus instead. So concentrate, because after watching the two
+games you will decide who pretended and who played fair.</p>`,
+`<p>We start with Player 1. Click when you're ready to watch their performance,
+it will start right away.</p>`]
         }
              timeline.push(instructions2);
 
@@ -93,7 +97,8 @@ and who played fair.</p>`,
          type: 'instructions',
          show_clickable_nav: true,
          pages: [
-`<p>This was Player 1. Now for Player 2: </p>`]
+`<p>This was Player 1. Now for Player 2. Click when you're ready to watch their performance,
+it will start right away. </p>`]
         }
              timeline.push(instructions3);
 
@@ -114,6 +119,7 @@ and who played fair.</p>`,
          prompt: 'Time to make a decision!',
          options: ['1. Player 1 knew where the ships were hiding, Player 2 played honestly.',
                    '2. Player 1 played honestly, Player 2 knew where the ships were hiding.'],
+        required: true
        }]
      };
        timeline.push(decision);

@@ -41,8 +41,10 @@
          show_clickable_nav: true,
          pages: [
 `<p>In this experiment you will play two rounds of the game Battleships.
-Your task is to sink all ships with as few clicks as possible. To sink a ship,
-you need to click on all squares in it. In the first practice round, there will
+Your task is to sink all ships located in a grid with as few clicks as possible. To sink
+a ship, you need to click on all of the squares it is located in. If you hit a
+ship, the square will turn red. If there is no ship in the square, it will turn
+blue.</p><p>In the first practice round, there will
 be two patrol boats of size 2 in the water. Good luck!</p>`]
        }
        timeline.push(instructions);
@@ -56,7 +58,7 @@ be two patrol boats of size 2 in the water. Good luck!</p>`]
             ['A','0','0','0'],
             ['0','0','0','0']
           ],
-          text: `Overall you need to sink one two 2-square patrol boats.`
+          text: `To win, you need to sink two 2-square patrol boats.`
         };
        timeline.push(practice);
 

@@ -34,7 +34,7 @@ jsPsych.plugins["Battleships_replay"] = (function() {
 			 type: jsPsych.plugins.parameterType.STRING,
 			 pretty_name:'text',
 			 default:
-`Overall you need to sink one 3-square submarine
+`To win, you need to sink one 3-square submarine
 and two 2-square patrol boats.`,
 			 description: 'Text to display on top of grid.'
 		 },

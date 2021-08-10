@@ -34,7 +34,7 @@ jsPsych.plugins["Battleships"] = (function() {
 			 type: jsPsych.plugins.parameterType.STRING,
 			 pretty_name:'text',
 			 default:
-`Overall you need to sink one 3-square submarine
+`To win, you need to sink one 3-square submarine
 and two 2-square patrol boats.`,
 			 description: 'Text to display on top of grid.'
 		 }
@@ -114,7 +114,9 @@ and two 2-square patrol boats.`,
 										xy.x-square_size/2,xy.y+square_size/2)
 							}
 						}
-					}
+					};
+
+
 				}
 
 				if (hits<num_nonzero) {
@@ -127,7 +129,20 @@ ${trial.text}`
 					p.fill(0);
 					p.strokeWeight(0)
 					p.text(text,left_margin,top_margin-70)
-					p.pop()
+					p.pop();
+
+
+					if (trial.cheat) {
+						// Description
+						p.push()
+						text=`Remember, your real task is to trick an independent judge \nthat you are an ordinary participant who doesn't know  \nwhere the boats are.`;
+						p.textAlign(p.Left, p.TOP)
+						p.fill(100);
+						p.strokeWeight(0)
+						p.text(text,left_margin,top_margin+du+20)
+						p.pop()
+					}
+
 			} else {
 
 
