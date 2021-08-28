@@ -128,13 +128,14 @@ and two 2-square patrol boats.`,
 			p.strokeWeight(0);
 			p.frameRate(trial.frame_rate);
 			p.rectMode(p.CENTER)
+			p.imageMode(p.CENTER)
 		}
 
 		//organize everything in one sequence
 		p.draw = function() {
 
 			p.background(255);
-			p.image(img, 0, 0);
+
 			// Display true positions
 			for (var i=0; i<trial.grid.length; i++) {
 				for (var j=0; j<trial.grid.length; j++) {
@@ -187,12 +188,18 @@ and two 2-square patrol boats.`,
 						p.stroke(127,182,177);
 						p.strokeWeight(1)
 						p.square(xy.x,xy.y,square_size);
+						if (playing_side == 'left' & grid_state[i][j]=='ship') {
+							mark_hit(xy.x,xy.y,square_size/2)
+						}
 
 						xy = grid_coordinates_to_screen_coordinates(i,j, 'right');
 						p.fill(playing_side=='right'? colors[grid_state[i][j]] : colors['unknown']);
 						p.stroke(127,182,177);
 						p.strokeWeight(1)
 						p.square(xy.x,xy.y,square_size);
+						if (playing_side == 'right' & grid_state[i][j]=='ship') {
+							mark_hit(xy.x,xy.y,square_size/2)
+						}
 
 					}
 				}
@@ -208,7 +215,7 @@ and two 2-square patrol boats.`,
 // 					p.strokeWeight(0)
 // 					// p.text(text,left_margin,top_margin-70)
 // 					p.pop()
-			} else if (p.millis() - last_click_time < trial.end_screen_time){
+} else if (p.millis() - last_click_time < trial.end_screen_time){
 				for (var i=0; i<trial.grid.length; i++) {
 					for (var j=0; j<trial.grid.length; j++) {
 						if (trial.grid[i][j]!='0') {
@@ -226,7 +233,24 @@ and two 2-square patrol boats.`,
 						}
 					}
 				}
-			} else {
+			} else if (playing_side!='waiting_for_input'){
+				for (var i=0; i<trial.grid.length; i++) {
+					for (var j=0; j<trial.grid.length; j++) {
+						if (trial.grid[i][j]!='0') {
+							xy = grid_coordinates_to_screen_coordinates(i,j, playing_side);
+							water_height = square_size*
+								(p.millis()-last_click_time)/trial.end_screen_time;
+								p.push()
+								p.rectMode(p.CORNERS)
+								p.fill(colors['sea'])
+								p.rect(xy.x-square_size/2,
+									xy.y+square_size/2-water_height,
+									xy.x+square_size/2,
+									xy.y+square_size/2);
+								p.pop()
+						}
+					}
+				}
 				if (playing_side=='right') {
 					played_right = true;
 				} else if (playing_side=='left') {
@@ -237,7 +261,7 @@ and two 2-square patrol boats.`,
 
 								var text =
 `Press 1 to see the game of Player 1. Press 2 to see the game of Player 2.
-${(played_right & played_left)? `Press Enter when you are ready to decide who pretended honestly and who knew where the ships were hiding.` : ''}`
+${(played_right & played_left)? `Press Enter when you are ready to decide who played fair and who knew where the ships were hiding.` : ''}`
 								p.textSize(15)
 								p.push()
 								p.textAlign(p.CENTER, p.TOP)
@@ -249,7 +273,7 @@ ${(played_right & played_left)? `Press Enter when you are ready to decide who pr
 }
 
 mark_hit = function(x,y,size) {
-
+	p.image(img, x, y, size, size);
 }
 
 p.keyPressed = function() {
