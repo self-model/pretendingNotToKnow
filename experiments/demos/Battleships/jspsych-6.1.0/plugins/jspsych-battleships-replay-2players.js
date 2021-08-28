@@ -118,7 +118,7 @@ and two 2-square patrol boats.`,
 		}
 
 		p.preload = function() {
-			img = p.loadImage('assets/hit.png');
+			img = p.loadImage('https://matanmazor.github.io/ignorance/experiments/demos/Battleships/assets/hit.png');
 		}
 
 		//sketch setup
