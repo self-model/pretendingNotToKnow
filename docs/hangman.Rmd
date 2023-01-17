@@ -1,0 +1,1686 @@
+---
+title             : "Pretending not to know"
+shorttitle        : "PNTN EXP2 results"
+
+author: 
+  - name          : "Matan Mazor"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "12 Queen Square, WC1N 3BG London"
+    email         : "mtnmzor@gmail.com"
+  - name          : "Ian Phillips"
+    affiliation   : "2"
+  - name          : "Chaz Firestone"
+    affiliation   : "2"
+
+affiliation:
+  - id            : "1"
+    institution   : "University College London"
+  - id            : "2"
+    institution   : "Johns Hopkins University"
+
+authornote: |
+  Enter author note here.
+
+abstract: |
+  Generally, what we do depends on what we know. But sometimes we try to appear not to know something that we really do know. Such pretense behavior relies on counterfactual self-simulation — an understanding of how we would behave if our knowledge were different — and so provides an opportunity to investigate how well can people emulate a hypothetical knowledge state. Surprisingly, despite its immediate relevance to metacognition and theory of mind, little research has focused on quantifying pretense accuracy, relative to non-pretense behaviour. In a first exploratory experiment, we examine the ability to both produce and detect pretense behaviour using the game "Battleships" — normally played by searching for ships hidden behind cells in a grid. In 'pretend' blocks, subjects were told where all the ships are but asked to play as if they lacked this knowledge. Analyzing non-pretend (regular) games of the same subjects, we identify robust behavioural patterns in the location and timing of cell selections, including serial dependencies in hit probability and decision time, and an association between decision time and the entropy of the posterior distribution over candidate actions. Critically, pretend games demonstrate similar, but exaggerated, behavioural patterns. Furthermore, relative to the modeled behaviour of a near-optimal Bayesian agent, pretend behaviour is markedly less optimal than non-pretend behaviour. This is because pretend play often doesn't make sense given the limited knowledge players pretend to have. However, despite these striking differences, independent "judge" participants were completely unable to discriminate the games of pretenders from non-pretenders.
+  
+keywords          : "Pretense, self-simulation, metacognition, theory of mind"
+
+wordcount         : "X"
+
+bibliography      : ["r-references.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_word
+---
+
+```{r setup, include = FALSE}
+library(groundhog)
+
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'reticulate',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel', #for ggplot words
+  'caret' #for cross validation
+  'kernlab' #for SVM
+), '2022-12-01')
+
+r_refs("r-references.bib")
+use_condaenv("py3.8", required = TRUE)
+
+```
+
+```{python, echo=FALSE, eval=FALSE}
+import json
+import pandas as pd
+import numpy as np
+from os import path as path
+
+def to_csv(filename):
+   dfs=[]
+   with open(filename+'.txt', encoding="utf8") as json_file:
+      for i,line in enumerate(json_file):
+         dfs.append(pd.read_json(line))
+   group_df = pd.concat(dfs);
+   cols = list(group_df.columns.values);
+   cols.remove('hover_log');
+   group_df = group_df[cols]
+   group_df.to_csv(filename+'.csv', index=False)
+   return(group_df)
+
+to_csv('..\\experiments\\Hangman2\\data\\jatos_results_batch1')
+to_csv('..\\experiments\\Hangman2\\data\\jatos_results_batch2')
+
+```
+
+```{r load-data, warning=FALSE}
+e4.df <- read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch2.csv',na.strings=c(""," ","NA")) %>%
+  rbind(read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch1.csv',na.strings=c(""," ","NA"))) %>%
+  rename(subj_id = participant_number) %>%
+  mutate(subj_id = factor(subj_id)) %>%
+  # the dash is breaking r
+  mutate(test_part = ifelse(test_part=='non-pretend','nonpretend',test_part)) %>%
+  filter(PROLIFIC_PID != '5ec4a156bc5aac3819ac52f2' & #reported some of the letters not showing up on their screen
+        PROLIFIC_PID != '58211fc787f6b90001f13f9' & #reported some of the letters not showing up on their screen
+        PROLIFIC_PID != '6149256f6335b06ade3723e0' &  # due a PROLFIIC bug, participated twice
+        PROLIFIC_PID != '615ddab1e4f013092538b6c5')# due a PROLFIIC bug, participated twice
+
+e4.export1 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export1.csv');
+e4.export2 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export2.csv');
+e4.export3 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export3.csv');
+e4.export4 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export4.csv');
+e4.export5 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export5.csv');
+e4.export6 <- read.csv('..\\experiments\\Hangman2\\data\\prolific_export6.csv');
+
+
+```
+
+```{r subject-comments, eval=FALSE}
+e4.comments <- e4.df %>%
+  filter(is.na(test_part) & substr(responses,1,1)=='{') %>%
+  dplyr::select(subj_id,PROLIFIC_PID,responses) %>%
+  mutate(comments = map(responses, ~fromJSON(.) %>%
+                          as.data.frame()))%>%
+  unnest(comments)%>%
+  dplyr::select(subj_id,PROLIFIC_PID,worker_comments)%>%
+  filter(!is.na(worker_comments) & worker_comments!="") %>%
+  mutate(worker_comments = gsub("[\r\n]", "",worker_comments))
+
+e4.debrief <- e4.df %>%
+  filter(is.na(test_part) & substr(responses,1,1)=='{') %>%
+  dplyr::select(subj_id,PROLIFIC_PID,responses) %>%
+  mutate(comments = map(responses, ~fromJSON(.) %>%as.data.frame()))%>%
+  unnest(comments)%>%
+  dplyr::select(subj_id,PROLIFIC_PID,debrief)%>%
+  filter(!is.na(debrief) & debrief != "")%>%
+  mutate(debrief = gsub("[\r\n]", "",debrief))
+
+```
+
+<!-- ## Strategy use: -->
+
+<!-- After completing the judgment blocks, participants were asked  -->
+
+<!-- > "Did you have a strategy that you used for pretending you had no hints? How about telling between players with and without hints - did you have a strategy for that?" -->
+
+```{r results='asis'}
+# string.list <- e4.debrief%>%pull(debrief)
+# cat(paste('-', string.list), sep = '\n')
+# cat(paste('-', string.list), sep = '\n',file='strategy_hangman2.txt')
+```
+
+## General comments
+
+Then, we asked participants for more general feedback about the task:
+
+> "That's it! Before we thank you, we would appreciate if you could share any thoughts you had about the experiment, or anything we should take into account when analyzing your data."
+
+```{r results='asis'}
+# string.list <- e4.comments%>%pull(worker_comments)
+# cat(paste('-', string.list), sep = '\n')
+```
+
+```{r comprehension-checks}
+e4.num_instructions <- e4.df %>%
+  group_by(subj_id)%>%
+  summarise(pretend_instructions = mean(pretend_instructions),
+            nonpretend_instructions = mean(nonpretend_instructions))
+
+```
+
+```{r format-data}
+
+e4.click_df <- e4.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         category,
+         word,
+         num_clicks,
+         click_log,
+         genuine_first,
+         trial_type) %>%
+  rowwise()%>%
+  mutate(num_hits = strsplit(gsub(' ','',word),split='')[[1]]%>%unique()%>%length(),
+         genuine_first= genuine_first=='True',
+         num_misses = num_clicks-num_hits,
+         click_log = gsub("\'","\"", click_log),
+         click_log = gsub("None","null", click_log),
+         word = factor(word,levels=c(
+           'eleven',
+           'ninety six',
+           'dalai lama',
+           'taylor swift',
+           'strawberry',
+           'lemon',
+           'tooth',
+           'head',
+           'iowa',
+           'montana'
+         ))) %>%
+  filter(test_part=='pretend' | test_part=='nonpretend') %>%
+  filter(trial_type=='Hangman')
+
+e4.median_clicks <- e4.click_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(test_part,num_clicks);
+
+e4.median_misses <- e4.click_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  spread(test_part,num_misses);
+
+e4.lucky_pretenders <- e4.median_misses%>%filter(pretend==0)%>%pull(subj_id)%>%unique();
+e4.lucky_nonpretenders <- e4.median_misses%>%filter(nonpretend==0)%>%pull(subj_id)%>%unique()
+
+# 
+# median_simulated = num_clicks%>%median()
+p<- e4.click_df %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=num_misses,fill=test_part))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='median number of misses', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()+
+    # geom_vline(xintercept= median_simulated)+
+    facet_wrap(~genuine_first, nrow=2);
+
+ggsave('figures/Hangman2/num_misses.png',p,width=5,height=3,dpi=300)
+
+
+e4.misses_per_word <- e4.click_df %>%
+  group_by(test_part,word) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  spread(test_part,num_misses)
+
+p <- e4.misses_per_word %>%
+  ggplot(aes(x=nonpretend,y=pretend, label=word)) +
+  geom_abline(intercept=0,slope=1) +
+  geom_point()+
+  geom_text_repel()+
+  coord_fixed(ratio=1)+
+  scale_x_continuous(limits=c(0,5.5), breaks=seq(0,5))+
+  scale_y_continuous(limits=c(0,5.5), breaks=seq(0,5)) +
+  theme(legend.position = 'none')+
+  theme_bw() +
+  labs(title='number of misses')
+
+ggsave('figures/hangman2/num_misses_per_word.png',p,width=5,height=5,dpi=300)
+
+```
+
+```{r parse-click-log, echo-FALSE}
+
+e4.click_log <- data.frame(matrix(ncol=11,nrow=0, 
+                               dimnames=list(NULL, 
+                                             c("subj_id",
+                                              "test_part", 
+                                              "word",
+                                              "category",
+                                              "num_clicks",
+                                              "num_misses",
+                                              "letter",
+                                              "hit",
+                                              "t",
+                                              "click_number",
+                                              "genuine_first"))))
+
+
+for (row in 1:nrow(e4.click_df)) {
+  
+    subject_click_log <- data.frame(fromJSON(e4.click_df[row, ]$click_log)) %>%
+    mutate(
+      letter = lead(letter,1),
+      t = lead(t,1),
+      hit = lead(hit,1),
+      click_number = 1:n(),
+      subj_id = e4.click_df[row, ]$subj_id,
+      test_part = e4.click_df[row, ]$test_part,
+      word = e4.click_df[row, ]$word,
+      category = e4.click_df[row, ]$category,
+      num_clicks = e4.click_df[row, ]$num_clicks,
+      num_misses = e4.click_df[row, ]$num_misses,
+      genuine_first = e4.click_df[row, ]$genuine_first
+    )%>%
+      filter(click_number<=num_clicks)
+    
+    e4.click_log <- rbind(e4.click_log, subject_click_log);
+}
+    
+
+e4.click_log <- e4.click_log %>%
+  relocate(subj_id, .before = letter) %>%
+  relocate(genuine_first, .before = letter) %>% 
+  relocate(test_part, .before=letter) %>% 
+  relocate(word, .before=letter) %>% 
+  relocate(category, .before=letter) %>% 
+  relocate(click_number, .before=letter) %>%
+  group_by(subj_id,test_part,word) %>%
+  mutate(RT=t-lag(t,default=0)) %>%
+  group_by(subj_id,word) %>%
+  rowwise()
+# %>%
+#   filter(!(subj_id %in% E1.lucky_pretenders))
+
+
+```
+
+```{r total_time, echo=FALSE}
+
+e4.total_time_df <- e4.click_log %>%
+ filter(click_number==num_clicks)%>%
+  mutate(t=t/1000)
+
+
+p <- e4.total_time_df %>%
+  ggplot(aes(x=word,y=t)) +
+  geom_boxplot() +
+  scale_y_continuous(limits=c(0,150))
+
+ggsave('figures/hangman_nonpretend_pilot_time_per_word.png',p)
+
+e4.median_time <- e4.total_time_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(t=median(t)) %>%
+  spread(test_part,t) %>%
+  mutate(diff=pretend-nonpretend);
+
+# anova
+e4.time_anva <- aov(t ~ genuine_first * condition,
+                         data = e4.median_time %>%
+                           gather('condition','t',nonpretend,pretend) %>%
+                           mutate(condition=as.factor(condition)))
+
+p<- e4.total_time_df %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=t,fill=test_part))+
+    geom_histogram( alpha=0.5, position = 'identity',bins=100) +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    scale_x_continuous(limits = c(0,200))+
+    labs(x='median game duration', y='number of players')+
+    theme(legend.position=c(0.90,0.85)) +
+    facet_wrap(~genuine_first, nrow=2) +
+    theme_classic();
+
+ggsave('figures/Hangman2/total_time.pdf',p)
+ggsave('figures/Hangman2/total_time.png',width=5,height=3,dpi=300)
+
+
+
+e4.time_per_word <- e4.total_time_df %>%
+  group_by(test_part,word) %>%
+  summarise(t=median(t)) %>%
+  spread(test_part,t)
+
+p <- e4.time_per_word %>%
+  ggplot(aes(x=pretend,y=nonpretend, label=word)) +
+  geom_abline(intercept=0,slope=1) +
+  geom_point()+
+  geom_text(position=position_jitter(), size=3.5)+
+  coord_fixed(ratio=1)+
+  scale_x_continuous(limits=c(15,60))+
+  scale_y_continuous(limits=c(15,60)) +
+  theme(legend.position = 'none')+
+  theme_classic()
+
+ggsave('figures/Hangman2/time_per_word.png',width=3,height=3,dpi=300)
+
+```
+
+## Hypothesis 1: Game duration
+
+The median game duration in non-pretend games was `r round(e4.median_time$nonpretend%>%median())` seconds in non-pretend games and `r round(e4.median_time$nonpretend%>%median())` seconds in pretend games. Pretend games were significantly shorter among subjects that pretended in the first block (`r e4.median_time%>%filter(!genuine_first)%>%pull(diff)%>%t.test()`) and in the second block (`r e4.median_time%>%filter(genuine_first)%>%pull(diff)%>%t.test()`).
+
+```{r time_per_click, echo=FALSE}
+
+N_perm <- 1000;
+bootstrap_error <- function(x, N_perm) {
+  N <- length(x)
+  medians = c();
+  for (i in 1:N_perm) {
+    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median(.,na.rm=T))
+  };
+  return(sd(medians))
+}
+
+
+e4.time_per_click_number <- e4.click_log %>%
+  group_by(subj_id,test_part,genuine_first,click_number)%>%
+  summarise(RT=median(RT)) %>%
+  group_by(genuine_first,test_part,click_number) %>%
+  summarise(median_RT=median(RT),
+            sem_RT = bootstrap_error(RT,1000)) 
+
+
+p <- e4.time_per_click_number %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  filter(click_number>=0 & click_number<=10) %>%
+  ggplot(aes(x=click_number,y=median_RT, color=test_part, fill=test_part)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT), alpha=0.5)+
+  scale_y_continuous(limits=c(0,7500))+
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  facet_wrap(~genuine_first,nrow=2) +
+  theme_classic()
+  
+ggsave('figures/Hangman2/time_per_click_number.png',width=5,height=3,dpi=300)
+
+
+e4.first_click_time_per_word <- e4.click_log %>%
+  filter(click_number==1) %>%
+  group_by(test_part,word)%>%
+  summarise(t=median(t))%>%
+  spread(test_part,t)
+  
+  
+
+
+# p <- e4.time_per_first_click %>%
+#   ggplot(aes(x=word,y=RT)) +
+#   geom_boxplot() +
+#   scale_y_continuous(limits=c(0,15000))
+# 
+# ggsave('figures/hangman_nonpretend_pilot_time_per_first_click.png',p)
+```
+
+## Hypothesis 2: First click latency
+
+## Hypothesis 3: number of misses
+
+Among our players, the median number of misses was `r e4.median_misses%>%pull(nonpretend)%>%median()` in non-pretend games and `r e4.median_misses%>%pull(pretend)%>%median()` in pretend games. This effect was significant among players that pretended in the first part (`r t.test(e4.median_misses%>%filter(!genuine_first)%>%pull(nonpretend)-e4.median_misses%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`), and among those that pretended in the second part (`r t.test(e4.median_misses%>%filter(genuine_first)%>%pull(nonpretend)-e4.median_misses%>%filter(genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`).
+
+Across the 10 words, the number of misses in pretend games closely matched the number of misses in non-pretend games (`r apa_print(cor.test(e4.misses_per_word$pretend,e4.misses_per_word$nonpretend,method='spearman'))$full_result`).
+
+## Reaction times
+
+```{r RT_by_accuracy}
+
+
+e4.click_log <- e4.click_log %>%
+  group_by(subj_id,test_part,word) %>%
+ mutate(hit_bin = hit !=0,
+        lag3 = lag(hit,3)!=0,
+        lag2 = lag(hit,2)!=0,
+        lag1 = lag(hit,1)!=0,
+        lead1 = lead(hit,1)!=0,
+        lead2 = lead(hit,2)!=0,
+        lead3 = lead(hit,3)!=0)
+
+
+
+# E1.RT_by_lag3 <- E1.click_log %>%
+#   filter(click_number>3) %>%
+#   group_by(subj_id,test_part,lag3,genuine_first)%>%
+#   summarise(RT=median(RT))  %>%
+#   spread(lag3,RT,sep='_') %>%
+#   mutate(lag3_diff = lag3_TRUE-lag3_FALSE);
+# 
+# E1.RT_by_lag2 <- E1.click_log %>%
+#   filter(click_number>2) %>%
+#   group_by(subj_id,test_part,lag2,genuine_first)%>%
+#   summarise(RT=median(RT))  %>%
+#   spread(lag2,RT,sep='_') %>%
+#   mutate(lag2_diff = lag2_TRUE-lag2_FALSE);
+
+e4.RT_by_lag1 <- e4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,lag1)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE)
+
+e4.RT_by_hit <- e4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,hit_bin)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+
+e4.RT_by_lead1 <- e4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,lead1)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+# E1.RT_by_lead2 <- E1.click_log %>%
+#   filter(click_number<num_clicks-1) %>%
+#   group_by(subj_id,test_part,lead2,genuine_first)%>%
+#   summarise(RT=median(RT))  %>%
+#   spread(lead2,RT,sep='_') %>%
+#   mutate(lead2_diff = lead2_TRUE-lead2_FALSE)
+# 
+# E1.RT_by_lead3 <- E1.click_log %>%
+#   filter(click_number<num_clicks-2) %>%
+#   group_by(subj_id,test_part,lead3,genuine_first)%>%
+#   summarise(RT=median(RT))  %>%
+#   spread(lead3,RT,sep='_') %>%
+#   mutate(lead3_diff = lead3_TRUE-lead3_FALSE)
+# 
+e4.RT_by_hit_lags <- e4.RT_by_lag1 %>%
+  merge(e4.RT_by_hit) %>%
+  merge(e4.RT_by_lead1) 
+
+e4.RT_by_hit_lags_long <- e4.RT_by_hit_lags %>%
+  gather("position","difference",c("lag1_diff", "hit_diff", "lead1_diff"))%>%
+  mutate(position = ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,-1))) %>%
+  dplyr::select(genuine_first,subj_id,test_part,position,difference);
+
+p<- e4.RT_by_hit_lags_long %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  group_by(genuine_first,test_part,position) %>%
+  summarise(median_difference=median(difference, na.rm=T),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  # mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  ggplot(aes(x=position,color=test_part,fill=test_part,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-3:3,labels=c('t-3','t-2','t-1','t','t+1','t+2','t+3'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_vline(xintercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  facet_wrap(~genuine_first,nrow=2)+
+  labs(fill=' ',x='Relative serial position', y='RT difference (ms) between hit or miss on timepoint t')+
+  theme_classic()
+
+ggsave('figures/Hangman2/RT_by_lag_acc.pdf',p,width=7)
+ggsave('figures/Hangman2/RT_by_lag_acc.png',p,width=5, height=3, dpi=300)
+
+e4.RT_by_hit_lags_by_condition <- e4.RT_by_hit_lags_long %>%
+  spread(test_part,difference) %>%
+  mutate(interaction = pretend-nonpretend)
+
+
+p<- e4.RT_by_hit_lags_long %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  group_by(genuine_first,test_part,position) %>%
+  summarise(mean_difference=mean(difference, na.rm=T),
+            se_difference=se(difference)) %>%
+  # mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  ggplot(aes(x=position,color=test_part,fill=test_part,y=mean_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-3:3,labels=c('t-3','t-2','t-1','t','t+1','t+2','t+3'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_vline(xintercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=mean_difference-se_difference,ymax=mean_difference+se_difference),alpha=0.3,show.legend=F)+
+  facet_wrap(~genuine_first,nrow=2)+
+  labs(fill=' ',x='Relative serial position', y='RT difference (ms) between hit or miss on timepoint t')+
+  theme_classic()
+
+ggsave('figures/Hangman2/RT_by_lag_acc_with_mean_instead_of_median_at_the_group_level.png',p,width=5, height=3, dpi=300)
+
+
+# p<- E1.RT_by_hit %>% 
+#   group_by(test_part,hit_bin,genuine_first) %>%
+#   summarise(median_RT=median(RT)/1000,
+#             sem_RT=bootstrap_error(RT,N_perm)/1000) %>%
+#   mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+#   ggplot(aes(x=test_part,fill=hit_bin,y=median_RT)) +
+#   geom_bar(stat="identity",position="dodge", color='black')+
+#   geom_errorbar(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),linetype="solid", color="black", position="dodge")+
+#   facet_wrap(~genuine_first,nrow=2)+
+#   labs(fill='hit',x='test part', y='median RT (seconds)')
+# 
+# ggsave('figures/RT_by_acc.pdf',p)
+# 
+# 
+# E1.RT_by_prev_trial <- E1.click_log %>%
+#   filter(click_number>1) %>%
+#   group_by(subj_id,test_part,prev_hit, genuine_first)%>%
+#   summarise(RT=median(RT))
+# 
+# E1.RT_by_prev_trial_long<- E1.RT_by_prev_trial %>%
+#   spread(prev_hit,RT,sep='_') %>%
+#   mutate(hit_diff = prev_hit_FALSE-prev_hit_TRUE)
+# 
+# p<- E1.RT_by_prev_trial %>% 
+#   group_by(test_part,prev_hit,genuine_first) %>%
+#   summarise(median_RT=median(RT)/1000,
+#             sem_RT=bootstrap_error(RT,N_perm)/1000) %>%
+#   mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+#   ggplot(aes(x=test_part,fill=prev_hit,y=median_RT)) +
+#   geom_bar(stat="identity",position="dodge", color='black')+
+#   geom_errorbar(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),linetype="solid", color="black", position="dodge")+
+#   facet_wrap(~genuine_first,nrow=2)+
+#   labs(fill='hit on previous click',x='test part', y='median RT (seconds)')
+# 
+# ggsave('figures/RT_by_prev_acc.pdf',p)
+# 
+# E1.RT_by_next_trial <- E1.click_log %>%
+#   filter(click_number<num_clicks) %>%
+#   group_by(subj_id,test_part,next_hit, genuine_first)%>%
+#   summarise(RT=median(RT))
+# 
+# E1.RT_by_next_trial_long<- E1.RT_by_next_trial %>%
+#   spread(next_hit,RT,sep='_') %>%
+#   mutate(hit_diff = next_hit_FALSE-next_hit_TRUE)
+# 
+# p<- E1.RT_by_next_trial %>% 
+#   group_by(test_part,next_hit,genuine_first) %>%
+#   summarise(median_RT=median(RT)/1000,
+#             sem_RT=bootstrap_error(RT,N_perm)/1000) %>%
+#   mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+#   ggplot(aes(x=test_part,fill=next_hit,y=median_RT)) +
+#   geom_bar(stat="identity",position="dodge", color='black')+
+#   geom_errorbar(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),linetype="solid", color="black", position="dodge")+
+#   facet_wrap(~genuine_first,nrow=2)+
+#   labs(fill='hit on next click',x='test part', y='median RT (seconds)')
+
+
+```
+
+## Hypotheses 4-6: effect of hits/misses on RT
+
+Hits were faster than misses by `r round(abs(e4.RT_by_hit_lags_by_condition%>%filter(position==0)%>%pull(nonpretend)%>%median(na.rm=T)))` ms in non-pretend games (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & !genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`) and by `r round(abs(e4.RT_by_hit_lags_by_condition%>%filter(position==0)%>%pull(pretend)%>%median(na.rm=T)))` ms in pretend games (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & genuine_first)%>%pull(pretend)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & !genuine_first)%>%pull(pretend)%>%t.test())$full_result`). We find no significant interaction between these effects (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & genuine_first)%>%pull(interaction)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==0 & !genuine_first)%>%pull(interaction)%>%t.test())$full_result`).
+
+Letter selections following a hit were slower than following a miss by `r round(abs(e4.RT_by_hit_lags_by_condition%>%filter(position==1)%>%pull(nonpretend)%>%median(na.rm=T)))` ms in non-pretend games (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & !genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`) and by `r round(abs(e4.RT_by_hit_lags_by_condition%>%filter(position==1)%>%pull(pretend)%>%median(na.rm=T)))` ms in pretend games (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & genuine_first)%>%pull(pretend)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & !genuine_first)%>%pull(pretend)%>%t.test())$full_result`). We find no significant interaction between these effects (non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & genuine_first)%>%pull(interaction)%>%t.test())$full_result`; pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==1 & !genuine_first)%>%pull(interaction)%>%t.test())$full_result`).
+
+Letter selections preceding a hit were faster than those preceding a miss in non-pretend games only in the group that pretended first (`r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & !genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`) but not in the group that played normally first (`r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & genuine_first)%>%pull(nonpretend)%>%t.test())$full_result`). This effect was not observed in pretend games (pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & !genuine_first)%>%pull(pretend)%>%t.test())$full_result`; non-pretend first: `r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & genuine_first)%>%pull(pretend)%>%t.test())$full_result`). We find a significant interaction between these effects in the group that pretended first (`r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & !genuine_first)%>%pull(interaction)%>%t.test())$full_result`) but not in the other group (`r apa_print(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & genuine_first)%>%pull(interaction)%>%t.test())$full_result`). The difference was not significant when analyzing first blocks only (`r apa_print(t.test(e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & genuine_first)%>%pull(nonpretend),e4.RT_by_hit_lags_by_condition%>%filter(position==-1 & !genuine_first)%>%pull(pretend)))$statistic`).
+
+```{r optimality_analysis, echo=FALSE}
+
+number_words_df <- read.csv('../analysis/word_lists/numbers.csv')
+states_df <- read.csv('../analysis/word_lists/USstates.csv')
+fruit_df <- read.csv('../analysis/word_lists/fruit.csv')
+body_df <-  read.csv('../analysis/word_lists/bodypart.csv')
+celebrity_df <- read.csv('../analysis/word_lists/celebrities.csv')
+letter_df <- read.csv('../analysis/word_lists/letters.csv')
+
+
+is_consistent <- function(word_state, asked,  word) {
+  
+  word_state = strsplit(toupper(word_state),'')[[1]];
+  word = strsplit(toupper(word),'')[[1]];
+  asked = strsplit(toupper(asked),'')[[1]];
+  not_in_word = asked[!(asked %in% word_state)]
+  
+  # check if number of letters is consistent
+  if (length(word_state) != length(word)) {
+    return(FALSE)
+  }
+  
+  # check if the letters in the masked word are consistent
+  for (i in seq_along(word)) {
+    if (word_state[i] != word[i]) {
+      if (word_state[i] != '_' | word[i] == ' ' | word[i] == '.') {
+      return(FALSE)
+      }
+    }
+  }
+  
+  # check if any of the misses appear in the candidate word
+  if (length(Reduce(intersect,list(word,not_in_word)))>0) {
+    return(FALSE)
+  }
+
+  #if the function hasn't returned FALSE, return TRUE
+  return(TRUE)
+  
+}
+
+get_word_prior <- function(category) {
+  
+  return(
+    switch(category,
+         "a number" = number_words_df,
+         "a US state" = states_df,
+         "a body part" = body_df,
+         "a famous person" = celebrity_df,
+         "a fruit" = fruit_df)
+  )
+}
+
+get_word_probabilities <- function(word_state, asked, category) {
+  
+  word_probabilities <- get_word_prior(category) %>%
+    rowwise() %>%
+    mutate(likelihood = ifelse(is_consistent(word_state, asked,word),1, 0),
+           pword = prior * likelihood) %>%
+    ungroup() %>%
+    mutate(posterior = pword/sum(pword))%>%
+    filter(posterior>0) %>%
+    arrange(desc(posterior))
+
+  
+  return(word_probabilities)
+  
+};
+
+
+
+get_posterior <- function(word_state, asked, category) {
+  
+  word_probabilities <- get_word_probabilities(word_state, asked, category);
+  
+  letter_probabilities = c();
+  for (letter in toupper(letters)) {
+    if (grepl(letter,asked)) {
+      letter_probabilities = c(letter_probabilities,
+                               NA)
+    } else {
+      letter_probabilities = c(letter_probabilities,
+                             word_probabilities %>%
+                               filter(grepl(letter,toupper(word))) %>%
+                               pull(posterior) %>%
+                               sum()
+    )
+    }
+  }
+  posterior = letter_probabilities/sum(letter_probabilities, na.rm=T)
+
+  return(paste(posterior,collapse=','))
+  
+};
+
+get_letter_prob_posterior <- function(asked) {
+  
+  letter_probabilities <- letter_df %>%
+    rowwise() %>%
+    mutate(prob = ifelse(
+      grepl(toupper(letter),toupper(asked)),
+      NA,
+      frequency)
+      ) %>%
+    ungroup()%>%
+    mutate(
+      posterior = prob/sum(prob,na.rm=T)
+    )
+  
+  return(paste(letter_probabilities$posterior,collapse=','))
+  
+};
+
+get_p_click <- function(posterior, letter) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  return(posterior[which(toupper(letters)==letter)])
+}
+
+get_p_click_rank <- function(posterior, letter) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  rank_posterior = rank(-posterior)
+  return(rank_posterior[which(toupper(letters)==letter)])
+}
+
+get_posterior_entropy <- function(posterior) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  posterior[which(posterior==0)]=NA; #to avoid infinity*0
+  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+  return(entropy);
+}
+
+e4.click_log_with_boards <- e4.click_log %>%
+  dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>% 
+  rowwise()%>%
+  mutate(posterior = get_posterior(word_state,asked,category),
+         p_click = get_p_click(posterior,letter),
+         entropy = get_posterior_entropy(posterior),
+         p_click_rank = get_p_click_rank(posterior,letter));
+
+get_random_letter <- function(asked) {
+  
+  asked = strsplit(tolower(asked),'')[[1]];
+  not_asked = setdiff(letters,asked)
+  return(toupper(not_asked)%>%sample(1))
+  
+}
+
+get_most_frequent_letter <- function(asked) {
+  
+   lp <- letter_df %>%
+    rowwise() %>%
+    mutate(prob = ifelse(
+      grepl(toupper(letter),toupper(asked)),
+      NA,
+      frequency)
+      ) %>%
+    ungroup()
+  
+     return(lp[which.max(lp$prob),]$letter%>%toupper())
+  
+}
+
+e4.click_log_with_boards_random <- e4.click_log_with_boards %>%
+  mutate(letter = get_random_letter(asked),
+         p_click = get_p_click(posterior,letter),
+         p_click_rank = get_p_click_rank(posterior,letter),
+         hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+         test_part='random');
+
+e4.click_log_with_boards_most_frequent <- e4.click_log_with_boards %>%
+  mutate(letter = get_most_frequent_letter(asked),
+         p_click = get_p_click(posterior,letter),
+         p_click_rank = get_p_click_rank(posterior,letter),
+         hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+         test_part='most_frequent');
+
+
+e4.letter_prob_click_log_with_boards <- e4.click_log %>%
+  dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>% 
+  rowwise()%>%
+  mutate(posterior = get_letter_prob_posterior(asked),
+         p_click = get_p_click(posterior,letter),
+         entropy = get_posterior_entropy(posterior),
+         p_click_rank = get_p_click_rank(posterior,letter));
+
+
+e4.letter_prob_click_log_with_boards_random <- e4.letter_prob_click_log_with_boards %>%
+  mutate(letter = get_random_letter(asked),
+         p_click = get_p_click(posterior,letter),
+         p_click_rank = get_p_click_rank(posterior,letter),
+         hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+         test_part='random');
+```
+
+```{r word_probabilities}
+
+words <-e4.click_log %>%
+  group_by(word) %>% summarise(word_state=word_state[1], category=category[1],asked=asked[1]) %>%
+  filter(word != 'vladimir putin') %>%
+  mutate(word=as.character(word), category=as.character(category))
+
+words[nrow(words)+1,] = list('taylor swift','______ _____','a famous person','')
+words[nrow(words)+1,] = list('papaya','_A_A_A','a fruit','AEIOMT')
+words[nrow(words)+1,] = list('banana','_A_A_A','a fruit','AEIOMT')
+words[nrow(words)+1,] = list('hand','HA__','a body part','AEOMTHP')
+words[nrow(words)+1,] = list('hair','HA__','a body part','AEOMTHP')
+
+save_word_probs <- function(word,word_state, asked, category) {
+  probs <- get_word_probabilities(word_state, asked, category);
+  probs %>%
+      write.csv(paste('../analysis/word_lists/per_game/',word,'.csv',sep=''))
+  return('')
+}
+
+
+words %>%
+  rowwise() %>%
+  mutate(a=save_word_probs(word,word_state,asked,category))
+```
+
+```{r p_click}
+
+
+
+e4.mean_P_click_rank <- e4.click_log_with_boards %>%
+  rbind(e4.click_log_with_boards_random)%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank))
+
+e4.mean_P_click_rank_wide <- e4.mean_P_click_rank %>%
+  spread(test_part,p_click_rank) %>%
+  mutate(p_vs_r = pretend-random,
+         np_vs_r = nonpretend-random,
+         p_vs_np = pretend-nonpretend)
+
+e4.mean_letter_prob_P_click_rank <- e4.letter_prob_click_log_with_boards %>%
+  rbind(e4.click_log_with_boards_random)%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank))
+
+e4.mean_letter_prob_P_click_rank_wide <- e4.mean_letter_prob_P_click_rank %>%
+  spread(test_part,p_click_rank) %>%
+  mutate(p_vs_r = pretend-random,
+         np_vs_r = nonpretend-random,
+         p_vs_np = pretend-nonpretend)
+
+p<- e4.mean_P_click_rank %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
+    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725")) +
+    labs(x='p(letter in word) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~genuine_first, nrow=2)+
+    theme_classic();
+
+ggsave('figures/Hangman2/pclick_rank.pdf',p)
+ggsave('figures/Hangman2/pclick_rank.png',p,width=5,height=3,dpi=300);
+
+
+
+p<- e4.mean_letter_prob_P_click_rank %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
+    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725")) +
+    labs(x='p(letter) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~genuine_first, nrow=2)+
+    theme_classic();
+
+ggsave('figures/Hangman2/letter_prob_pclick_rank.pdf',p)
+ggsave('figures/Hangman2/letter_prob_pclick_rank.png',p,width=5,height=3,dpi=300)
+
+e4.mean_P_click_rank_misses <- e4.click_log_with_boards %>%
+  filter(!hit_bin) %>%
+  rbind(e4.click_log_with_boards_random %>%filter(!hit_bin))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank))
+
+e4.mean_P_click_rank_misses_wide <- e4.mean_P_click_rank_misses %>%
+  spread(test_part,p_click_rank) %>%
+  mutate(p_vs_r = pretend-random,
+         np_vs_r = nonpretend-random,
+         p_vs_np = pretend-nonpretend)
+
+e4.mean_letter_prob_P_click_rank_misses <- e4.letter_prob_click_log_with_boards %>%
+  filter(!hit_bin) %>%
+  rbind(e4.click_log_with_boards_random %>%filter(!hit_bin))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank))
+
+e4.mean_letter_prob_P_click_rank_misses_wide <- e4.mean_letter_prob_P_click_rank_misses %>%
+  spread(test_part,p_click_rank) %>%
+  mutate(p_vs_r = pretend-random,
+         np_vs_r = nonpretend-random,
+         p_vs_np = pretend-nonpretend)
+
+p<- e4.mean_P_click_rank_misses %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(letter in word) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~genuine_first, nrow=2)+
+    theme_classic();
+
+ggsave('figures/Hangman2/pclick_rank_misses.pdf',p)
+ggsave('figures/Hangman2/pclick_rank_misses.png',p,width=5,height=3,dpi=300)
+
+p<- e4.mean_letter_prob_P_click_rank_misses %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(letter) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~genuine_first, nrow=2)+
+    theme_classic();
+
+ggsave('figures/Hangman2/letter_prob_pclick_rank_misses.pdf',p)
+ggsave('figures/Hangman2/letter_prob_pclick_rank_misses.png',p,width=5,height=3,dpi=300)
+
+e4.num_irrational_clicks <- e4.click_log_with_boards %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(nic=sum(p_click==0)/5) %>%
+  spread(test_part,nic)
+
+e4.irrational_clicks_misses_ratio <- e4.click_log_with_boards %>%
+  filter(!hit_bin)%>%
+  rbind(e4.click_log_with_boards_random %>%
+           filter(!hit_bin))%>%
+    rbind(e4.click_log_with_boards_most_frequent %>%
+           filter(!hit_bin))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(nic=sum(p_click==0)/n()) %>%
+  spread(test_part,nic) %>%
+  mutate(diff=pretend-nonpretend)
+
+e4.rank_misses_by_category <- e4.click_log_with_boards %>%
+  filter(!hit_bin) %>%
+  rbind(e4.click_log_with_boards_random %>%filter(!hit_bin))%>%
+  group_by(subj_id,test_part, category, word) %>%
+  summarise(p_click_rank=mean(p_click_rank)) %>%
+  group_by(test_part,category,word)%>%
+  summarise(p_rank = mean(p_click_rank,na.rm=T),
+            se = se(p_click_rank,na.rm=T))
+
+p <- e4.rank_misses_by_category %>% ggplot(
+  aes(x=as.factor(word),y=p_rank,fill=test_part)
+) + 
+  geom_bar(position=position_dodge(),
+           stat='identity', color='black')+
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+  geom_errorbar(aes(ymin=p_rank-se, ymax=p_rank+se), width=.2,position=position_dodge(.9)) +
+  labs(x='word',
+       y='posterior rank')
+
+ggsave('figures/Hangman2/prank_by_word.png',p,width=12,height=3,dpi=300)
+
+```
+
+## Hypothesis 7: optimality
+
+Letter selections in pretend games had a higher posterior probability to be included in the word than in non-pretend games (pretend first: `r e4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). The same was true for letter selections in pretend games (pretend first: `r e4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). Non-pretend letter selections had a higher posterior probability among players who pretended first (`r e4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`) but not in the group that played normally first (`r e4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`). Comparing data from the first condition only in a between-subject manner revealed a significant difference (`r t.test(e4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(nonpretend),e4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print%>%'$'(full_result)`).
+
+When focusing on misses, non-pretend letter selections were more optimal than random (pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(!genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`), as well as pretend games (pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(!genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). In both cases, non-pretend games were more optimal than pretend games (pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(!genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`)
+
+## Hypothesis 7b: Letter frequency
+
+Non-pretenders selected high-frequency letters more than expected by chance (pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). The same was true for letter selections in pretend games (pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). Letters selected by pretenders had a higher overall frequency compared to letters selected by non-pretenders (pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`). but not in the group that played normally first (`r e4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`). Comparing data from the first condition only in a between-subject manner revealed a significant difference (`r t.test(e4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(nonpretend),e4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print%>%'$'(full_result)`).
+
+This was the case also when focusing on misses only ( pretend first: `r e4.mean_letter_prob_P_click_rank_misses_wide%>%filter(!genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r e4.mean_P_click_rank_misses_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`)
+
+```{r}
+
+e4.RT_by_entropy <- e4.click_log_with_boards %>%
+  filter(click_number>1) %>%
+  mutate(entropy_bin=round(entropy*10)/10) %>%
+  group_by(test_part,subj_id,genuine_first,entropy_bin) %>% 
+  summarise(RT=median(RT)) %>%
+  group_by(test_part,genuine_first,entropy_bin) %>%
+  summarise(median_RT=median(RT),
+            sem_RT=bootstrap_error(RT,N_perm))
+
+
+p <- e4.RT_by_entropy %>%
+  mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  ggplot(aes(x=entropy_bin,color=test_part,fill=test_part,y=median_RT)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),alpha=0.3,show.legend=F)+
+  facet_wrap(~genuine_first,nrow=2)+
+  labs(fill=' ',x='Entropy of posterior', y='median RT (ms)')+
+  theme_classic()
+
+ggsave('figures/Hangman2/RT_by_entropy.png',p,width=5,height=3,dpi=300)
+
+
+e4.RT_by_entropy_trimmed <- e4.click_log_with_boards %>%
+  # filter(click_number>1) %>%
+  filter(RT<5000 & RT>100) %>%
+  mutate(entropy_bin=round(entropy*5)/5) %>%
+  group_by(test_part,subj_id,genuine_first,entropy_bin) %>% 
+  summarise(RT=median(RT)) %>%
+  group_by(test_part,genuine_first,entropy_bin) %>%
+  summarise(median_RT=median(RT),
+            sem_RT=bootstrap_error(RT,N_perm))
+
+
+p <- e4.RT_by_entropy_trimmed %>%
+  mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  ggplot(aes(x=entropy_bin,color=test_part,fill=test_part,y=median_RT)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),alpha=0.3,show.legend=F)+
+  facet_wrap(~genuine_first,nrow=2)+
+  labs(fill=' ',x='Entropy of posterior', y='median RT (ms)')+
+  theme_classic()
+
+ggsave('figures/hangman2/RT_by_entropy_trimmed.png',p,width=5,height=3,dpi=300)
+
+e4.RT_by_entropy_coefs <- e4.click_log_with_boards %>%
+  # filter(click_number>1) %>%
+  group_by(genuine_first,subj_id,test_part,word) %>%
+  mutate(entropy_centered = entropy-mean(entropy),
+         entropy_squared = entropy_centered^2) %>%
+  select(genuine_first,subj_id,test_part,word,click_number,entropy_centered,entropy_squared,RT) %>%
+  group_by(genuine_first,subj_id,test_part,word) %>%
+  do(model=lm(RT~entropy_centered+entropy_squared,data=.)) %>%
+  mutate(tidys=list(broom::tidy(model))) %>%
+  unnest(tidys) %>%
+  dplyr::select(!c(std.error,statistic,p.value)) %>%
+  group_by(genuine_first,subj_id,test_part,term) %>%
+  summarise(estimate = mean(estimate))
+
+e4.RT_by_entropy_coefs_wide <- e4.RT_by_entropy_coefs %>% 
+  spread(test_part,estimate) %>%
+  mutate(diff=pretend-nonpretend)
+
+e4.RT_by_entropy_coefs_summary <- e4.RT_by_entropy_coefs %>%
+  group_by(test_part,term, genuine_first) %>%
+  summarise(mean_estimate = mean(estimate),
+            se_estimate = se(estimate))
+
+p <- e4.RT_by_entropy_coefs_summary %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  mutate(term = factor(term,levels=c('entropy_centered','entropy_squared'), labels = c('entropy','entropy squared')))%>%
+  filter(term!='(Intercept)') %>%
+  ggplot(aes(x=term,y=mean_estimate,fill=test_part)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_bar(stat='identity',color='black',position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean_estimate-se_estimate,ymax=mean_estimate+se_estimate),width=.2,position=position_dodge(.9))+
+  labs(fill=' ',x='term', y='coefficient')+
+  theme_classic() +
+  facet_grid(rows=vars(genuine_first))
+
+ggsave('figures/Hangman2/RT_by_entropy_coefficientst.png',p,width=5,height=5,dpi=300)
+
+
+e4.corrected_RT_by_entropy_coefs <- e4.click_log_with_boards %>%
+  group_by(subj_id,test_part,click_number) %>%
+  mutate(corrected_RT = RT-mean(RT)) %>%
+  group_by(genuine_first,subj_id,test_part) %>%
+  mutate(entropy_centered = entropy-mean(entropy),
+         entropy_squared = entropy_centered^2) %>%
+  select(genuine_first,subj_id,test_part,entropy_centered,entropy_squared,corrected_RT) %>%
+  group_by(genuine_first,subj_id,test_part) %>%
+  do(model=lm(corrected_RT~entropy_centered+entropy_squared,data=.)) %>%
+  mutate(tidys=list(broom::tidy(model))) %>%
+  unnest(tidys) %>%
+  dplyr::select(!c(std.error,statistic,p.value))
+
+
+
+e4.corrected_RT_by_entropy_coefs_summary <- e4.corrected_RT_by_entropy_coefs %>%
+  group_by(test_part,term,genuine_first) %>%
+  summarise(mean_estimate = mean(estimate),
+            se_estimate = se(estimate)) 
+
+p <- e4.corrected_RT_by_entropy_coefs_summary %>%
+      mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+  mutate(term = factor(term,levels=c('entropy_centered','entropy_squared'), labels = c('entropy','entropy squared')))%>%
+  filter(term!='(Intercept)') %>%
+  ggplot(aes(x=term,y=mean_estimate,fill=test_part)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_bar(stat='identity',color='black',position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean_estimate-se_estimate,ymax=mean_estimate+se_estimate),width=.2,position=position_dodge(.9))+
+  labs(fill=' ',x='term', y='coefficient')+
+  theme_classic()+
+  facet_grid(rows=vars(genuine_first))
+
+
+ggsave('figures/Hangman2/corrected_RT_by_entropy_coefficients_no_split.png',p,width=5,height=5,dpi=300)
+
+
+```
+
+## Hypothesis 8: Entropy/RT relationship
+
+In non-pretend games, high uncertainty was associated with longer decision times (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & genuine_first)%>%pull(nonpretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & !genuine_first)%>%pull(nonpretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`). The same was true for pretend games (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & genuine_first)%>%pull(pretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & !genuine_first)%>%pull(pretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`). The effects were significantly weaker in pretend games (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_centered' & !genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`).
+
+In non-pretend games, the relationship between uncertainty and RT was negatively quadratic, such that the longest responses were the one associated with intermediate uncertainty levels (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & genuine_first)%>%pull(nonpretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & !genuine_first)%>%pull(nonpretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`). The same was true for pretend games (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & genuine_first)%>%pull(pretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & !genuine_first)%>%pull(pretend)%>%t.test()%>%apa_print()%>%'$'(statistic)`). The effects were significantly weaker in pretend games (non-pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r e4.RT_by_entropy_coefs_wide %>% filter(term=='entropy_squared' & !genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`).
+
+```{r}
+
+
+e4.judge_df <- e4.df %>%
+  filter(test_part=='judge' & trial_type=='html-keyboard-response')%>%
+  dplyr::select(subj_id, 
+         word, 
+         player,
+         correct_response,
+         key_press,
+         correct)%>%
+  rowwise()%>%
+  mutate(decision = ifelse(key_press==80,1,0),
+         pretend = ifelse(correct_response=='P',1,0)
+)
+
+e4.judge_df$correct%>%mean();
+
+
+e4.judge_summary_df <- e4.judge_df %>%
+  group_by(subj_id)%>%
+  summarise(accuracy=mean(correct),
+            bias=mean(decision))
+
+```
+
+```{r condition-classifier, echo=FALSE, eval=FALSE}
+
+set.seed(42);
+
+gamewise_data <- e4.click_log_with_boards %>% 
+  filter(genuine_first != 'True' | test_part=='pretend') %>% 
+  mutate(word=factor(word)) %>%
+  group_by(subj_id,test_part,word) %>%
+  filter(sum(RT)<=90000) %>%
+  summarise(median_RT=median(RT),
+            mean_p_click_rank = mean(p_click_rank),
+            first_click_latency=RT[click_number==1],
+            num_irrational_clicks = sum(p_click==0)) %>%
+  ungroup()%>%
+  select(test_part,mean_p_click_rank,median_RT,num_irrational_clicks,word) 
+# 
+# model.matrix(~ 0 + word, gamewise_data) %>%
+#     as.data.frame() %>%
+#     bind_cols(gamewise_data) %>%
+#     select(x, day, everything());
+
+# gamewise_data_nonpretend = gamewise_data%>%filter(test_part=='nonpretend') %>%mutate(nrow=1:n())
+# gamewise_data_pretend = gamewise_data%>%filter(test_part=='pretend')
+# rows <- sample(nrow(gamewise_data_nonpretend))
+# gamewise_data_pretend <- gamewise_data_pretend[rows,]%>%mutate(nrow=1:n())
+# 
+# pair_gamewise_data <- full_join(gamewise_data_nonpretend,
+#                                 gamewise_data_pretend,
+#                                 by='nrow',
+#                                 suffix=c('.nonpretend','.pretend')) %>%
+#   mutate(which_side = sample(c(-1,1),nrow(gamewise_data_pretend),replace=TRUE),
+#          mean_p_click = which_side*(mean_p_click_rank.nonpretend-mean_p_click_rank.pretend),
+#          median_RT = which_side*(median_RT.nonpretend-median_RT.pretend),
+#          num_irrational_clicks = which_side*(num_irrational_clicks.nonpretend-num_irrational_clicks.pretend),
+#          which_side=factor(which_side)) %>%
+#   select(which_side,mean_p_click,median_RT,num_irrational_clicks)
+
+train_control <- trainControl(method = "CV", number=10, sampling='down')
+
+# train the model on training set
+model <- train(test_part ~ .,
+               data = gamewise_data,
+               trControl = train_control,
+               method = "svmLinear",
+               preProcess = c("center","scale"))
+
+
+# print cv scores
+# model
+```
+
+```{r}
+
+unidentifiable_ss <- e4.judge_df %>%
+  group_by(subj_id)%>%
+  summarise(n=n())%>%
+  filter(n>5)%>%
+  pull(subj_id)%>%
+  unique();
+
+e4.judge_performance <- e4.judge_df %>%
+  filter(!(subj_id %in% unidentifiable_ss)) %>%
+  group_by(subj_id)%>%
+  summarise(judge_rate=sum(correct)/5);
+
+e4.pretend_performance <- e4.judge_df %>%
+  filter(!(player %in% unidentifiable_ss & pretend==1)) %>%
+  group_by(player)%>%
+  summarise(ntrials=n(),
+            successful=ntrials-sum(correct),
+            pretend_rate = successful/ntrials) %>%
+  mutate(subj_id=player)
+
+e4.optimality_cost <- e4.click_log_with_boards %>%
+  group_by(subj_id,test_part) %>%
+  summarise(p_click_rank=mean(p_click_rank)) %>%
+  spread(test_part,p_click_rank) %>%
+  mutate(optimality_cost=nonpretend-pretend)
+
+e4.performance_df <- merge(e4.judge_performance,e4.pretend_performance)%>%
+  merge(e4.optimality_cost);
+
+p <- e4.performance_df %>%
+  ggplot(aes(x=judge_rate,y=pretend_rate)) +
+  geom_jitter() + 
+  labs(x='judge accuracy',y='pretense success rate') +
+  theme_classic()
+
+ggsave('figures/Hangman2/judge_pretend_accuracy.png',p,width=5,height=3,dpi=300)
+
+p <- e4.performance_df %>%
+  ggplot(aes(x=judge_rate,y=optimality_cost)) +
+  geom_jitter() + 
+  labs(x='judge accuracy',y='optimality cost') +
+  theme_classic()
+
+ggsave('figures/Hangman2/optimality_judge_accuracy.png',p,width=5,height=3,dpi=300)
+
+```
+
+## Hypothesis 9 (judge accuracy)
+
+Subjects were not better than chance in detecting pretense games (`r e4.judge_summary_df$accuracy%>%t.test(mu=0.5)%>%apa_print()%>%'$'(full_result)`).
+
+## Hypothesis 9B (judge bias)
+
+Subjects were not slightly biased to classify games as pretend games (`r e4.judge_summary_df$bias%>%t.test(mu=0.5)%>%apa_print()%>%'$'(full_result)`).
+
+## Hypothesis 10 (judge-pretend relation)
+
+No significant correlation between judge accuracy and ability to trick others (`r cor.test(e4.performance_df$pretend_rate,e4.performance_df$judge_rate,method='spearman')%>%apa_print()%>%'$'(full_result)`), nor with the optimality cost to pretending (`r cor.test(e4.performance_df$optimality_cost,e4.performance_df$judge_rate,method='spearman')%>%apa_print()%>%'$'(full_result)`).
+
+### Half games
+
+```{r}
+
+e4.half_game_click_df <- e4.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         word,
+         num_clicks,
+         click_log,
+         genuine_first) %>%
+  rowwise()%>%
+  mutate(num_hits = strsplit(gsub(' ','',word),split='')[[1]]%>%unique()%>%length(),
+         num_misses = num_clicks-num_hits,
+         click_log = gsub("\'","\"", click_log),
+         click_log = gsub("None","null", click_log),
+         word = factor(word,levels=c(
+           'papaya',
+           'banana',
+           'hair',
+           'hand'
+         )),
+         category = ifelse(word=='papaya'|word=='banana','a fruit','a body part')) %>%
+  filter(test_part=='pretend_half_game' | test_part=='nonpretend_half_game')
+
+e4.half_game_click_log <- data.frame(matrix(ncol=11,nrow=0, 
+                               dimnames=list(NULL, 
+                                             c("subj_id",
+                                              "test_part", 
+                                              "word",
+                                              "category",
+                                              "num_clicks",
+                                              "num_misses",
+                                              "letter",
+                                              "hit",
+                                              "t",
+                                              "click_number",
+                                              "genuine_first"))))
+
+
+for (row in 1:nrow(e4.half_game_click_df)) {
+  
+    subject_click_log <- data.frame(fromJSON(e4.half_game_click_df[row, ]$click_log)) %>%
+    mutate(
+      letter = lead(letter,1),
+      t = lead(t,1),
+      hit = lead(hit,1),
+      click_number = 1:n(),
+      subj_id = e4.half_game_click_df[row, ]$subj_id,
+      test_part = e4.half_game_click_df[row, ]$test_part,
+      word = e4.half_game_click_df[row, ]$word,
+      category = e4.half_game_click_df[row, ]$category,
+      num_clicks = e4.half_game_click_df[row, ]$num_clicks,
+      num_misses = e4.half_game_click_df[row, ]$num_misses,
+      genuine_first = e4.half_game_click_df[row, ]$genuine_first
+    )%>%
+      filter(click_number<=num_clicks)
+    
+    e4.half_game_click_log <- rbind(e4.half_game_click_log, subject_click_log);
+}
+    
+
+e4.half_game_click_log <- e4.half_game_click_log %>%
+  relocate(subj_id, .before = letter) %>%
+  relocate(genuine_first, .before = letter) %>% 
+  relocate(test_part, .before=letter) %>% 
+  relocate(word, .before=letter) %>% 
+  relocate(category, .before=letter) %>% 
+  relocate(click_number, .before=letter) %>%
+  group_by(subj_id,test_part,word) %>%
+  mutate(RT=t-lag(t,default=0)) %>%
+  group_by(subj_id,word) %>%
+  rowwise()
+
+# %>%
+#   mutate(posterior = get_posterior(word_state,asked,category),
+#          p_click = get_p_click(posterior,letter),
+#          entropy = get_posterior_entropy(posterior),
+#          p_click_rank = get_p_click_rank(posterior,letter))
+
+e4.letter_choice_frequency <- e4.half_game_click_log %>%
+  filter(click_number==1) %>%
+  dplyr::select(subj_id,test_part,word_state,letter) %>%
+  mutate(letter=factor(letter,levels=toupper(letters))) %>%
+  group_by(letter,test_part,word) %>%
+  summarise(count = n()) %>%
+  group_by(test_part,word) %>%
+  mutate(p=count/sum(count)) %>%
+  complete(letter,fill=list(count=0,p=0)) %>%
+  mutate(test_part=ifelse(test_part=='pretend_half_game','pretend','non-pretend'))
+
+e4.first_click_half_games <- e4.half_game_click_log %>%
+  filter(click_number==1) %>%
+  dplyr::select(subj_id,genuine_first,word,letter,t,hit,test_part) %>%
+  mutate(
+    makes_sense = 
+    (word %in% c('hair','hand') & letter %in% c('N','D','I','R')) | 
+      (word %in% c('banana','papaya') & letter %in% c('P','Y','B','N')),
+    bananahand = letter %in% c('B','N','D')
+  )
+
+p <- e4.first_click_half_games %>%
+  group_by(test_part,genuine_first) %>%
+  summarise(makes_sense=mean(makes_sense)) %>%
+  mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'),
+         test_part=ifelse(test_part=='pretend_half_game','pretend','non-pretend')) %>%
+  ggplot(aes(x=test_part,fill=test_part,y=makes_sense))+
+  geom_bar(position=position_dodge(),
+           stat='identity', color='black')+
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+  facet_grid(~genuine_first)+
+  theme_classic()+
+  labs(y='proportion of clicks that make sense')
+
+ggsave('figures/Hangman2/halfgames_make_sense.png',p,width=6,height=3,dpi=300)
+
+p <- e4.first_click_half_games %>%
+  filter(makes_sense)%>%
+  mutate(word_class = ifelse(word %in% c('banana','hand'),'BANANA or HAND','PAPAYA or HAIR'))%>%
+  group_by(test_part,genuine_first,word_class) %>%
+  summarise(bananahand = mean(bananahand)) %>%
+  mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'),
+         test_part=ifelse(test_part=='pretend_half_game','pretend','non-pretend')) %>%
+  ggplot(aes(x=test_part,fill=test_part,y=bananahand))+
+  geom_bar(position=position_dodge(),
+           stat='identity', color='black')+
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+  facet_grid(rows=vars(genuine_first),col=vars(word_class))+
+  theme_classic()+
+  labs(y='(consistent with BANANA/HAND)/(cons. with something)')
+
+ggsave('figures/Hangman2/halfgames_attraction.png',p,width=6,height=4,dpi=300)
+
+
+e4.optimal_letter_choice <- e4.half_game_click_log %>% 
+  filter(click_number==1) %>% 
+  group_by(word) %>% 
+  summarize(posterior = get_posterior(word_state[1],asked[1],category[1]),
+            word_state=word_state[1])
+
+e4.optimal_by_letter <- data.frame(matrix(ncol=5,nrow=0, 
+                               dimnames=list(NULL, 
+                                             c("test_part", 
+                                               "word",
+                                              "word_state",
+                                              "letter",
+                                              "p"))))
+
+
+for (row in 1:nrow(e4.optimal_letter_choice)) {
+  
+   p <- scan(text= e4.optimal_letter_choice[row,]$posterior, what = numeric(), sep="," , quiet = TRUE);
+   letter = LETTERS;
+   
+   this.word <- tibble(letter,p) %>%
+     mutate(
+       word_state = e4.optimal_letter_choice[row,]$word_state,
+       word = e4.optimal_letter_choice[row,]$word,
+       test_part = 'optimal'
+     )
+    
+    e4.optimal_by_letter <- rbind(e4.optimal_by_letter, this.word);
+    
+}
+  
+
+
+e4.letter_choice_frequency <-
+  e4.letter_choice_frequency %>%
+  rbind(e4.optimal_by_letter) 
+
+p <- e4.letter_choice_frequency %>% 
+  mutate(test_part = factor(test_part, levels=c('non-pretend','pretend','optimal'))) %>%
+  ggplot(aes(x=letter,y=p, fill=test_part)) +
+  geom_bar(stat='identity', position='dodge') +
+  facet_grid(rows=vars(word)) +
+  theme_minimal() +
+  scale_fill_manual(values=c("#69b3a2", "#404080", "#49B240")) 
+
+ggsave('figures/hangmanpilot_halfgames.png',p,width=6,height=3,dpi=300)
+
+p <- e4.letter_choice_frequency %>%
+  filter((word=='papaya' | word=='banana') & test_part != 'optimal') %>%
+  mutate(letter = factor(
+    ifelse(letter %in% c('B','N','P','Y'), letter, 'other'),
+    levels=rev(c('B','N','P','Y','other'))),
+    test_part = factor(test_part, levels=c('non-pretend','pretend'))) %>%
+  group_by(test_part,word,letter) %>%
+  summarise(p=sum(p)) %>%
+  ggplot(aes(x=letter,y=p, fill=test_part)) +
+  geom_bar(stat='identity', position='dodge') +
+  coord_flip()+
+  facet_grid(cols=vars(word)) +
+  theme_minimal() +
+  scale_fill_manual(values=c("#69b3a2", "#404080", "#49B240")) 
+
+
+irrational_test_p_first <- binom.test(
+  e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False') %>%
+    pull(makes_sense) %>%
+    sum(), 
+  e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False') %>%
+    nrow(),
+  e4.first_click_half_games %>% 
+    filter(test_part=='nonpretend_half_game' & genuine_first=='False') %>%
+    pull(makes_sense) %>%
+    mean())
+
+irrational_test_np_first <- binom.test(
+  e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True') %>%
+    pull(makes_sense) %>%
+    sum(), 
+  e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True') %>%
+    nrow(),
+  e4.first_click_half_games %>% 
+    filter(test_part=='nonpretend_half_game' & genuine_first=='True') %>%
+    pull(makes_sense) %>%
+    mean())
+
+attraction_test_np_first <- prop.test(
+  x=c(
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True' & makes_sense & word %in% c('banana','hand')) %>%
+    pull(bananahand) %>%
+    sum(), 
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True' & makes_sense & word %in% c('papaya','hair')) %>%
+    pull(bananahand) %>%
+    sum()), 
+  n= c(
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True' & makes_sense & word %in% c('banana','hand')) %>%
+    nrow(),
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='True' & makes_sense & word %in% c('papaya','hair')) %>%
+    nrow()))
+
+attraction_test_p_first <- prop.test(
+  x=c(
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False' & makes_sense & word %in% c('banana','hand')) %>%
+    pull(bananahand) %>%
+    sum(), 
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False' & makes_sense & word %in% c('papaya','hair')) %>%
+    pull(bananahand) %>%
+    sum()), 
+  n= c(
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False' & makes_sense & word %in% c('banana','hand')) %>%
+    nrow(),
+    e4.first_click_half_games %>% 
+    filter(test_part=='pretend_half_game' & genuine_first=='False' & makes_sense & word %in% c('papaya','hair')) %>%
+    nrow()))
+
+```
+
+## Hypothesis 12 (irrational letter selections)
+
+In non-pretend games, subjects almost always chose letters that made sense (non-pretend first: `r e4.first_click_half_games %>% filter(test_part=='nonpretend_half_game' & genuine_first=='True')%>%pull(makes_sense)%>%mean()%>%printnum()`; pretend first: `r e4.first_click_half_games %>% filter(test_part=='nonpretend_half_game' & genuine_first=='False')%>%pull(makes_sense)%>%mean()%>%printnum()`). In pretend games, these figures were significantly lower (non-pretend first: `r e4.first_click_half_games %>% filter(test_part=='pretend_half_game' & genuine_first=='True')%>%pull(makes_sense)%>%mean()%>%printnum()`, $p<.001$; pretend first: `r e4.first_click_half_games %>% filter(test_part=='pretend_half_game' & genuine_first=='False')%>%pull(makes_sense)%>%mean()%>%printnum()`, $p<.001$).
+
+## Hypothesis 13 (target word effect)
+
+```{r compute-bonus-4}
+
+
+
+nonpretend_points <- e4.df %>%
+  group_by(PROLIFIC_PID) %>%
+  filter(test_part=='nonpretend') %>%
+  summarise(nonpretend = sum(points,na.rm=T),
+            subj_id=subj_id[1]);
+
+judge_points <- e4.judge_df %>%
+  group_by(subj_id) %>%
+  summarise(judge = 10*sum(correct));
+
+pretend_points <- e4.judge_df %>%
+  filter(pretend==1) %>%
+  group_by(player)%>%
+  summarise(pretend=sum(correct)*10) %>%
+  mutate(subj_id=player) %>%
+  dplyr::select(subj_id,pretend)
+
+bonus.df <- nonpretend_points %>%
+  merge(judge_points,by='subj_id',all=T) %>%
+  merge(pretend_points, by="subj_id", all=T) %>%
+  mutate(points = pretend+nonpretend+judge,
+         bonus=floor(points/100));
+
+export_2_ss <- e4.export2$participant_id %>%
+  unique()
+
+bonus.df %>%
+  filter(PROLIFIC_PID %in% export_2_ss)%>%
+  filter(bonus>0)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export2.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+export_3_ss <- e4.export3$participant_id %>%
+  unique()
+
+bonus.df %>%
+  filter(PROLIFIC_PID %in% export_3_ss)%>%
+  filter(bonus>0)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export3.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+export_4_ss <- e4.export4$participant_id %>%
+  unique()
+
+bonus.df %>%
+  filter(PROLIFIC_PID %in% export_4_ss)%>%
+  filter(bonus>0)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export4.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+export_5_ss <- e4.export5$participant_id %>%
+  unique()
+
+bonus.df %>%
+  filter(PROLIFIC_PID %in% export_5_ss)%>%
+  filter(bonus>0)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export5.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+export_6_ss <- e4.export6$participant_id %>%
+  unique()
+
+bonus.df %>%
+  filter(PROLIFIC_PID %in% export_6_ss)%>%
+  # filter(bonus>0)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export6.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+# this ignores participatns whose games were not presented to later participants!
+nonincluded_subs <-setdiff(nonpretend_points$subj_id%>%unique(),
+                           pretend_points$subj_id%>%unique())
+nonincluded.pretend_points <- data.frame(subj_id=nonincluded_subs,pretend=0)
+
+nonincluded_bonus.df <- nonpretend_points %>%
+  merge(judge_points,by='subj_id',all=T) %>%
+  merge(nonincluded.pretend_points, by="subj_id", all=T) %>%
+  mutate(points = pretend+nonpretend+judge) %>%
+  filter(points>85);
+
+nonincluded_bonus.df %>%
+  filter(PROLIFIC_PID %in% export_2_ss)%>%
+  mutate(bonus=1)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\nonincluded_prolific_export2.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+nonincluded_bonus.df %>%
+  filter(PROLIFIC_PID %in% export_3_ss)%>%
+  mutate(bonus=1)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\nonincluded_prolific_export3.csv', 
+              sep=',',col.names = F, row.names=F, quote=F) 
+
+nonincluded_bonus.df %>%
+  filter(PROLIFIC_PID %in% export_4_ss)%>%
+  mutate(bonus=1)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\nonincluded_prolific_export4.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+nonincluded_bonus.df %>%
+  filter(PROLIFIC_PID %in% export_5_ss)%>%
+  mutate(bonus=1)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\nonincluded_prolific_export5.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+
+nonincluded_bonus.df %>%
+  filter(PROLIFIC_PID %in% export_6_ss)%>%
+  mutate(bonus=1)%>%
+  dplyr::select(PROLIFIC_PID,bonus)%>%
+  write.table('..\\experiments\\Hangman2\\data\\bonuses\\nonincluded_prolific_export6.csv', 
+              sep=',',col.names = F, row.names=F, quote=F)
+```
+
+# Discussion
+
+\newpage
+
+# References
+
+```{=tex}
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+```
+::: {#refs custom-style="Bibliography"}
+:::
+
+```{=tex}
+\endgroup
+```
