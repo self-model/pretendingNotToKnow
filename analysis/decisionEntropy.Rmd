@@ -5,6 +5,10 @@ date: "2023-01-18"
 output: html_document
 ---
 
+These scripts can be run after running PTKN.Rmd from docs, because they use objects and functions that are defined there.
+
+Here I compare subjects' tendency to make 'conventional' clicks (that is, clicks that are often made by participants at this stage of the game), in pretend and non-pretend games. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE)
 library(groundhog)
@@ -37,28 +41,34 @@ Unlike the main analysis, where we look at the likelihood of hitting a ship, her
 
 ```{r get-priors, echo=FALSE, cache=TRUE}
 
+# What  I refer to as 'prior' here is the overall tendency of participants to
+# click on some cells. To make sure this quantity is not driven by the content
+# of the board itself, for each board I compute this quantity across all other
+# boards, not including itself.
 E2.prior_from_group <- E2.click_log_with_boards %>% 
-  filter(test_part=='nonpretend')%>%
+  filter(test_part=='nonpretend') %>% # we are interested in true games
   mutate(flat_position = factor(flat_position, levels=seq(25))) %>%
   group_by(grid_number,click_number, flat_position) %>%
-  summarise(n=n())%>%
+  summarise(n=n())%>% # count the number of clicks per cell per board per timepoint
   group_by(click_number, flat_position)%>%
+  ## for each grid, average across all other grids.
   do( data.frame(.,other_n=sapply(.$grid_number, function(i) mean(.$n[!.$grid_number %in% i])))) %>%
   group_by(grid_number, click_number) %>%
-  mutate(p=other_n/sum(other_n)) %>%
+  mutate(p=other_n/sum(other_n)) %>% # normalize to get a probability function
   dplyr::select(grid_number,click_number,flat_position,p) %>%
-  spread(flat_position,p, fill=0, sep='_') %>%
+  spread(flat_position,p, fill=0, sep='_') %>% # pivot to wider format
   ungroup();
 
 ```
 
 ```{r decision-entropy-functions, echo=FALSE, cache=TRUE}
 
+
 get_group_prior <- function(grid_i, click_i, board_state) {
   
   board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
   
-  hidden_cells = ifelse(is.na(board_state),1,0);
+  hidden_cells = ifelse(is.na(board_state),1,0); #only hidden cells can be clicked on
   
   group_prior = E2.prior_from_group %>%
     filter(grid_number==grid_i & click_number==click_i) %>%
@@ -71,6 +81,9 @@ get_group_prior <- function(grid_i, click_i, board_state) {
   
 };
 
+## the next three functions are exactly the same as the corresponding functions for
+## the posterior, with the variable name posterior replaced with prior. I did 
+## this just to avoid confusion later.
 
 get_prior_click <- function(prior, flat_position) {
   prior <- scan(text= prior, what = numeric(), sep="," , quiet = TRUE);
@@ -94,87 +107,67 @@ get_prior_entropy <- function(prior) {
 
 ```{r p_click, echo = FALSE, cache=TRUE}
 
-# E2.click_log_with_boards <-E2.click_log %>%
-#   dplyr::select(subj_id,genuine_first,test_part,grid_number,click_number,i,j,RT,hit_bin) %>%
-#   mutate(flat_position = 1+i*5+j) %>%
-#   group_by(subj_id,genuine_first,test_part,grid_number) %>%
-#   arrange(click_number) %>%
-#   summarise(click_number = click_number,
-#             board_state=create_board_states(flat_position,hit_bin),
-#             flat_position=flat_position,
-#             i=i,
-#             j=j,
-#             RT=RT,
-#             hit_bin=hit_bin) %>%
-#   rowwise()%>%
-#   mutate(likelihood = get_likelihood(board_state),
-#          posterior = get_posterior(likelihood),
-#          p_click = get_p_click(posterior,flat_position),
-#          entropy = get_posterior_entropy(posterior),
-#          p_click_rank = get_p_click_rank(posterior,flat_position));
+E2.click_log_with_boards_and_prior <-E2.click_log_with_boards %>%
+  rowwise()%>%
+  mutate(prior = get_group_prior(grid_number, click_number, board_state),
+         prior_click = get_p_click(prior,flat_position),
+         prior_entropy = get_prior_entropy(prior),
+         prior_click_rank = get_prior_click_rank(prior,flat_position));
 
-E2.click_log_with_boards <- readRDS('../../experiments/Battleships2/data/batch1/click_log_with_boards.Rda')
 
-get_random_flat_position <- function(board_state) {
-  
-  board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
-  return(which(is.na(board_state))%>%sample(1))
-  
-}
+E2.click_log_with_prior_optimal <- E2.click_log_with_boards_optimal %>%
+  mutate(prior = get_group_prior(grid_number, click_number, board_state),
+         prior_click = get_p_click(prior,flat_position),
+         prior_entropy = get_prior_entropy(prior),
+         prior_click_rank = get_prior_click_rank(prior,flat_position),
+         test_part=='optimal');
 
-get_optimal_flat_position <- function(posterior) {
-  
-  posterior = scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
-  return(which.max(posterior))
-  
-}
-
-E2.click_log_with_boards_optimal <- E2.click_log_with_boards %>%
-  mutate(flat_position = get_optimal_flat_position(posterior),
-         p_click = get_p_click(posterior,flat_position),
-         p_click_rank = get_p_click_rank(posterior,flat_position),
-         test_part = 'optimal')
-
-E2.click_log_with_boards_random <- E2.click_log_with_boards %>%
-  mutate(flat_position = get_random_flat_position(board_state),
-         p_click = get_p_click(posterior,flat_position),
-         p_click_rank = get_p_click_rank(posterior,flat_position),
+E2.click_log_with_prior_random <- E2.click_log_with_boards_random %>%
+  mutate(prior = get_group_prior(grid_number, click_number, board_state),
+         prior_click = get_p_click(prior,flat_position),
+         prior_entropy = get_prior_entropy(prior),
+         prior_click_rank = get_prior_click_rank(prior,flat_position),
          test_part = 'random')
 
-E2.mean_P_click_rank <- E2.click_log_with_boards %>%
-  rbind(E2.click_log_with_boards_optimal) %>%
-  rbind(E2.click_log_with_boards_random) %>%
+E2.mean_prior_click_rank <- E2.click_log_with_boards_and_prior %>%
+  dplyr::select(subj_id,test_part,genuine_first,prior_click_rank)%>%
+  rbind(E2.click_log_with_prior_optimal %>% ungroup() %>%
+          dplyr::select(subj_id,test_part,genuine_first,prior_click_rank)) %>%
+  rbind(E2.click_log_with_prior_random %>% ungroup() %>%
+          dplyr::select(subj_id,test_part,genuine_first,prior_click_rank)) %>%
   group_by(subj_id,test_part, genuine_first) %>%
-  summarise(p_click_rank=mean(p_click_rank));
+  summarise(prior_click_rank=mean(prior_click_rank));
 
-E2.mean_P_click_rank_misses_only <- E2.click_log_with_boards %>%
-  rbind(E2.click_log_with_boards_optimal) %>%
-  rbind(E2.click_log_with_boards_random) %>%
+E2.mean_prior_click_rank_misses_only <- E2.click_log_with_boards_and_prior %>%
+  dplyr::select(subj_id,test_part,genuine_first,prior_click_rank, hit_bin)%>%
+  rbind(E2.click_log_with_prior_optimal %>% ungroup() %>%
+          dplyr::select(subj_id,test_part,genuine_first,prior_click_rank, hit_bin)) %>%
+  rbind(E2.click_log_with_prior_random %>% ungroup() %>%
+          dplyr::select(subj_id,test_part,genuine_first,prior_click_rank, hit_bin)) %>%
   rowwise() %>%
   filter(!hit_bin) %>%
   group_by(subj_id,test_part, genuine_first) %>%
-  summarise(p_click_rank=mean(p_click_rank))
+  summarise(prior_click_rank=mean(prior_click_rank));
 
-
-p<- E2.mean_P_click_rank %>%
+p<- E2.mean_prior_click_rank %>%
     filter(test_part != 'optimal') %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
-    ggplot(aes(x=p_click_rank,fill=test_part))+
+    ggplot(aes(x=prior_click_rank,fill=test_part))+
     geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
     scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
-    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    labs(x='p(click here) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     # facet_wrap(~genuine_first, nrow=2)+
     # scale_x_reverse() +
     theme_classic();
 
-ggsave('../figures/E2_pclick_rank.pdf',p)
-ggsave('../figures/E2_pclick_rank.png',p,width=5,height=2,dpi=300)
+ggsave('../docs/figures/E2_prior_click_rank.pdf',p)
+ggsave('../docs/figures/E2_prior_click_rank.png',p,width=5,height=2,dpi=300)
 
-p<- E2.mean_P_click_rank_misses_only %>%
+p<- E2.mean_prior_click_rank_misses_only %>%
     filter(test_part != 'optimal') %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
-    ggplot(aes(x=p_click_rank,fill=test_part))+
+    ggplot(aes(x=prior_click_rank,fill=test_part))+
     geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
     scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
     labs(x='p(ship in clicked square) - rank', y='number of players')+
@@ -187,41 +180,128 @@ p<- E2.mean_P_click_rank_misses_only %>%
 ggsave('../figures/E2_pclick_rank_misses_only.pdf',p)
 ggsave('../figures/E2_pclick_rank_misses_only.png',p,width=5,height=2,dpi=300)
 
-E2.num_irrational_clicks <- E2.click_log_with_boards %>%
-  group_by(subj_id,test_part, genuine_first) %>%
-  summarise(nic=sum(p_click==0)/5);
 
-p<- E2.num_irrational_clicks %>%
-    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
-    ggplot(aes(x=nic,fill=test_part))+
-    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080")) +
-    labs(x='mean number of irrational clicks per game', y='number of players')+
-    theme(legend.position=c(0.10,0.85)) +
-    facet_wrap(~genuine_first, nrow=2)+
-    theme_classic();
-
-ggsave('figures/../E2_num_irrational_clicks.png',p,width=5,height=3,dpi=300)
-
-
- E2.RT_p_click_cor <- E2.click_log_with_boards %>%
+ E2.RT_prior_click_cor <- E2.click_log_with_boards_and_prior %>%
      filter(click_number<9 & click_number>1) %>%
      group_by(subj_id,test_part, genuine_first) %>%
-     summarise(r=cor(RT,p_click,method='spearman'));
+     summarise(r=cor(RT,prior_click,method='spearman'));
  
- E2.RT_entropy_cor <- E2.click_log_with_boards %>%
+ E2.RT_prior_entropy_cor <- E2.click_log_with_boards_and_prior %>%
      filter(click_number<9 & click_number>1) %>%
      group_by(subj_id,test_part, genuine_first) %>%
-     summarise(r=cor(entropy,p_click,method='spearman'))
+     summarise(r=cor(prior_entropy,RT,method='spearman'))
 
 
 ```
-## Including Plots
+The mean prior rank of non-pretend cell selections was `r E2.mean_prior_click_rank%>%filter(test_part=='nonpretend')%>%pull(prior_click_rank)%>%mean()%>%printnum()` and significantly lower (more optimal) than that of a simulated random agent (see Fig. 2B; `r E2.mean_prior_click_rank%>%filter(test_part=='random')%>%pull(prior_click_rank)%>%mean()%>%printnum()`, `r E2.mean_prior_click_rank%>%spread(test_part,prior_click_rank)%>%mutate(diff=nonpretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Pretend games were significantly less stereotypical than non-pretend games (`r E2.mean_prior_click_rank%>%filter(test_part=='pretend')%>%pull(prior_click_rank)%>%mean()%>%printnum()`; `r apa_print(t.test(E2.mean_prior_click_rank%>%filter(genuine_first&test_part=='nonpretend')%>%pull(prior_click_rank), E2.mean_prior_click_rank%>%filter(!genuine_first&test_part=='pretend')%>%pull(prior_click_rank)))$statistic`), but still more optimal than those of a random agent (`r E2.mean_prior_click_rank%>%spread(test_part,prior_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Critically, the same pattern was observed when restricting analysis to cell selections that resulted in a miss (non-pretend - pretend: `r apa_print(t.test(E2.mean_prior_click_rank_misses_only%>%filter(genuine_first&test_part=='nonpretend')%>%pull(prior_click_rank), E2.mean_prior_click_rank_misses_only%>%filter(!genuine_first&test_part=='pretend')%>%pull(prior_click_rank)))$statistic`; pretend - random: `r E2.mean_prior_click_rank_misses_only%>%spread(test_part,prior_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). 
 
-You can also embed plots, for example:
+```{r prior-entropy-RT, echo=FALSE, cache=TRUE}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+E2.RT_by_prior_entropy <- E2.click_log_with_boards_and_prior %>%
+  filter(click_number>1) %>%
+  mutate(entropy_bin=round(prior_entropy*2)/2) %>%
+  group_by(subj_id,test_part,click_number) %>%
+  mutate(corrected_RT = RT-mean(RT)) %>%
+  group_by(test_part,subj_id,entropy_bin) %>%
+  summarise(RT=median(RT),
+            corrected_RT = median(corrected_RT)) %>%
+  group_by(test_part,entropy_bin) %>%
+  summarise(median_RT=median(RT),
+            sem_RT=bootstrap_error(RT,N_perm),
+            median_corrected_RT=median(corrected_RT),
+            sem_corrected_RT=bootstrap_error(corrected_RT,N_perm))
+
+
+p <- E2.RT_by_prior_entropy %>%
+  ggplot(aes(x=entropy_bin,color=test_part,fill=test_part,y=median_RT)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_RT-sem_RT,ymax=median_RT+sem_RT),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='Entropy of prior', y='median RT (ms)')+
+  theme_classic()
+
+ggsave('../figures/E2_RT_by_prior_entropy_no_split.png',p,width=5,height=2,dpi=300)
+# ggsave('../figures/E2_RT_by_prior_entropy_no_split.svg',p,width=5,height=2,dpi=300)
+
+p <- E2.RT_by_prior_entropy %>%
+  ggplot(aes(x=entropy_bin,color=test_part,fill=test_part,y=median_corrected_RT)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_corrected_RT-sem_corrected_RT,ymax=median_corrected_RT+sem_corrected_RT),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='Entropy of prior', y='median residual RT (ms)')+
+  theme_classic()
+
+ggsave('../figures/E2_corrected_RT_by_prior_entropy_no_split.png',p,width=5,height=2,dpi=300)
+
+
+E2.RT_by_prior_entropy_coefs <- E2.click_log_with_boards_and_prior %>%
+  filter(click_number>1) %>%
+  group_by(genuine_first,subj_id,test_part,grid_number) %>%
+  mutate(entropy_centered = prior_entropy-mean(prior_entropy),
+         entropy_squared = entropy_centered^2) %>%
+  select(genuine_first,subj_id,test_part,grid_number,click_number,entropy_centered,entropy_squared,RT) %>%
+  group_by(genuine_first,subj_id,test_part,grid_number) %>%
+  do(model=lm(RT~entropy_centered+entropy_squared,data=.)) %>%
+  mutate(tidys=list(broom::tidy(model))) %>%
+  unnest(tidys) %>%
+  dplyr::select(!c(std.error,statistic,p.value)) %>%
+  group_by(genuine_first,subj_id,test_part,term) %>%
+  summarise(estimate = mean(estimate))
+
+
+
+E2.RT_by_prior_entropy_coefs_summary <- E2.RT_by_prior_entropy_coefs %>%
+  group_by(test_part,term) %>%
+  summarise(mean_estimate = mean(estimate),
+            se_estimate = se(estimate))
+
+p <- E2.RT_by_prior_entropy_coefs_summary %>%
+  mutate(term = factor(term,levels=c('entropy_centered','entropy_squared'), labels = c('entropy','entropy squared')))%>%
+  filter(term!='(Intercept)') %>%
+  ggplot(aes(x=term,y=mean_estimate,fill=test_part)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_bar(stat='identity',color='black',position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean_estimate-se_estimate,ymax=mean_estimate+se_estimate),width=.2,position=position_dodge(.9))+
+  labs(fill=' ',x='term', y='coefficient')+
+  theme_classic()
+
+ggsave('../figures/E2_RT_by_entropy_coefficients_no_split.png',p,width=5,height=2,dpi=300)
+
+
+E2.corrected_RT_by_prior_entropy_coefs <- E2.click_log_with_boards_and_prior %>%
+  filter(click_number>1) %>%
+  group_by(subj_id,test_part,click_number) %>%
+  mutate(corrected_RT = RT-mean(RT)) %>%
+  group_by(genuine_first,subj_id,test_part) %>%
+  mutate(entropy_centered = prior_entropy-mean(prior_entropy),
+         entropy_squared = entropy_centered^2) %>%
+  select(genuine_first,subj_id,test_part,entropy_centered,entropy_squared,corrected_RT) %>%
+  group_by(genuine_first,subj_id,test_part) %>%
+  do(model=lm(corrected_RT~entropy_centered+entropy_squared,data=.)) %>%
+  mutate(tidys=list(broom::tidy(model))) %>%
+  unnest(tidys) %>%
+  dplyr::select(!c(std.error,statistic,p.value))
+
+E2.corrected_RT_by_prior_entropy_coefs_summary <- E2.corrected_RT_by_prior_entropy_coefs %>%
+  group_by(test_part,term) %>%
+  summarise(mean_estimate = mean(estimate),
+            se_estimate = se(estimate)) 
+
+p <- E2.corrected_RT_by_prior_entropy_coefs_summary %>%
+  mutate(term = factor(term,levels=c('entropy_centered','entropy_squared'), labels = c('entropy','entropy squared')))%>%
+  filter(term!='(Intercept)') %>%
+  ggplot(aes(x=term,y=mean_estimate,fill=test_part)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_bar(stat='identity',color='black',position=position_dodge()) +
+  geom_errorbar(aes(ymin=mean_estimate-se_estimate,ymax=mean_estimate+se_estimate),width=.2,position=position_dodge(.9))+
+  labs(fill=' ',x='term', y='coefficient')+
+  theme_classic()
+
+ggsave('../figures/E2_corrected_RT_by_prior_entropy_coefficients_no_split.png',p,width=5,height=2,dpi=300)
+
+
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
