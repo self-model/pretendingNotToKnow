@@ -1,0 +1,227 @@
+---
+title: "Decision entropy"
+author: "Matan Mazor"
+date: "2023-01-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE)
+library(groundhog)
+
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret' #for cross validation
+), '2022-12-01')
+
+load('../.Rdata')
+```
+
+## Decision entropy
+
+Unlike the main analysis, where we look at the likelihood of hitting a ship, here we look at the prior of clicking on a cell, regardless of possible ships' locations. 
+
+```{r get-priors, echo=FALSE, cache=TRUE}
+
+E2.prior_from_group <- E2.click_log_with_boards %>% 
+  filter(test_part=='nonpretend')%>%
+  mutate(flat_position = factor(flat_position, levels=seq(25))) %>%
+  group_by(grid_number,click_number, flat_position) %>%
+  summarise(n=n())%>%
+  group_by(click_number, flat_position)%>%
+  do( data.frame(.,other_n=sapply(.$grid_number, function(i) mean(.$n[!.$grid_number %in% i])))) %>%
+  group_by(grid_number, click_number) %>%
+  mutate(p=other_n/sum(other_n)) %>%
+  dplyr::select(grid_number,click_number,flat_position,p) %>%
+  spread(flat_position,p, fill=0, sep='_') %>%
+  ungroup();
+
+```
+
+```{r decision-entropy-functions, echo=FALSE, cache=TRUE}
+
+get_group_prior <- function(grid_i, click_i, board_state) {
+  
+  board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
+  
+  hidden_cells = ifelse(is.na(board_state),1,0);
+  
+  group_prior = E2.prior_from_group %>%
+    filter(grid_number==grid_i & click_number==click_i) %>%
+    select(flat_position_1:flat_position_25) %>%
+    as.numeric()
+  
+  group_prior_for_hidden_cells = group_prior*hidden_cells/sum(group_prior*hidden_cells)
+  
+  return(paste(group_prior_for_hidden_cells,collapse=','))
+  
+};
+
+
+get_prior_click <- function(prior, flat_position) {
+  prior <- scan(text= prior, what = numeric(), sep="," , quiet = TRUE);
+  return(prior[flat_position])
+}
+
+get_prior_click_rank <- function(prior, flat_position) {
+  prior <- scan(text= prior, what = numeric(), sep="," , quiet = TRUE);
+  rank_prior = rank(-prior)
+  return(rank_prior[flat_position])
+}
+
+get_prior_entropy <- function(prior) {
+  prior <- scan(text= prior, what = numeric(), sep="," , quiet = TRUE);
+  prior[which(prior==0)]=NA; #to avoid infinity*0
+  entropy <- -sum(unlist(prior)*(unlist(log(prior))),na.rm=TRUE);
+  return(entropy);
+}
+
+```
+
+```{r p_click, echo = FALSE, cache=TRUE}
+
+# E2.click_log_with_boards <-E2.click_log %>%
+#   dplyr::select(subj_id,genuine_first,test_part,grid_number,click_number,i,j,RT,hit_bin) %>%
+#   mutate(flat_position = 1+i*5+j) %>%
+#   group_by(subj_id,genuine_first,test_part,grid_number) %>%
+#   arrange(click_number) %>%
+#   summarise(click_number = click_number,
+#             board_state=create_board_states(flat_position,hit_bin),
+#             flat_position=flat_position,
+#             i=i,
+#             j=j,
+#             RT=RT,
+#             hit_bin=hit_bin) %>%
+#   rowwise()%>%
+#   mutate(likelihood = get_likelihood(board_state),
+#          posterior = get_posterior(likelihood),
+#          p_click = get_p_click(posterior,flat_position),
+#          entropy = get_posterior_entropy(posterior),
+#          p_click_rank = get_p_click_rank(posterior,flat_position));
+
+E2.click_log_with_boards <- readRDS('../../experiments/Battleships2/data/batch1/click_log_with_boards.Rda')
+
+get_random_flat_position <- function(board_state) {
+  
+  board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
+  return(which(is.na(board_state))%>%sample(1))
+  
+}
+
+get_optimal_flat_position <- function(posterior) {
+  
+  posterior = scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  return(which.max(posterior))
+  
+}
+
+E2.click_log_with_boards_optimal <- E2.click_log_with_boards %>%
+  mutate(flat_position = get_optimal_flat_position(posterior),
+         p_click = get_p_click(posterior,flat_position),
+         p_click_rank = get_p_click_rank(posterior,flat_position),
+         test_part = 'optimal')
+
+E2.click_log_with_boards_random <- E2.click_log_with_boards %>%
+  mutate(flat_position = get_random_flat_position(board_state),
+         p_click = get_p_click(posterior,flat_position),
+         p_click_rank = get_p_click_rank(posterior,flat_position),
+         test_part = 'random')
+
+E2.mean_P_click_rank <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal) %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E2.mean_P_click_rank_misses_only <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal) %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  rowwise() %>%
+  filter(!hit_bin) %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(p_click_rank=mean(p_click_rank))
+
+
+p<- E2.mean_P_click_rank %>%
+    filter(test_part != 'optimal') %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    # facet_wrap(~genuine_first, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('../figures/E2_pclick_rank.pdf',p)
+ggsave('../figures/E2_pclick_rank.png',p,width=5,height=2,dpi=300)
+
+p<- E2.mean_P_click_rank_misses_only %>%
+    filter(test_part != 'optimal') %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    scale_x_continuous(limits=c(0,15))+
+    theme(legend.position=c(0.10,0.85)) +
+    # facet_wrap(~genuine_first, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('../figures/E2_pclick_rank_misses_only.pdf',p)
+ggsave('../figures/E2_pclick_rank_misses_only.png',p,width=5,height=2,dpi=300)
+
+E2.num_irrational_clicks <- E2.click_log_with_boards %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(nic=sum(p_click==0)/5);
+
+p<- E2.num_irrational_clicks %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=nic,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='mean number of irrational clicks per game', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~genuine_first, nrow=2)+
+    theme_classic();
+
+ggsave('figures/../E2_num_irrational_clicks.png',p,width=5,height=3,dpi=300)
+
+
+ E2.RT_p_click_cor <- E2.click_log_with_boards %>%
+     filter(click_number<9 & click_number>1) %>%
+     group_by(subj_id,test_part, genuine_first) %>%
+     summarise(r=cor(RT,p_click,method='spearman'));
+ 
+ E2.RT_entropy_cor <- E2.click_log_with_boards %>%
+     filter(click_number<9 & click_number>1) %>%
+     group_by(subj_id,test_part, genuine_first) %>%
+     summarise(r=cor(entropy,p_click,method='spearman'))
+
+
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
