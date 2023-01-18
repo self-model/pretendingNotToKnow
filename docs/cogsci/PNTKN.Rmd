@@ -5,7 +5,7 @@ csl: apa6.csl
 document-params: "10pt, letterpaper"
 
 author-information: > 
-    \author{{\large \bf Matan Mazor (mtnmzor@gmail.com)} \\ Birkbeck, University of london \\ London, WC1E 7HX UK
+    \author{{\large \bf Matan Mazor (mtnmzor@gmail.com)} \\ Birkbeck, University of London \\ London, WC1E 7HX UK
     \AND {\large \bf Chaz Firestone (chaz@jhu.edu)}
     \AND {\large \bf Ian Phillips (ianphillips@jhu.edu)} \\ Johns Hopkins University \\ Baltimore, MD 21218, USA}
 
@@ -53,17 +53,13 @@ groundhog.library(c(
 
 ```
 
+# Introduction
 
+The ability to intentionally deceive others relies on a capacity to reason about mental states [@frith2005theory]. This is evident in a similar developmental trajectory for the acquisition of theory of mind and the ability to deceive and detect deception [@wimmer1983beliefs; @shultz1981development; @sodian1991early], and a similar distribution of deception and theory of mind in the animal kingdom [e.g., @emery2004mentality; @hall2017cooperation]. This link makes conceptual sense: to deceive others, one needs to understand that others can have different knowledge and beliefs than one's own.
 
+Moreover, deception often involves pretense behavior, which in turn relies on an ability to simulate and mimic one's own behavior under a hypothetical belief state. For example, in order to successfully deceive your friends into thinking that you were surprised by the birthday party they threw for you, it is not sufficient that you are able to reason about their mental states ("I know that they are planning a surprise party, but they don't know that I know that.") --- you also need to convincingly simulate and mimic your hypothetical behavior had you not known about the party ("Where would I look first? What would I say? How long would it take me to recover from the surprise?"). This reliance of pretense behavior on self-simulation makes it an ideal opportunity to examine metacognitive knowledge about one's own mental states, and the potential reliance of this knowledge on a self-simulation. By comparing non-pretend and pretend behavior, we can ask which aspects of their own cognitive processes subjects can and cannot effectively simulate, and which aspects are not well-represented in their mental models of their own cognition.
 
-# Introduction 
-
-The ability to intentionally deceive others relies on a capacity to reason about mental states [@frith2005theory]. This is evident in a similar developmental trajectory for the acquisition of theory of mind and the ability to deceive and detect deception [@wimmer1983beliefs; @shultz1981development; @sodian1991early], and a similar distribution of deception and theory of mind in the animal kingdom [e.g., @emery2004mentality; @hall2017cooperation]. This link makes conceptual sense: to deceive others, one needs to understand that others can have different knowledge and beliefs than one's own. 
-
-Moreover, deception often involves pretense behavior, which in turn relies on an ability to simulate and mimic one's own behavior under a hypothetical belief state. For example, in order to successfully deceive your friends into thinking that you were surprised by the birthday party they threw for you, it is not sufficient that you are able to reason about their mental states ("I know that they are planning a surprise party, but they don't know that I know that.") — you also need to convincingly simulate and mimic your hypothetical behavior had you not known about the party ("Where would I look first? What would I say? How long would it take me to recover from the surprise?"). This reliance of pretense behavior on self-simulation makes it an ideal opportunity to examine metacognitive knowledge about one's own mental states, and the potential reliance of this knowledge on a self-simulation. By comparing non-pretend and pretend behavior, we can ask which aspects of their own cognitive processes subjects can and cannot effectively simulate, and which aspects are not well-represented in their mental models of their own cognition.
-
-To this end, here we examine pretense in a game setting. Using an online version of the game Battleships, participants played a 'non-pretend' (normal) version of the game (trying to sink ships whose locations are unknown), as well as a 'pretend' version where they were given secret information about the location of hidden ships, but were instructed to behave as if they didn't have this information. 
-
+To this end, here we examine pretense in a game setting. Using an online version of the game Battleships, participants played a 'non-pretend' (normal) version of the game (trying to sink ships whose locations are unknown), as well as a 'pretend' version where they were given secret information about the location of hidden ships, but were instructed to behave as if they didn't have this information.
 
 # Methods
 
@@ -86,14 +82,13 @@ E2.bonus <- read.csv('../../experiments/Battleships2/data/batch1/bonus.csv',na.s
 
 ## Participants
 
-The research complied with all relevant ethical regulations and was approved by the Research Ethics Committee of Johns Hopkins University. 500 Participants were recruited via Prolific (prolific.co) and gave their informed consent prior to their participation. They were selected based on their acceptance rate (>95%) and for being native English speakers. The entire experiment took approximately 20 minutes to complete. Participants' pay was equivalent to an hourly wage of 9.50 USD, in addition to a bonus payment (`r E2.bonus$bonus%>%min()` - `r E2.bonus$bonus%>%max()` USD, mean = `r E2.bonus$bonus%>%mean()%>%printnum()`).
+The research complied with all relevant ethical regulations and was approved by the Research Ethics Committee of Johns Hopkins University. 500 Participants were recruited via Prolific (prolific.co) and gave their informed consent prior to their participation. They were selected based on their acceptance rate (\>95%) and for being native English speakers. The entire experiment took approximately 20 minutes to complete. Participants' pay was equivalent to an hourly wage of 9.50 USD, in addition to a bonus payment (`r E2.bonus$bonus%>%min()` - `r E2.bonus$bonus%>%max()` USD, mean = `r E2.bonus$bonus%>%mean()%>%printnum()`).
 
 ## Procedure
 
 Participants were first instructed that the experiment, based on the game Battleships, had three parts, and that they could accumulate 'points' that would later translate to a monetary bonus payment. They were then presented with a leaderboard of previous players, and given the rules of the game:
 
-> "In the game Battleships, your task is to sink all ships located in a grid with as few clicks as possible.
-What makes the game difficult is that you can’t see the ships; all you can see is a grid of squares, and you have to guess where the ships are. To sink a ship, you need to click on all of the squares it is located in. If you hit part of a ship, the square will turn red. If there is no ship in the square, it will turn blue." 
+> "In the game Battleships, your task is to sink all ships located in a grid with as few clicks as possible. What makes the game difficult is that you can't see the ships; all you can see is a grid of squares, and you have to guess where the ships are. To sink a ship, you need to click on all of the squares it is located in. If you hit part of a ship, the square will turn red. If there is no ship in the square, it will turn blue."
 
 We further explained that in this version of the game, ships can touch corners, but their sides can't touch. This explanation was accompanied by a visual presentation of legal and illegal ship configurations.
 
@@ -101,35 +96,31 @@ After completing a comprehension question and a practice round, participants com
 
 ### Non-pretend (normal) games
 
-In non-pretend games (Fig. 1B), participants aimed to sink two 2-square patrol boats and one 3-square submarine with as few clicks as possible. An online counter of the number of clicks was displayed on the screen. After each game, feedback was given about the number of clicks and resulting number of points obtained. 
+In non-pretend games (Fig. 1B), participants aimed to sink two 2-square patrol boats and one 3-square submarine with as few clicks as possible. An online counter of the number of clicks was displayed on the screen. After each game, feedback was given about the number of clicks and resulting number of points obtained.
 
 ### Pretend games
 
 Participants in pretend games were given the same explanation of Battleships, and played a practice round. However, they were then given an additional twist:
 
-> "This time your goal is different. In this round, we’re going to tell you where the ships are, but **we want you to act like you don’t know this information**. We’ve marked the ships’ locations with a cross, so you’ll know where they are the whole time; but your job is to play the game as if these hints aren’t there. To see how good you are at this, we're going to compare your games to the games of people who actually had no hints, and see how similar they are. We will measure where and when you clicked; if your clicks look similar to people who played like normal (trying to reveal all ships with as few clicks as possible, but without any hints), you'll get bonus points. But if your games look different, you won't get these bonus points. Your number of clicks in this part will not affect your bonus. Only your ability to play like you had no hints."
+> "This time your goal is different. In this round, we're going to tell you where the ships are, but **we want you to act like you don't know this information**. We've marked the ships' locations with a cross, so you'll know where they are the whole time; but your job is to play the game as if these hints aren't there. To see how good you are at this, we're going to compare your games to the games of people who actually had no hints, and see how similar they are. We will measure where and when you clicked; if your clicks look similar to people who played like normal (trying to reveal all ships with as few clicks as possible, but without any hints), you'll get bonus points. But if your games look different, you won't get these bonus points. Your number of clicks in this part will not affect your bonus. Only your ability to play like you had no hints."
 
 We informed participants that both the location and timing of their cell clicks will be measured. After one practice round and one comprehension question, participants played five pretend games (Fig. 1C), followed by one pretend half-game. Each game was followed by a short message, reminding them that a game that looks similar to the games of participants who had no hints would be awarded 10 bonus points.
 
-
 ### Half games
 
-In order to directly compare participants' pretend and non-pretend games for identical belief states (genuine or pretended ignorance about where the ships are hidden), participants completed one pretend and one non-pretend game given a partly finished board with the content of 7 cells already revealed (see Fig. 1D). We designed our half games to produce a strong expectation to find a ship in specific cells, but not in others. The assignment of half-completed boards to pretend and non-pretend conditions was randomized between participants. 
+In order to directly compare participants' pretend and non-pretend games for identical belief states (genuine or pretended ignorance about where the ships are hidden), participants completed one pretend and one non-pretend game given a partly finished board with the content of 7 cells already revealed (see Fig. 1D). We designed our half games to produce a strong expectation to find a ship in specific cells, but not in others. The assignment of half-completed boards to pretend and non-pretend conditions was randomized between participants.
 
 ### Judge trials
 
 In the final part of the experiment, participants observed the games of previous players and tried to determine who had hints and who didn't. On each trial, two empty grids were presented side by side, with a smaller grid on top, displaying the hidden positions of ships on the grid (Fig. 1F). The two grids corresponded to the true games of two previous players who played a version of the top grid either as pretenders or as non-pretenders. Only games shorter than one minute were chosen for presentation in this part. For non-pretend games, only games from the group of participants that pretended in the second block (and played normally in the first block) were chosen for presentation in this part. Judge participants observed a real time replay of the two grids, showing not only where participants clicked, but also when. After making a decision, participants were informed whether they would receive the 10 bonus points, or alternatively, whether the pretender would receive them in the event the pretender managed to trick them.
 
-
-
 <!-- 500 players played 12 games of the game Battleships in two conditions presented in two blocks. The order of conditions was randomized between players. the standard, *non-pretend* condition, players started the game not knowing where the ships were and tried to sink all ships with as few clicks as possible. In the *pretend* condition, ship locations were marked with a cross such that players knew where they were hidden, and their task was to play the game as if they did not have this information. The sixth game in each block was a 'half-game', where participants completed the game with the content of some cells revealed by a previous player. Lastly, in judge trials, players observed a replay of the games of two previous players – one pretender and one non-pretender, and their task was to identify which was which. We created nine different 5x5 boards, each containing two 2-square patrol boats and one 3-square submarine. The assignment of boards to conditions was randomized across participants such that exactly one board was presented in both pretend and non-pretend blocks.  (see Fig. 1). -->
 
-A more detailed description of the study procedure is provided in the study pre-registration document (LINK HIDDEN). Readers are also invited to try a [demo of the experiment](https://jatos.mindprobe.eu/publix/NervzpM0Y0z). 
+A more detailed description of the study procedure is provided in the study pre-registration document (LINK HIDDEN). Readers are also invited to try a [demo of the experiment](https://jatos.mindprobe.eu/publix/NervzpM0Y0z).
 
 ```{r design, echo=FALSE, fig.cap="Experimental Design. See Methods for details.", out.width = '100%'}
 knitr::include_graphics("../figures/Battleships_design.png")
 ```
-
 
 # Results
 
@@ -154,7 +145,7 @@ E2.debrief <- E2.df %>%
 
 ```
 
-We designed our analyses to explore subjects' capacity for self-simulation under a counterfactual knowledge state, and the limits of this capacity. We focused on where subjects clicked and when, and asked whether this differed between pretend and non-pretend games. All analyses were pre-registered unless otherwise specified. In our pre-registration document, we committed to separately analyzing participants according to whether they pretended before or after completing a non-pretend block. Due to space limitations, and since the results of the two groups mostly agreed, we report here the pooled results from both groups of participants, and mention whenever we found different results depending on block order. When directly comparing pretend and non-pretend blocks, we perform a between-subjects comparison using data from the first block only, i.e., pretend games from participants who pretended in the first block and non-pretend games from participants who played normally in the first block. We do so to ensure that any successful pretending is not due to memory of one's own behavior in a previous block, and that non-pretend games are not biased by experience with the pretend block.  
+We designed our analyses to explore subjects' capacity for self-simulation under a counterfactual knowledge state, and the limits of this capacity. We focused on where subjects clicked and when, and asked whether this differed between pretend and non-pretend games. All analyses were pre-registered unless otherwise specified. In our pre-registration document, we committed to separately analyzing participants according to whether they pretended before or after completing a non-pretend block. Due to space limitations, and since the results of the two groups mostly agreed, we report here the pooled results from both groups of participants, and mention whenever we found different results depending on block order. When directly comparing pretend and non-pretend blocks, we perform a between-subjects comparison using data from the first block only, i.e., pretend games from participants who pretended in the first block and non-pretend games from participants who played normally in the first block. We do so to ensure that any successful pretending is not due to memory of one's own behavior in a previous block, and that non-pretend games are not biased by experience with the pretend block.
 
 ```{r num_clicks, echo=FALSE, cache=TRUE}
 
@@ -261,7 +252,6 @@ get_posterior_entropy <- function(posterior) {
 
 ```
 
-
 ```{r simulate_nclicks, echo=FALSE, cache=TRUE}
 
 ## simulate number of clicks for random play
@@ -333,15 +323,15 @@ for (i in 1:nsim) {
 
 ## Total number of clicks
 
-To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a median total click number of `r num_clicks_sim%>%median()`, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a median total click number of `r num_clicks_optimal_sim%>%median()`. Among our players, the median number of clicks was `r E2.median_clicks%>%pull(nonpretend)%>%median()` in both pretend and non-pretend games (see Fig. 2A).  
+To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a median total click number of `r num_clicks_sim%>%median()`, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a median total click number of `r num_clicks_optimal_sim%>%median()`. Among our players, the median number of clicks was `r E2.median_clicks%>%pull(nonpretend)%>%median()` in both pretend and non-pretend games (see Fig. 2A).
 
-We observed no significant difference in the number of clicks between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend),E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`). However, a significant interaction with block order suggested that participants made fewer clicks in the second block compared to the first, regardless of which block was the pretend block (`r E2.median_clicks%>%gather('condition','nclicks',c('nonpretend','pretend'))%>%aov(nclicks ~ genuine_first * condition,data=.)%>%apa_print()%>%'$'(statistic)%>%'$'(genuine_first_condition)`). 
+We observed no significant difference in the number of clicks between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend),E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`). However, a significant interaction with block order suggested that participants made fewer clicks in the second block compared to the first, regardless of which block was the pretend block (`r E2.median_clicks%>%gather('condition','nclicks',c('nonpretend','pretend'))%>%aov(nclicks ~ genuine_first * condition,data=.)%>%apa_print()%>%'$'(statistic)%>%'$'(genuine_first_condition)`).
 
 In `r E2.click_df%>%filter(num_clicks==7)%>%nrow()` pretend games from `r E2.lucky_pretenders%>%length()` players, games were completed after 7 clicks only, without ever missing a ship. This never happened in non-pretend games. We assumed that these participants did not follow task instructions, and excluded them from all following analyses.
 
 ## Game optimality
 
-Pretend games were similar to non pretend games in the total number of clicks — but were they also similar in *where* participants clicked? More specifically, did cell selections in pretend games make sense given the limited information those participants pretended to have? To ask this, we approximated optimal behavior by calculating the probability that a ship is hidden in each cell given available information, $p(ship(x_{i}))$, and the posterior probability that one should click on a square, assuming a uniform prior over cells $P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}$. Critically, in modeling pretend games we did not treat hints as part of this available information for extracting $p(ship(x_{i}))$, because an optimal player should ignore hints in choosing where to click next. Given this posterior map, a rational player should choose cells where $P(x_{i})$ is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; @audinot2014optimal, Section 3.3]. To quantify optimality, before each cell selection we computed the posterior probability map for all 'unknown' cells. Then, we ranked cells from high to low according to their posterior probability and recorded the rank of the chosen cell: a lower rank indicating more optimal behavior.
+Pretend games were similar to non pretend games in the total number of clicks --- but were they also similar in *where* participants clicked? More specifically, did cell selections in pretend games make sense given the limited information those participants pretended to have? To ask this, we approximated optimal behavior by calculating the probability that a ship is hidden in each cell given available information, $p(ship(x_{i}))$, and the posterior probability that one should click on a square, assuming a uniform prior over cells $P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}$. Critically, in modeling pretend games we did not treat hints as part of this available information for extracting $p(ship(x_{i}))$, because an optimal player should ignore hints in choosing where to click next. Given this posterior map, a rational player should choose cells where $P(x_{i})$ is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; @audinot2014optimal, Section 3.3]. To quantify optimality, before each cell selection we computed the posterior probability map for all 'unknown' cells. Then, we ranked cells from high to low according to their posterior probability and recorded the rank of the chosen cell: a lower rank indicating more optimal behavior.
 
 ```{r parse-click-log, echo-FALSE, cache=TRUE}
 
@@ -506,6 +496,24 @@ for (i in 1:nsim) {
 
 ```{r p_click, echo = FALSE, cache=TRUE}
 
+# a <-E2.click_log %>%
+#   dplyr::select(subj_id,genuine_first,test_part,grid_number,click_number,i,j,RT,hit_bin) %>%
+#   mutate(flat_position = 1+i*5+j) %>%
+#   group_by(subj_id,genuine_first,test_part,grid_number) %>%
+#   arrange(click_number) %>%
+#   summarise(click_number = click_number,
+#             board_state=create_board_states(flat_position,hit_bin),
+#             flat_position=flat_position,
+#             i=i,
+#             j=j,
+#             RT=RT,
+#             hit_bin=hit_bin) %>%
+#   rowwise()%>%
+#   mutate(likelihood = get_likelihood(board_state),
+#          posterior = get_posterior(likelihood),
+#          p_click = get_p_click(posterior,flat_position),
+#          entropy = get_posterior_entropy(posterior),
+#          p_click_rank = get_p_click_rank(posterior,flat_position));
 
 E2.click_log_with_boards <- readRDS('../../experiments/Battleships2/data/batch1/click_log_with_boards.Rda')
 
@@ -536,24 +544,7 @@ E2.click_log_with_boards_random <- E2.click_log_with_boards %>%
          test_part = 'random')
   
 
-# E2.click_log <-E2.click_log %>%
-#   dplyr::select(subj_id,genuine_first,test_part,grid_number,click_number,i,j,RT,hit_bin) %>% 
-#   mutate(flat_position = 1+i*5+j) %>%
-#   group_by(subj_id,genuine_first,test_part,grid_number) %>%
-#   arrange(click_number) %>%
-#   summarise(click_number = click_number,
-#             board_state=create_board_states(flat_position,hit_bin),
-#             flat_position=flat_position,
-#             i=i,
-#             j=j,
-#             RT=RT,
-#             hit_bin=hit_bin) %>%
-#   rowwise()%>%
-#   mutate(likelihood = get_likelihood(board_state),
-#          posterior = get_posterior(likelihood),
-#          p_click = get_p_click(posterior,flat_position),
-#          entropy = get_posterior_entropy(posterior),
-#          p_click_rank = get_p_click_rank(posterior,flat_position));
+
 
 E2.mean_P_click_rank <- E2.click_log_with_boards %>%
   rbind(E2.click_log_with_boards_optimal) %>%
@@ -639,7 +630,6 @@ knitr::include_graphics("../figures/numclicks_optimality.png")
 
 ## Response time analysis
 
-
 ```{r total_time, echo=FALSE}
 
 E2.total_time_df <- E2.click_log %>%
@@ -670,10 +660,9 @@ E2.click_time_anva <- aov(RT ~ genuine_first * condition,
                            mutate(condition=as.factor(condition)))
 ```
 
-In general, participants gave slower responses when pretending compared to when playing normally. Despite the similar number of clicks per game, the median game duration was `r E2.total_time_df%>%filter(test_part=='nonpretend')%>%pull(t)%>%median()%>%printnum()` seconds in the non-pretend condition and `r E2.total_time_df%>%filter(test_part=='pretend')%>%pull(t)%>%median()%>%printnum()` seconds in the pretend condition, which was significantly longer (`r t.test(E2.median_time$pretend-E2.median_time$nonpretend)%>%apa_print()%>%'$'(statistic)`). This difference showed a significant interaction with the order of conditions, such that completing games in the first block took longer (`r apa_print(E2.time_anva%>%summary())$full_result$genuine_first_condition`). 
+In general, participants gave slower responses when pretending compared to when playing normally. Despite the similar number of clicks per game, the median game duration was `r E2.total_time_df%>%filter(test_part=='nonpretend')%>%pull(t)%>%median()%>%printnum()` seconds in the non-pretend condition and `r E2.total_time_df%>%filter(test_part=='pretend')%>%pull(t)%>%median()%>%printnum()` seconds in the pretend condition, which was significantly longer (`r t.test(E2.median_time$pretend-E2.median_time$nonpretend)%>%apa_print()%>%'$'(statistic)`). This difference showed a significant interaction with the order of conditions, such that completing games in the first block took longer (`r apa_print(E2.time_anva%>%summary())$full_result$genuine_first_condition`).
 
 In our instructions to pretenders, we asked them to pretend not to know where the ships were, not only in *where* they chose to click, but also in *when* they clicked. In the following set of analyses, we identified patterns in click latency in non-pretend games, and asked whether the same patterns are also observed in pretend games. We focused on the effects of hitting versus missing a ship, decision uncertainty, and ship completion.
-
 
 ```{r RT_by_accuracy}
 
@@ -783,12 +772,11 @@ ggsave('../figures/E2_RT_by_lag_three_only_collapse.png',p,width=4, height=3.5, 
 
 In non-pretend games, players were faster by `r E2.RT_by_hit_lags%>%filter(test_part=='nonpretend')%>%pull(hit_diff)%>%median%>%round()%>%abs()` ms (`r round(E2.RT_by_hit%>%filter(test_part=='nonpretend')%>%mutate(relative=hit_diff/hit_bin_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) when hitting compared to missing a ship (see Fig. 3A; `r E2.RT_by_hit_lags%>%filter(test_part=='nonpretend')%>%pull(hit_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). The same effect was observed in pretend games: players were faster by `r E2.RT_by_hit_lags%>%filter(test_part=='pretend')%>%pull(hit_diff)%>%median%>%round()%>%abs()` ms (`r round(E2.RT_by_hit%>%filter(test_part=='pretend')%>%mutate(relative=hit_diff/hit_bin_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) in hits compared to misses (`r E2.RT_by_hit_lags%>%filter(test_part=='pretend' & !genuine_first)%>%pull(hit_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend first: `r E2.RT_by_hit_lags%>%filter(test_part=='pretend')%>%pull(hit_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). However, this difference between hits and misses was significantly more pronounced in pretend games (`r apa_print(t.test(E2.RT_by_hit_lags%>%filter(test_part=='pretend' & !genuine_first)%>%pull(hit_diff), E2.RT_by_hit_lags%>%filter(test_part=='nonpretend' & genuine_first)%>%pull(hit_diff)))$statistic`).
 
-The opposite effect was observed for a hit on the previous click: players were slower by `r E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%median()%>%round()` ms (`r round(E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%mutate(relative=lag1_diff/lag1_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) after hitting a ship (`r E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). This effect was also observed in pretend games, where players were slower by `r E2.RT_by_lag1%>%filter(test_part=='pretend')%>%pull(lag1_diff)%>%median()%>%round()` ms (`r round(E2.RT_by_lag1%>%filter(test_part=='pretend')%>%mutate(relative=lag1_diff/lag1_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) following a hit on the previous click (`r E2.RT_by_lag1%>%filter(test_part=='pretend')%>%pull(lag1_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Again, the absolute effect in ms was exaggerated in the pretend condition (`r t.test(E2.RT_by_lag1%>%filter(!genuine_first & test_part=='pretend')%>%pull(lag1_diff),E2.RT_by_lag1%>%filter(genuine_first & test_part=='nonpretend')%>%pull(lag1_diff))%>%apa_print()%>%'$'(statistic)`). 
+The opposite effect was observed for a hit on the previous click: players were slower by `r E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%median()%>%round()` ms (`r round(E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%mutate(relative=lag1_diff/lag1_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) after hitting a ship (`r E2.RT_by_lag1%>%filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). This effect was also observed in pretend games, where players were slower by `r E2.RT_by_lag1%>%filter(test_part=='pretend')%>%pull(lag1_diff)%>%median()%>%round()` ms (`r round(E2.RT_by_lag1%>%filter(test_part=='pretend')%>%mutate(relative=lag1_diff/lag1_TRUE)%>%pull(relative)%>%mean()%>%abs()*100)`%) following a hit on the previous click (`r E2.RT_by_lag1%>%filter(test_part=='pretend')%>%pull(lag1_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Again, the absolute effect in ms was exaggerated in the pretend condition (`r t.test(E2.RT_by_lag1%>%filter(!genuine_first & test_part=='pretend')%>%pull(lag1_diff),E2.RT_by_lag1%>%filter(genuine_first & test_part=='nonpretend')%>%pull(lag1_diff))%>%apa_print()%>%'$'(statistic)`).
 
 ### Effects of decision uncertainty
 
 When playing Battleships, it is sometimes clear what the next cell selection should be, and sometimes more difficult to decide where to click next. To capture this notion of decision uncertainty, we calculated the entropy of the posterior distribution over cell selections $H(P)=-\sum_{i=1}^{k}P(x_i) \log P(x_{i})$, where $P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}$, and asked how this measure relates to decision latency, or the time taken to click on the next cell. $H(P)$ is high when players need to decide between multiple cells with a similar probability of hiding a ship, and low when there are only a few candidates with a high probability of hiding a ship. For every player and condition separately, we fitted a multiple linear regression to predict decision latency based on $H(P)$ and $H(P)^2$. The resulting coefficients were then subjected to a group-level inference. The first cell selection of each game was excluded from this analysis, because entropy was constant for the first click.
-
 
 ```{r entropy-RT, echo=FALSE, cache=TRUE}
 
@@ -903,7 +891,7 @@ ggsave('../figures/E2_corrected_RT_by_entropy_coefficients_no_split.png',p,width
 
 ```
 
-In non-pretend games, we found no evidence for a linear relation between decision entropy and decision latency (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered')%>%pull(estimate)%>%t.test())$statistic`). We did however observe a block order effect, with a significantly negative linear modulation only in the group that pretended in the first (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered' & !genuine_first)%>%pull(estimate)%>%t.test())$statistic`), but not in the second block (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered' & genuine_first)%>%pull(estimate)%>%t.test())$statistic`).  In pretend games this negative relation between $H(P)$ and click latency was significant in both groups, as well as overall (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='pretend' &term=='entropy_centered')%>%pull(estimate)%>%t.test())$statistic`).  
+In non-pretend games, we found no evidence for a linear relation between decision entropy and decision latency (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered')%>%pull(estimate)%>%t.test())$statistic`). We did however observe a block order effect, with a significantly negative linear modulation only in the group that pretended in the first (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered' & !genuine_first)%>%pull(estimate)%>%t.test())$statistic`), but not in the second block (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_centered' & genuine_first)%>%pull(estimate)%>%t.test())$statistic`). In pretend games this negative relation between $H(P)$ and click latency was significant in both groups, as well as overall (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='pretend' &term=='entropy_centered')%>%pull(estimate)%>%t.test())$statistic`).
 
 A negative linear modulation of $H(P)$ on decision latency is surprising, as it suggests that participants were quicker to decide when uncertainty was high. However, visual inspection of the RT/entropy curves (Fig. 3B) reveals a pronounced quadratic modulation, such that in both pretend and non-pretend games slower decision times are observed for intermediate $H(P)$ values of around 2. Similar to the linear effect of $H(P)$ on decision latency, here too a quadratic modulation in non-pretend games was observed only in the group that pretended in the first (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_squared' & !genuine_first)%>%pull(estimate)%>%t.test())$statistic`), but not in the second block (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_squared' & genuine_first)%>%pull(estimate)%>%t.test())$statistic`). Again, in pretend games this negative quadratic relation was significant in both groups, as well as overall (`r apa_print(E2.RT_by_entropy_coefs%>%filter(test_part=='pretend' &term=='entropy_squared')%>%pull(estimate)%>%t.test())$statistic`). A between-subjects comparison focusing on games from the first block revealed that this negative quadratic effect was stronger in pretend, compared to non-pretend games (`r apa_print(t.test(E2.RT_by_entropy_coefs%>%filter(test_part=='nonpretend' &term=='entropy_squared' & genuine_first)%>%pull(estimate),E2.RT_by_entropy_coefs%>%filter(test_part=='pretend' &term=='entropy_squared' & !genuine_first)%>%pull(estimate)))$statistic`).
 
@@ -1066,35 +1054,34 @@ ggsave('../figures/E2_corrected_RT_by_previous_hit_number_collapsed_boats_only.p
 
 ```
 
-The previous analyses reveal robust associations between game state and decision latency, that are highly similar, and even exaggerated, in pretend compared to non-pretend games. To get at subtler dynamics in a more direct way, in a follow-up exploratory analysis we focused on decision latencies following a hit. We categorized hits into four types: first hit on a ship, second hit on a ship when the size-three submarine hasn’t been sunk yet, second hit on a ship when the size-three submarine has already been sunk, and third hit on a submarine (see Fig. 3C). In the first case, players know the ship must continue in one of the neighboring cells. In the second case, there is a good chance the ship continues (if this ship turns out to be a submarine). In the third and fourth cases, it is clear that the ship is fully sunk.
+The previous analyses reveal robust associations between game state and decision latency, that are highly similar, and even exaggerated, in pretend compared to non-pretend games. To get at subtler dynamics in a more direct way, in a follow-up exploratory analysis we focused on decision latencies following a hit. We categorized hits into four types: first hit on a ship, second hit on a ship when the size-three submarine hasn't been sunk yet, second hit on a ship when the size-three submarine has already been sunk, and third hit on a submarine (see Fig. 3C). In the first case, players know the ship must continue in one of the neighboring cells. In the second case, there is a good chance the ship continues (if this ship turns out to be a submarine). In the third and fourth cases, it is clear that the ship is fully sunk.
 
-In non-pretend games, participants were significantly slower to select the next cell when they knew they had just completed a ship (categories 3 and 4) compared to when they just hit a ship, but were not sure (category 2) or knew they had not completely sunk it (category 1; `r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Specifically, we find that participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). 
+In non-pretend games, participants were significantly slower to select the next cell when they knew they had just completed a ship (categories 3 and 4) compared to when they just hit a ship, but were not sure (category 2) or knew they had not completely sunk it (category 1; `r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Specifically, we find that participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`).
 
-Strikingly, we found the exact same pattern in pretend games. Players were faster to make the next cell selection when they pretended to think that the current ship might not be fully sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`). This was not merely a difference between the first, second and third hits: participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Further analysis confirmed that this effect remained significant when controlling for click number (`r apa_print(E2.corrected_RT_by_hit_order%>%spread(prev_hit_type,corrected_RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`), and when restricting the analysis to the second hit of a ship that is in fact of size-two (`r apa_print(E2.RT_by_hit_order_boats_only%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`). 
+Strikingly, we found the exact same pattern in pretend games. Players were faster to make the next cell selection when they pretended to think that the current ship might not be fully sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`). This was not merely a difference between the first, second and third hits: participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Further analysis confirmed that this effect remained significant when controlling for click number (`r apa_print(E2.corrected_RT_by_hit_order%>%spread(prev_hit_type,corrected_RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`), and when restricting the analysis to the second hit of a ship that is in fact of size-two (`r apa_print(E2.RT_by_hit_order_boats_only%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`).
 
 This last finding bears emphasizing: In both classes two and three, pretenders *knew* that they had just sunk a size-two ship, but in the second case they *pretended not to know* this fact, and this affected their their response latency in the same way it would have been affected had they been in a non-pretend game.
 
-
 ## Half-games
 
-Our optimality analysis showed that pretenders’ click selections closely resemble those of non-pretenders, at least in that they are not random, but rather guided by where a ship might be. However,  due to the high number of possible board configurations, data from full games provide limited opportunity to compare cell selections for specific game states. In addition to asking, “What guides cell selections in pretend and non-pretend games?”, we also wanted to ask, “Where exactly would pretenders and non-pretenders click, given a specific board configuration?”.
+Our optimality analysis showed that pretenders' click selections closely resemble those of non-pretenders, at least in that they are not random, but rather guided by where a ship might be. However, due to the high number of possible board configurations, data from full games provide limited opportunity to compare cell selections for specific game states. In addition to asking, "What guides cell selections in pretend and non-pretend games?", we also wanted to ask, "Where exactly would pretenders and non-pretenders click, given a specific board configuration?".
 
 To achieve this, the sixth game in each block started not with an empty grid, but with the contents of some cells already revealed by a previous player. As before, pretenders also knew where the remaining ships were hidden, but tried to play as if they only knew what was known to this previous player. Having cell selections from 250 players for each board configuration and condition allowed us to plot and compare the distribution of clicks under a genuine, or pretend, knowledge state.
 
 ```{r, child=c('../half_games.Rmd')}
 ```
 
-For example, look at Board A in Fig. 4 (upper left corner). Imagine that you need to select your next move, knowing that exactly two size-two patrol boats and one size-three submarine are hiding in the water. Where would you click next? Perhaps one of the two revealed ships is the size-three submarine. In that case you want to click on the first cell in the third row, or on the third cell in the fifth row. Or maybe these are the two size-two patrol boats. This would mean the submarine is hiding in some other place, and for it not to touch sides with the boats this must be in the first row. The hit probability map in the second column visualizes this reasoning, by plotting the normalized probability that a ship is hidden in different cells. As can be seen, the highest probabilities are to the sides of the revealed ships, and in the first row. 
+For example, look at Board A in Fig. 4 (upper left corner). Imagine that you need to select your next move, knowing that exactly two size-two patrol boats and one size-three submarine are hiding in the water. Where would you click next? Perhaps one of the two revealed ships is the size-three submarine. In that case you want to click on the first cell in the third row, or on the third cell in the fifth row. Or maybe these are the two size-two patrol boats. This would mean the submarine is hiding in some other place, and for it not to touch sides with the boats this must be in the first row. The hit probability map in the second column visualizes this reasoning, by plotting the normalized probability that a ship is hidden in different cells. As can be seen, the highest probabilities are to the sides of the revealed ships, and in the first row.
 
-In the third column we plot the distribution of clicks for non-pretend players. This distribution is in agreement with the hit probability map (board A: `r cor_A_nonpretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_nonpretend%>%apa_print()%>%'$'(full_result)`). Finally, in the fourth column we plot the distribution of cell selections for pretend players. Although noisier, this distribution is also in agreement with the hit probability map (board A: `r cor_A_pretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_pretend%>%apa_print()%>%'$'(full_result)`), and more importantly, with the hit distribution of non-pretenders for the same board configuration (board A: `r cor_A_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`,  board B: `r cor_B_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`). 
+In the third column we plot the distribution of clicks for non-pretend players. This distribution is in agreement with the hit probability map (board A: `r cor_A_nonpretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_nonpretend%>%apa_print()%>%'$'(full_result)`). Finally, in the fourth column we plot the distribution of cell selections for pretend players. Although noisier, this distribution is also in agreement with the hit probability map (board A: `r cor_A_pretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_pretend%>%apa_print()%>%'$'(full_result)`), and more importantly, with the hit distribution of non-pretenders for the same board configuration (board A: `r cor_A_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`, board B: `r cor_B_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`).
 
 ```{r half-games, echo=FALSE, out.width = '100%', fig.cap = "Half games. First column: the two boards, as they appeared to pretenders. Second column: objective hit probability, given game state. Third and fourth columns: empirical click probabilities in non-pretend and pretend games, respectively."}
 knitr::include_graphics("../figures/Half_games.png")
 ```
 
 <!-- Furthermore, compared to non-pretend games, in pretend games participants were more likely to make irrational clicks on cells where a ship could not in fact be hiding (a median of `r E2.num_irrational_clicks%>%filter(test_part=='pretend')%>%pull(nic)%>%median()` per game in pretend versus `r E2.num_irrational_clicks%>%filter(test_part=='nonpretend')%>%pull(nic)%>%median()` in non-pretend games.  `r E2.num_irrational_clicks%>%spread(test_part,nic)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`).  -->
-## Judge trials 
 
+## Judge trials
 
 ```{r condition-classifier, echo=FALSE, eval=FALSE}
 
@@ -1146,7 +1133,8 @@ pair_model <- train(which_side ~ .,
 # print cv scores
 
 ```
-Despite the fact that pretenders were overall successful in mimicking patterns of cell selection and decision latency, they also left many clues for an independent observer to pick up on: they were slower, displayed exaggerated effects of decision uncertainty and hit success on response time, and were less optimal in choosing where to click next. To illustrate, a support vector machine (SVM) algorithm reached an accuracy level of 72% in linearly classifying condition (pretend / non-pretend) based on just three basic summary features: median decision latency, game optimality score, and number of irrational clicks per game. 
+
+Despite the fact that pretenders were overall successful in mimicking patterns of cell selection and decision latency, they also left many clues for an independent observer to pick up on: they were slower, displayed exaggerated effects of decision uncertainty and hit success on response time, and were less optimal in choosing where to click next. To illustrate, a support vector machine (SVM) algorithm reached an accuracy level of 72% in linearly classifying condition (pretend / non-pretend) based on just three basic summary features: median decision latency, game optimality score, and number of irrational clicks per game.
 
 ```{r judge}
 
@@ -1242,9 +1230,9 @@ p <- E2.judge_df %>%
 ggsave('../figures/E2_correct_guesses_by_board_type.png',p,width=5,height=3,dpi=300)
 ```
 
-Despite this, participants were never significantly above chance in judging which of the two presented games came from a pretender (mean accuracy: `r E2.judge_df%>%group_by(subj_id)%>%summarise(accuracy=sum(correct)*20)%>%pull(accuracy)%>%mean()%>%round()`%; t test against 50: `r apa_print(E2.judge_df%>%group_by(subj_id)%>%summarise(accuracy=sum(correct)*20)%>%pull(accuracy)%>%t.test(mu=50))$statistic`). 
+Despite this, participants were never significantly above chance in judging which of the two presented games came from a pretender (mean accuracy: `r E2.judge_df%>%group_by(subj_id)%>%summarise(accuracy=sum(correct)*20)%>%pull(accuracy)%>%mean()%>%round()`%; t test against 50: `r apa_print(E2.judge_df%>%group_by(subj_id)%>%summarise(accuracy=sum(correct)*20)%>%pull(accuracy)%>%t.test(mu=50))$statistic`).
 
-For a subset of `r E2.judge_df%>%filter(common_board)%>%pull(correct)%>%length()` players, one of the five boards presented in the judging block was already presented both in the pretend and in the non-pretend blocks. Still, even this subset of participants who had just experienced a board both as pretenders and as non-pretenders were not significantly above chance in telling which of two other players had hints for this same board (mean accuracy: 55%, $p=.141$).   
+For a subset of `r E2.judge_df%>%filter(common_board)%>%pull(correct)%>%length()` players, one of the five boards presented in the judging block was already presented both in the pretend and in the non-pretend blocks. Still, even this subset of participants who had just experienced a board both as pretenders and as non-pretenders were not significantly above chance in telling which of two other players had hints for this same board (mean accuracy: 55%, $p=.141$).
 
 ## Are good pretenders also better judges?
 
@@ -1317,27 +1305,29 @@ E2.judge_summary <- E2.judge_summary %>%
 
 The abilities to pretend and to detect pretense in others both rely on some form of theory of mind: reasoning about counterfactual knowledge states of oneself in the first case, and of others in the second. For example, in scrub jays, individual birds that pilfered another bird's caches were also more careful in hiding their own food, suggesting an ability to project from their own experience of stealing to the behavior of others [@emery2001effects]. Along similar lines, we reasoned that those participants whose pretend games better resembled the games of genuine players would also be more accurate in detecting pretense in others. To our surprise, this was not at all the case (`r  apa_print(cor.test(E2.performance_df$judge_rate,E2.performance_df$pretend_rate))$full_result`). Furthermore, we find no significant correlation between participants' accuracy in detecting the pretender and their decision optimality in pretend games (measured as the mean rank posterior probability of their cell selections; `r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend))$full_result`), nor with the cost to optimality relative to non-pretend games (`r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend-E2.judge_summary$nonpretend))$full_result`).
 
-Despite our considerable sample size of 500 participants, we are cautious in making strong claims based on the absence of a correlation between pretense and pretense detection abilities in our sample. We note, however, that previous developmental research has identified weaker correlations with theory of mind measures for a tendency to intentionally deceive another player in a game setting, compared to an ability to detect and understand deception, potentially indicating partly different mechanisms [@shultz1981development].  
+Despite our considerable sample size of 500 participants, we are cautious in making strong claims based on the absence of a correlation between pretense and pretense detection abilities in our sample. We note, however, that previous developmental research has identified weaker correlations with theory of mind measures for a tendency to intentionally deceive another player in a game setting, compared to an ability to detect and understand deception, potentially indicating partly different mechanisms [@shultz1981development].
 
 # Discussion
 
-Many tasks (including writing papers for conferences) require us to overcome the ‘curse of knowledge’ — the challenge of putting ourselves in the shoes of someone who doesn’t know what we know. This is just an example of a more general fact: the ability to simulate counterfactual knowledge states is necessary for efficient and flexible communication. To do this, we must have an internal self-model that can generate thoughts and behavior for hypothetical beliefs, desires, and perceptions.
+Many tasks (including writing papers for conferences) require us to overcome the 'curse of knowledge' --- the challenge of putting ourselves in the shoes of someone who doesn't know what we know. This is just an example of a more general fact: the ability to simulate counterfactual knowledge states is necessary for efficient and flexible communication. To do this, we must have an internal self-model that can generate thoughts and behavior for hypothetical beliefs, desires, and perceptions.
 
-Research on Bayesian Theory of Mind provides some support for the existence of such a model by measuring subjects' ability to infer beliefs and desires from observed behavior, either explicitly [@baker2009action; @baker2017rational], or implicitly [@onishi2005fifteen; @liu2017ten]. Here we have put forward a complementary approach: Asking participants to generate behavior based on a counterfactual mental state - in this case, a counterfactual knowledge state in which a known piece of information is unknown. Instead of relying on model inversion (e.g., “Which belief states would give rise to this behavior?”), we ask participants to run the model forward, taking beliefs and desires as input and producing behavior as output. Due to the unconstrained space of possible behaviors in our task (cell selections x decision latencies), successfully pretending not to know demands a rich model of cognition, and is much harder to achieve based on a quasi-scientific theory of mental states [@gopnik1994theory].
+Research on Bayesian Theory of Mind provides some support for the existence of such a model by measuring subjects' ability to infer beliefs and desires from observed behavior, either explicitly [@baker2009action; @baker2017rational], or implicitly [@onishi2005fifteen; @liu2017ten]. Here we have put forward a complementary approach: Asking participants to generate behavior based on a counterfactual mental state - in this case, a counterfactual knowledge state in which a known piece of information is unknown. Instead of relying on model inversion (e.g., "Which belief states would give rise to this behavior?"), we ask participants to run the model forward, taking beliefs and desires as input and producing behavior as output. Due to the unconstrained space of possible behaviors in our task (cell selections x decision latencies), successfully pretending not to know demands a rich model of cognition, and is much harder to achieve based on a quasi-scientific theory of mental states [@gopnik1994theory].
 
-Our subjects rose to the challenge. Their pretense behavior, although not perfect, closely resembled that of non-pretenders — not only in gross measures such as total number of clicks, but also in subtler patterns of cell selection and decision latency. Our interpretation of this finding is that participants engaged in rich and relatively accurate counterfactual self-simulation: “What would I have done if I didn’t have this piece of knowledge?”
+Our subjects rose to the challenge. Their pretense behavior, although not perfect, closely resembled that of non-pretenders --- not only in gross measures such as total number of clicks, but also in subtler patterns of cell selection and decision latency. Our interpretation of this finding is that participants engaged in rich and relatively accurate counterfactual self-simulation: "What would I have done if I didn't have this piece of knowledge?"
 
-An alternative interpretation is that instead of simulating a counterfactual knowledge state, participants actively suppressed or ignored unwanted knowledge, such that their entire cognitive machinery was available to play the game. This does not require any self-modeling or self-simulation, beyond the knowledge that suppressing knowledge can be beneficial for pretending not to know something. While we cannot fully rule out this interpretation, we think it is unlikely to explain participants’ pretense ability in our data, for two indirect reasons. First, suppressing thoughts on demand is notoriously difficult  [@wegner1987paradoxical], and our first-person experience of performing the task is that suppressing knowledge of ship locations is hardly possible. Second, when asked how they had performed the task in a debrief question, the responses of most participants were aligned with a self-simulation account. In future work, we intend to more directly rule out this knowledge-suppression hypothesis, and well as to generalize our results to other games.
+An alternative interpretation is that instead of simulating a counterfactual knowledge state, participants actively suppressed or ignored unwanted knowledge, such that their entire cognitive machinery was available to play the game. This does not require any self-modeling or self-simulation, beyond the knowledge that suppressing knowledge can be beneficial for pretending not to know something. While we cannot fully rule out this interpretation, we think it is unlikely to explain participants' pretense ability in our data, for two indirect reasons. First, suppressing thoughts on demand is notoriously difficult [@wegner1987paradoxical], and our first-person experience of performing the task is that suppressing knowledge of ship locations is hardly possible. Second, when asked how they had performed the task in a debrief question, the responses of most participants were aligned with a self-simulation account. In future work, we intend to more directly rule out this knowledge-suppression hypothesis, and well as to generalize our results to other games.
 
-In conclusion, we propose that pretense behavior provides a unique opportunity to directly test the richness and accuracy of subjects’ models of their own cognitive processes, and find evidence for accurate pretending that surprisingly does not translate to an ability to detect pretense. While more work is needed to exclude alternative explanations, we interpret our findings as providing preliminary evidence for a remarkable capacity for counterfactual self-simulation.
+In conclusion, we propose that pretense behavior provides a unique opportunity to directly test the richness and accuracy of subjects' models of their own cognitive processes, and find evidence for accurate pretending that surprisingly does not translate to an ability to detect pretense. While more work is needed to exclude alternative explanations, we interpret our findings as providing preliminary evidence for a remarkable capacity for counterfactual self-simulation.
 
-# References 
+# References
 
 ```{r}
 # References will be generated automatically by Pandoc and included here.
 # The following code is some latex to format the bibliography. Do not remove it.
 ```
 
+```{=tex}
 \setlength{\parindent}{-0.1in} 
 \setlength{\leftskip}{0.125in}
+```
 \noindent
