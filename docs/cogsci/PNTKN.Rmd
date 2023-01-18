@@ -496,7 +496,7 @@ for (i in 1:nsim) {
 
 ```{r p_click, echo = FALSE, cache=TRUE}
 
-# a <-E2.click_log %>%
+# E2.click_log_with_boards <-E2.click_log %>%
 #   dplyr::select(subj_id,genuine_first,test_part,grid_number,click_number,i,j,RT,hit_bin) %>%
 #   mutate(flat_position = 1+i*5+j) %>%
 #   group_by(subj_id,genuine_first,test_part,grid_number) %>%
