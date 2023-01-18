@@ -1,0 +1,16 @@
+---
+title: "Research log"
+author: "Matan Mazor"
+date: "2023-01-18"
+output: github_document
+bibliography: references.bib
+---
+
+## Analysis of decision conformity (2023-01-18)
+
+Instead of computing p(click) relative to places where a ship could be hiding, I now computed it relative to the behaviour of other players in the same click number in non-pretend games. My reasoning was that pretenders may be following what people usually do in a rigid and inflexible manner, instead of adapting it flexibly to the game state.  
+
+Turns out that's not the case. Pretenders and non-pretenders followed similarly stereotypical click sequences, with slightly less stereotypical sequences in pretend games. The relation between entropy of this new measure and RT was negatively quadratic, but not very strongly so, and only in pretend games. 
+
+The entropy of clicks across games seem generally similar in pretend and non-pretend games, but for some reason it decreases at a round the 10th click. I'm not sure why this happens. 
+

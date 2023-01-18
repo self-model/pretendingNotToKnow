@@ -51,8 +51,8 @@ E2.prior_from_group <- E2.click_log_with_boards %>%
   group_by(grid_number,click_number, flat_position) %>%
   summarise(n=n())%>% # count the number of clicks per cell per board per timepoint
   group_by(click_number, flat_position)%>%
-  ## for each grid, average across all other grids.
-  do( data.frame(.,other_n=sapply(.$grid_number, function(i) mean(.$n[!.$grid_number %in% i])))) %>%
+  ## for each grid, sum across all other grids.
+  do( data.frame(.,other_n=sapply(.$grid_number, function(i) sum(.$n[!.$grid_number %in% i])))) %>%
   group_by(grid_number, click_number) %>%
   mutate(p=other_n/sum(other_n)) %>% # normalize to get a probability function
   dplyr::select(grid_number,click_number,flat_position,p) %>%
@@ -302,6 +302,47 @@ p <- E2.corrected_RT_by_prior_entropy_coefs_summary %>%
   theme_classic()
 
 ggsave('../figures/E2_corrected_RT_by_prior_entropy_coefficients_no_split.png',p,width=5,height=2,dpi=300)
+
+
+```
+
+```{r entropy-by-erial-position, echo=FALSE, cache=TRUE}
+
+#compute Shannon entropy
+entropy <- function(target) {
+  freq <- table(target)/length(target)
+  # vectorize
+  vec <- as.data.frame(freq)[,2]
+  #drop 0 to avoid NaN resulting from log2
+  vec<-vec[vec>0]
+  #compute entropy
+  -sum(vec * log2(vec))
+}
+
+E2.click_entropy_by_serial_position <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal)%>%
+  rbind(E2.click_log_with_boards_random)%>%
+  # filter(click_number<15) %>%
+  group_by(subj_id,test_part,click_number)%>%
+  summarise(entropy=entropy(flat_position))
+
+
+E2.click_entropy_by_serial_position_summary <- E2.click_entropy_by_serial_position %>%
+  group_by(test_part,click_number) %>%
+  summarise(mean_entropy=mean(entropy),
+            se_entropy=se(entropy)) %>%
+  mutate(test_part = factor(test_part, levels=c('nonpretend','pretend','random','optimal')));
+
+p <- E2.click_entropy_by_serial_position_summary %>%
+  ggplot(aes(x=click_number,y=mean_entropy,color=test_part,group=test_part)) +
+  geom_line() +
+  geom_ribbon(aes(ymax=mean_entropy+se_entropy,ymin=mean_entropy-se_entropy, fill=test_part),alpha=0.5) +
+  scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", "black")) +
+  scale_color_manual(values=c("#69b3a2", "#404080", "black", "black")) +
+  labs(x='click number', y='entropy') +
+  theme_classic()
+
+ggsave('../figures/E2_entropy_by_click_nnumber.png',p,width=5,height=5,dpi=300)
 
 
 ```
