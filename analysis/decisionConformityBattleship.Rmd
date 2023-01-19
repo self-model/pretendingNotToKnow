@@ -1,5 +1,5 @@
 ---
-title: "Decision entropy"
+title: "Decision conformity: Battleship"
 author: "Matan Mazor"
 date: "2023-01-18"
 output: html_document
@@ -308,15 +308,19 @@ ggsave('../figures/E2_corrected_RT_by_prior_entropy_coefficients_no_split.png',p
 
 ```{r entropy-by-erial-position, echo=FALSE, cache=TRUE}
 
-#compute Shannon entropy
+#compute Shannon entropy, but only until the first timepoint at which some gamed ended
 entropy <- function(target) {
-  freq <- table(target)/length(target)
-  # vectorize
-  vec <- as.data.frame(freq)[,2]
-  #drop 0 to avoid NaN resulting from log2
-  vec<-vec[vec>0]
-  #compute entropy
-  -sum(vec * log2(vec))
+  if (length(target)<5) {
+    return(NaN)
+  } else {
+    freq <- table(target)/length(target)
+    # vectorize
+    vec <- as.data.frame(freq)[,2]
+    #drop 0 to avoid NaN resulting from log2
+    vec<-vec[vec>0]
+    #compute entropy
+    return(-sum(vec * log2(vec)))
+  }
 }
 
 E2.click_entropy_by_serial_position <- E2.click_log_with_boards %>%
@@ -329,8 +333,8 @@ E2.click_entropy_by_serial_position <- E2.click_log_with_boards %>%
 
 E2.click_entropy_by_serial_position_summary <- E2.click_entropy_by_serial_position %>%
   group_by(test_part,click_number) %>%
-  summarise(mean_entropy=mean(entropy),
-            se_entropy=se(entropy)) %>%
+  summarise(mean_entropy=mean(entropy, na.rm=T),
+            se_entropy=se(entropy, na.rm=T)) %>%
   mutate(test_part = factor(test_part, levels=c('nonpretend','pretend','random','optimal')));
 
 p <- E2.click_entropy_by_serial_position_summary %>%
@@ -342,7 +346,7 @@ p <- E2.click_entropy_by_serial_position_summary %>%
   labs(x='click number', y='entropy') +
   theme_classic()
 
-ggsave('../figures/E2_entropy_by_click_nnumber.png',p,width=5,height=5,dpi=300)
+ggsave('../docs/figures/E2_entropy_by_click_nnumber.png',p,width=7,height=5,dpi=300)
 
 
 ```
