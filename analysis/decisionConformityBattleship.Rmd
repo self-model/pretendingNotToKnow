@@ -110,21 +110,21 @@ get_prior_entropy <- function(prior) {
 E2.click_log_with_boards_and_prior <-E2.click_log_with_boards %>%
   rowwise()%>%
   mutate(prior = get_group_prior(grid_number, click_number, board_state),
-         prior_click = get_p_click(prior,flat_position),
+         prior_click = get_prior_click(prior,flat_position),
          prior_entropy = get_prior_entropy(prior),
          prior_click_rank = get_prior_click_rank(prior,flat_position));
 
 
 E2.click_log_with_prior_optimal <- E2.click_log_with_boards_optimal %>%
   mutate(prior = get_group_prior(grid_number, click_number, board_state),
-         prior_click = get_p_click(prior,flat_position),
+         prior_click = get_prior_click(prior,flat_position),
          prior_entropy = get_prior_entropy(prior),
          prior_click_rank = get_prior_click_rank(prior,flat_position),
          test_part=='optimal');
 
 E2.click_log_with_prior_random <- E2.click_log_with_boards_random %>%
   mutate(prior = get_group_prior(grid_number, click_number, board_state),
-         prior_click = get_p_click(prior,flat_position),
+         prior_click = get_prior_click(prior,flat_position),
          prior_entropy = get_prior_entropy(prior),
          prior_click_rank = get_prior_click_rank(prior,flat_position),
          test_part = 'random')
@@ -177,8 +177,8 @@ p<- E2.mean_prior_click_rank_misses_only %>%
     # scale_x_reverse() +
     theme_classic();
 
-ggsave('../figures/E2_pclick_rank_misses_only.pdf',p)
-ggsave('../figures/E2_pclick_rank_misses_only.png',p,width=5,height=2,dpi=300)
+ggsave('../docs/figures/E2_pclick_rank_misses_only.pdf',p)
+ggsave('../docs/figures/E2_pclick_rank_misses_only.png',p,width=5,height=2,dpi=300)
 
 
  E2.RT_prior_click_cor <- E2.click_log_with_boards_and_prior %>%
@@ -348,5 +348,26 @@ p <- E2.click_entropy_by_serial_position_summary %>%
 
 ggsave('../docs/figures/E2_entropy_by_click_nnumber.png',p,width=7,height=5,dpi=300)
 
+
+```
+
+```{r entropy-pclick-correlation, echo=FALSE, cache=TRUE}
+
+E2.entropy_summary <- E2.click_entropy_by_serial_position %>%
+  filter(click_number>8) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(entropy=mean(entropy,na.rm=T))
+
+E2.p_click_summary <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  ungroup() %>%
+  filter(click_number<8) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(p_click=mean(p_click))
+
+E2.p_click_summary %>%
+  merge(E2.entropy_summary) %>%
+  ggplot(aes(x=entropy,y=p_click, color=test_part))+
+  geom_point(size=2,alpha=0.8)
 
 ```
