@@ -234,7 +234,7 @@ ggsave('../docs/figures/E2_num_clicks.png',p,width=5,height=2, dpi=300)
 
 ```{r battleship-useful_functions, echo=FALSE, cache=TRUE}
 
-all_possible_boards <- read.csv('../../analysis/flat_boards.csv',header=FALSE);
+all_possible_boards <- read.csv('../analysis/flat_boards.csv',header=FALSE);
 
 create_board_states <- function(flat_positions,hit) {
   
@@ -294,6 +294,131 @@ get_posterior_entropy <- function(posterior) {
 }
 
 ```
+
+```{r battleship-parse-click-log, echo-FALSE, cache=TRUE}
+
+E2.click_log <- readRDS('../experiments/Battleships2/data/batch1/click_log.Rda');
+
+# E2.click_log <- data.frame(matrix(ncol=10,nrow=0, 
+#                                dimnames=list(NULL, 
+#                                              c("subj_id",
+#                                               "test_part", 
+#                                               "grid_number", 
+#                                               "num_clicks",
+#                                               "i",
+#                                               "j",
+#                                               "hit",
+#                                               "t",
+#                                               "click_number",
+#                                               "genuine_first"))))
+# 
+# 
+# for (row in 1:nrow(E2.click_df)) {
+#   
+#     subject_click_log <- data.frame(fromJSON(E2.click_df[row, ]$click_log)) %>%
+#     mutate(
+#       click_number = 1:n(),
+#       subj_id = E2.click_df[row, ]$subj_id,
+#       test_part = E2.click_df[row, ]$test_part,
+#       grid_number = E2.click_df[row, ]$grid_number,
+#       num_clicks = E2.click_df[row, ]$num_clicks,
+#       genuine_first = E2.click_df[row, ]$genuine_first
+#     )
+#     
+#     E2.click_log <- rbind(E2.click_log, subject_click_log);
+# }
+#     
+# 
+# E2.click_log <- E2.click_log %>%
+#   relocate(subj_id, .before = i) %>%
+#   relocate(genuine_first, .before = i) %>% 
+#   relocate(test_part, .before=i) %>% 
+#   relocate(grid_number, .before=i) %>% 
+#   relocate(click_number, .before=i) %>%
+#   group_by(subj_id,test_part,grid_number) %>%
+#   mutate(RT=t-lag(t,default=0)) %>%
+#   filter(!(subj_id %in% E2.lucky_pretenders))%>%
+#  mutate(hit_bin = hit !=0,
+#         lag3 = lag(hit,3)!=0,
+#         lag2 = lag(hit,2)!=0,
+#         lag1 = lag(hit,1)!=0,
+#         lead1 = lead(hit,1)!=0,
+#         lead2 = lead(hit,2)!=0,
+#         lead3 = lead(hit,3)!=0)
+
+```
+
+```{r battleship-duration, echo-FALSE, cache=TRUE}
+
+E2.duration_log <- E2.click_log %>% 
+  group_by(subj_id,test_part,grid_number, genuine_first) %>%
+  summarise(duration=sum(RT)) %>% 
+  group_by(subj_id,test_part,genuine_first) %>% 
+  summarise(duration=median(duration)) %>% 
+  spread(test_part,duration) %>%
+  mutate(diff=pretend-nonpretend)
+
+```
+
+*Hypothesis 1 (game duration)*: Pretend games were longer than non-pretend games by `r (E2.duration_log %>%pull(diff)%>%mean()/1000)%>%round()` seconds on average. This was true in the pretend-first group (`r E2.duration_log %>% filter(!genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), and in the pretend-second groups (`r E2.duration_log %>% filter(genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`).
+
+```{r battleship-first-click, echo-FALSE, cache=TRUE}
+
+E2.first_click_log <- E2.click_log %>% 
+  group_by(subj_id,test_part,grid_number, genuine_first) %>%
+  summarise(RT=RT[click_number==1]) %>% 
+  group_by(subj_id,test_part,genuine_first) %>% 
+  summarise(RT=median(RT)) %>% 
+  spread(test_part,RT) %>%
+  mutate(diff=pretend-nonpretend)
+
+```
+
+*Hypothesis 2 (first click latency)*: The first click in pretend games took longer to execute by `r E2.first_click_log %>%pull(diff)%>%mean()%>%round()` ms. This was true in the pretend-first group (`r E2.first_click_log %>% filter(!genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), but not in the pretend-second groups (`r E2.first_click_log %>% filter(genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). As per our pre-registration document, we focused our analysis on the first blocks only, using a between-subject t-test. This test revealed a significant difference in the first click latency (`r t.test(E2.first_click_log%>%filter(!genuine_first)%>%pull(pretend), E2.first_click_log%>%filter(genuine_first)%>%pull(nonpretend))%>%apa_print()%>%'$'(full_result)`).
+
+```{r battleship-num-clicks, echo=FALSE, cache=TRUE}
+
+E2.click_df <- E2.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         grid_number, 
+         num_clicks,
+         click_log,
+         genuine_first) %>%
+  mutate(click_log = gsub("\'","\"", click_log)) %>%
+  filter(test_part=='pretend' | test_part=='nonpretend');
+
+E2.median_clicks <- E2.click_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(test_part,num_clicks) %>%
+  mutate(diff=pretend-nonpretend);
+
+E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%unique();
+
+E2.median_clicks_filtered <- E2.click_df %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(test_part,num_clicks);
+
+p<- E2.click_df %>%
+    group_by(subj_id,test_part, genuine_first) %>%
+    summarise(num_clicks=median(num_clicks)) %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=num_clicks,fill=test_part))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='median number of clicks', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+    # geom_vline(xintercept= median_simulated)+
+    # facet_wrap(~genuine_first, nrow=2);
+
+ggsave('../docs/figures/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+
+```
+
 
 ```{r simulate_nclicks, echo=FALSE, cache=TRUE}
 
@@ -360,15 +485,16 @@ for (i in 1:nsim) {
   num_clicks_optimal_sim = c(num_clicks_optimal_sim,simulate_optimal_game(cur_board));
 }
 
-
-  
 ```
 
-*Hypothesis 1 (game duration)*: We will test the null hypothesis that pretend games take as long as non-pretend games. For each participant, a difference between median game duration in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level. 
+*Hypothesis 3 (number of clicks)*: 
 
-*Hypothesis 2 (first click latency)*: We will test the null hypothesis that the first click in pretend games takes as long to execute as in non-pretend games. For each participant, a difference between median first click latency in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level. 
+To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a median total click number of `r num_clicks_sim%>%median()`, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a median total click number of `r num_clicks_optimal_sim%>%median()`. Among our players, the median number of clicks was `r E2.median_clicks%>%pull(nonpretend)%>%median()` in both pretend and non-pretend games.
 
-*Hypothesis 3 (number of clicks)*: We will test the null hypothesis that pretend games are as long, in terms of total number of clicks, as non-pretend games. For each participant, a difference between median number of clicks in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level.
+No significant difference in the total number of clicks was observed in the pretend-first group (`r E2.median_clicks%>%filter(!genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), but a significant difference was observed in the pretend-second group (`r E2.median_clicks%>%filter(genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Note that the two effects point in opposite directions, reflecting a tendency to make fewer clicks in the second block of the game. Crucially, when focusing on the first block only, We observed no significant difference in the number of clicks between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend),E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`). 
+
+In `r E2.click_df%>%filter(num_clicks==7)%>%nrow()` pretend games from `r E2.lucky_pretenders%>%length()` players, games were completed after 7 clicks only, without ever missing a ship. This never happened in non-pretend games. We assumed that these participants did not follow the task instructions, and excluded them from all analyses.
+
 
 *Hypotheses 4-6 (click latency by click outcome)*: Trials will be classified based on whether they resulted in hitting a ship (*hit*) or not (*miss*). We will then contrast median click latency between hits and misses separately for pretend and non-pretend games. We will test for a difference in trial latency as a function of outcome on pretend games, on non-pretend games, and for an interaction effect between click outcome (hit or miss) and condition (pretend or non-pretend) on click latency. The same analysis will then be repeated by classifying trials on the basis of whether the previous trial resulted in a hit or a miss (*Hypothesis 5*), and whether the next trial will result in a hit or a miss (*Hypothesis 6*).
 
