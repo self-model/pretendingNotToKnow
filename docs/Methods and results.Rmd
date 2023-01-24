@@ -1,0 +1,402 @@
+---
+title             : "Pretending not to know"
+shorttitle        : "Pretending not to know"
+
+author: 
+  - name          : "Matan Mazor"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Malet St., London WC1E 7HX"
+    email         : "mtnmzor@gmail.com"
+  - name          : "Chaz Firestone"
+    affiliation   : "2"
+  - name          : "Ian Phillips"
+    affiliation   : "2"
+
+affiliation:
+  - id            : "1"
+    institution   : "Birkbeck, University of London"
+  - id            : "2"
+    institution   : "Johns Hopkins University"
+
+authornote: |
+  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
+
+  Enter author note here.
+
+abstract: |
+  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+  
+  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
+  
+  One sentence clearly stating the **general problem** being addressed by  this particular study.
+  
+  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
+  
+  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
+  
+  One or two sentences to put the results into a more **general context**.
+  
+  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "pretense, theory of mind, metacognition, self-model, self-simulation"
+wordcount         : "X"
+
+bibliography      : "r-references.bib"
+
+floatsintext      : no
+linenumbers       : yes
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : papaja::apa6_word
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+```{r global_options, include=FALSE}
+set.seed(42)
+knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, 
+                      fig.pos = "tb", fig.path='figs/',
+                      echo=F, warning=F, cache=F, 
+                      message=F, sanitize = T)
+```
+
+```{r, libraries, echo=FALSE, warning=FALSE}
+
+library(groundhog)
+
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret' #for cross validation
+), '2022-12-01')
+
+```
+
+# Exp. 1: Battleship
+
+## Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+
+A detailed pre-registration can be accessed at [osf.io/v9zsb](https://osf.io/v9zsb)
+
+```{r battleship-load-data, warning=FALSE}
+
+E2.df <- read.csv('../experiments/Battleships2/data/batch1/jatos_results_batch1.csv',na.strings=c(""," ","NA")) %>%
+  mutate(subj_id = paste(as.character(participant_number),substr(PROLIFIC_PID,1,4),sep='')) %>%
+  mutate(subj_id = factor(subj_id)) %>%
+  # the dash is breaking r
+  mutate(test_part = ifelse(test_part=='non-pretend','nonpretend',test_part)) %>%
+  mutate(genuine_first=genuine_first=='True');
+
+E2.export <- read.csv('../experiments/Battleships2/data/batch1/prolific_export_batch1.csv',na.strings=c(""," ","NA"));
+
+E2.bonus <- read.csv('../experiments/Battleships2/data/batch1/bonus.csv',na.strings=c(""," ","NA"))
+
+```
+
+### Participants
+
+The research complied with all relevant ethical regulations and was approved by the Research Ethics Committee of Johns Hopkins University. 500 Participants were recruited via Prolific (prolific.co) and gave their informed consent prior to their participation. They were selected based on their acceptance rate (\>95%) and for being native English speakers. The entire experiment took approximately 20 minutes to complete. Participants' pay was equivalent to an hourly wage of 9.50 USD, in addition to a bonus payment (`r E2.bonus$bonus%>%min()` - `r E2.bonus$bonus%>%max()` USD, mean = `r E2.bonus$bonus%>%mean()%>%printnum()`).
+
+### Procedure
+
+Participants were first instructed that the experiment, based on the game Battleships, had three parts, and that they could accumulate 'points' that would later translate to a monetary bonus payment. They were then presented with a leaderboard of previous players, and given the rules of the game:
+
+> "In the game Battleships, your task is to sink all ships located in a grid with as few clicks as possible. What makes the game difficult is that you can't see the ships; all you can see is a grid of squares, and you have to guess where the ships are. To sink a ship, you need to click on all of the squares it is located in. If you hit part of a ship, the square will turn red. If there is no ship in the square, it will turn blue."
+
+We further explained that in this version of the game, ships can touch corners, but their sides can't touch. This explanation was accompanied by a visual presentation of legal and illegal ship configurations.
+
+After completing a comprehension question and a practice round, participants completed one 'pretend' and one 'non-pretend' block, each comprising five full games and one half game (see below for details). The order of pretend and non-pretend blocks was counterbalanced between participants. The allocation of boards (spatial configurations of ships; see Fig. 1A) to conditions was randomized between participants such that exactly one board was played in both pretend and non-pretend conditions, and this common board was different for different participants. The order of boards within a block was fully randomized, with the exception that half-games were always played last.
+
+#### Non-pretend (normal) games
+
+In non-pretend games (Fig. 1B), participants aimed to sink two 2-square patrol boats and one 3-square submarine with as few clicks as possible. An online counter of the number of clicks was displayed on the screen. After each game, feedback was given about the number of clicks and resulting number of points obtained.
+
+#### Pretend games
+
+Participants in pretend games were given the same explanation of Battleships, and played a practice round. However, they were then given an additional twist:
+
+> "This time your goal is different. In this round, we're going to tell you where the ships are, but **we want you to act like you don't know this information**. We've marked the ships' locations with a cross, so you'll know where they are the whole time; but your job is to play the game as if these hints aren't there. To see how good you are at this, we're going to compare your games to the games of people who actually had no hints, and see how similar they are. We will measure where and when you clicked; if your clicks look similar to people who played like normal (trying to reveal all ships with as few clicks as possible, but without any hints), you'll get bonus points. But if your games look different, you won't get these bonus points. Your number of clicks in this part will not affect your bonus. Only your ability to play like you had no hints."
+
+We informed participants that both the location and timing of their cell clicks will be measured. After one practice round and one comprehension question, participants played five pretend games (Fig. 1C), followed by one pretend half-game. Each game was followed by a short message, reminding them that a game that looks similar to the games of participants who had no hints would be awarded 10 bonus points.
+
+```{r battleship-design, echo=FALSE, fig.cap="Experimental Design. See Methods for details.", out.width = '100%'}
+knitr::include_graphics("figures/Battleships_design.png")
+```
+
+#### Half games
+
+In order to directly compare participants' pretend and non-pretend games for identical belief states (genuine or pretended ignorance about where the ships are hidden), participants completed one pretend and one non-pretend game given a partly finished board with the content of 7 cells already revealed (see Fig. 1D). We designed our half games to produce a strong expectation to find a ship in specific cells, but not in others. The assignment of half-completed boards to pretend and non-pretend conditions was randomized between participants.
+
+#### Judge trials
+
+In the final part of the experiment, participants observed the games of previous players and tried to determine who had hints and who didn't. On each trial, two empty grids were presented side by side, with a smaller grid on top, displaying the hidden positions of ships on the grid (Fig. 1F). The two grids corresponded to the true games of two previous players who played a version of the top grid either as pretenders or as non-pretenders. Only games shorter than one minute were chosen for presentation in this part. For non-pretend games, only games from the group of participants that pretended in the second block (and played normally in the first block) were chosen for presentation in this part. Judge participants observed a real time replay of the two grids, showing not only where participants clicked, but also when. After making a decision, participants were informed whether they would receive the 10 bonus points, or alternatively, whether the pretender would receive them in the event the pretender managed to trick them.
+
+
+A more detailed description of the study procedure is provided in the study [pre-registration document](https://osf.io/v9zsb). Readers are also invited to try a [demo of the experiment](https://jatos.mindprobe.eu/publix/NervzpM0Y0z).
+
+### Data analysis
+<!-- We used `r cite_r("r-references.bib")` for all our analyses. -->
+
+
+## Results
+
+```{r battleship-subject-comments, echo=FALSE}
+
+E2.comments <- E2.df %>%
+  filter(!is.na(responses) & is.na(test_part)) %>%
+  dplyr::select(subj_id,responses) %>%
+  mutate(comments = map(responses, ~fromJSON(.) %>%as.data.frame()))%>%
+  unnest(comments)%>%
+  dplyr::select(subj_id,worker_comments)%>%
+  filter(!is.na(worker_comments) & worker_comments!="") %>%
+  mutate(worker_comments = gsub("[\r\n]", "",worker_comments))
+
+E2.debrief <- E2.df %>%
+  filter(!is.na(responses) & is.na(test_part)) %>%
+  dplyr::select(subj_id,responses) %>%
+  mutate(comments = map(responses, ~fromJSON(.) %>%as.data.frame()))%>%
+  unnest(comments)%>%
+  dplyr::select(subj_id,debrief)%>%
+  filter(!is.na(debrief) & debrief != "")%>%
+  mutate(debrief = gsub("[\r\n]", "",debrief))
+
+```
+
+We designed our analyses to explore subjects' capacity for self-simulation under a counterfactual knowledge state, and the limits of this capacity. We focused on where subjects clicked and when, and asked whether this differed between pretend and non-pretend games. All analyses were pre-registered unless otherwise specified. In our pre-registration document, we committed to separately analyzing participants according to whether they pretended before or after completing a non-pretend block. Whenever there is a mismatch between the two groups, we focus on the first block of each participant (only pretend games from participants who pretended first, and only standard games from participants who played normally first). We do so to ensure that any successful pretending is not due to memory of one's own behavior in a previous block, and that non-pretend games are not biased by experience with the pretend block.
+
+```{r battleship-num_clicks, echo=FALSE, cache=TRUE}
+
+E2.click_df <- E2.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         grid_number, 
+         num_clicks,
+         click_log,
+         genuine_first) %>%
+  mutate(click_log = gsub("\'","\"", click_log)) %>%
+  filter(test_part=='pretend' | test_part=='nonpretend');
+
+E2.median_clicks <- E2.click_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(test_part,num_clicks);
+
+E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%unique();
+
+E2.median_clicks_filtered <- E2.click_df %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(test_part,num_clicks);
+
+p<- E2.click_df %>%
+    group_by(subj_id,test_part, genuine_first) %>%
+    summarise(num_clicks=median(num_clicks)) %>%
+    mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
+    ggplot(aes(x=num_clicks,fill=test_part))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='median number of clicks', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+    # geom_vline(xintercept= median_simulated)+
+    # facet_wrap(~genuine_first, nrow=2);
+
+ggsave('../docs/figures/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+
+```
+
+```{r battleship-useful_functions, echo=FALSE, cache=TRUE}
+
+all_possible_boards <- read.csv('../../analysis/flat_boards.csv',header=FALSE);
+
+create_board_states <- function(flat_positions,hit) {
+  
+  board_state = rep(NA,25)
+  board_states = c();
+  for (p in seq_along(flat_positions)) {
+    board_states = c(board_states, paste(board_state,collapse=','));
+    board_state[flat_positions[p]]=ifelse(hit[p],1,0);
+  }
+  
+  return(board_states)
+};
+
+get_likelihood <- function(board_state) {
+  
+  board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
+  
+  revealed_positions <- which(!is.na(board_state));
+  
+  boards_to_remove = c();
+  
+  for (position in revealed_positions) {
+    boards_to_remove = union(boards_to_remove, which(all_possible_boards[,position] != board_state[position]))
+  }
+  
+  survived_boards = setdiff(1:nrow(all_possible_boards), boards_to_remove);
+  likelihood = all_possible_boards[survived_boards,]%>%colMeans();
+  likelihood[revealed_positions]=NA;
+  
+  return(paste(likelihood,collapse=','))
+  
+};
+
+get_posterior <- function(likelihood) {
+    likelihood = scan(text= likelihood, what = numeric(), sep="," , quiet = TRUE);
+    posterior = likelihood/sum(likelihood,na.rm=TRUE); # assuming a uniform prior
+    return(paste(posterior,collapse=','))
+}
+
+
+get_p_click <- function(posterior, flat_position) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  return(posterior[flat_position])
+}
+
+get_p_click_rank <- function(posterior, flat_position) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  rank_posterior = rank(-posterior)
+  return(rank_posterior[flat_position])
+}
+
+get_posterior_entropy <- function(posterior) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  posterior[which(posterior==0)]=NA; #to avoid infinity*0
+  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+  return(entropy);
+}
+
+```
+
+```{r simulate_nclicks, echo=FALSE, cache=TRUE}
+
+## simulate number of clicks for random play
+
+num_clicks_sim = c();
+nsim = 10000
+boards = rep(NaN,25)
+
+for (i in 1:nsim) {
+  board = rep(c(0),25);
+  while (sum(board)<7) {
+    board[sample(1:25,1)]=1
+  }
+  nc = which(board==1)%>%tail(n=1);
+  num_clicks_sim = c(num_clicks_sim, nc);
+  if (nc<25) {
+    board[(nc+1):length(board)]=NaN;
+  }
+  boards = rbind(boards,board)
+}
+
+simulated_hits <- data.frame(click_number=1:25,mean_hit=colMeans(boards,na.rm=T))
+
+
+## OPTIMAL PLAYER
+
+
+simulate_optimal_game <- function(ship_positions) {
+  #initialize
+  board_state <- rep(NA,25); 
+  nhits <- 0;
+  nclicks <- 0;
+  nships <- sum(ship_positions);
+  
+  while (nships>nhits) {
+    
+    posterior <- get_likelihood(paste(board_state,collapse=',')) %>%
+      get_posterior() %>%
+      scan(text = ., what= numeric(), sep="," , quiet = TRUE);
+    
+    best_shot = which.max(posterior);
+    
+    #click on best shot
+    nclicks = nclicks+1;
+    result = ship_positions[best_shot]
+    if (result==1) {
+      nhits = nhits+1;
+    }
+    board_state[best_shot]=result;
+
+  }
+  
+  return(nclicks)
+  
+}
+
+num_clicks_optimal_sim = c();
+nsim = 100;
+nboards = all_possible_boards%>%nrow();
+
+for (i in 1:nsim) {
+  cur_board = all_possible_boards[sample(1:nboards,1),];
+  num_clicks_optimal_sim = c(num_clicks_optimal_sim,simulate_optimal_game(cur_board));
+}
+
+
+  
+```
+
+*Hypothesis 1 (game duration)*: We will test the null hypothesis that pretend games take as long as non-pretend games. For each participant, a difference between median game duration in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level. 
+
+*Hypothesis 2 (first click latency)*: We will test the null hypothesis that the first click in pretend games takes as long to execute as in non-pretend games. For each participant, a difference between median first click latency in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level. 
+
+*Hypothesis 3 (number of clicks)*: We will test the null hypothesis that pretend games are as long, in terms of total number of clicks, as non-pretend games. For each participant, a difference between median number of clicks in pretend and non-pretend games will be extracted. Subject-wise differences will then be carried over to a t-test at the group level.
+
+*Hypotheses 4-6 (click latency by click outcome)*: Trials will be classified based on whether they resulted in hitting a ship (*hit*) or not (*miss*). We will then contrast median click latency between hits and misses separately for pretend and non-pretend games. We will test for a difference in trial latency as a function of outcome on pretend games, on non-pretend games, and for an interaction effect between click outcome (hit or miss) and condition (pretend or non-pretend) on click latency. The same analysis will then be repeated by classifying trials on the basis of whether the previous trial resulted in a hit or a miss (*Hypothesis 5*), and whether the next trial will result in a hit or a miss (*Hypothesis 6*).
+
+
+# Exp. 2: Hangman
+
+## Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+
+### Participants
+
+### Material
+
+### Procedure
+
+### Data analysis
+We used `r cite_r("r-references.bib")` for all our analyses.
+
+
+## Results
+
+
+# Discussion
+
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
