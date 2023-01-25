@@ -495,8 +495,113 @@ No significant difference in the total number of clicks was observed in the pret
 
 In `r E2.click_df%>%filter(num_clicks==7)%>%nrow()` pretend games from `r E2.lucky_pretenders%>%length()` players, games were completed after 7 clicks only, without ever missing a ship. This never happened in non-pretend games. We assumed that these participants did not follow the task instructions, and excluded them from all analyses.
 
+In our instructions to pretenders, we asked them to pretend not to know where the ships were, not only in *where* they chose to click, but also in *when* they clicked. In the following set of analyses, we identified patterns in click latency in non-pretend games, and asked whether the same patterns are also observed in pretend games. We focused on the effects of hitting versus missing a ship, decision uncertainty, and ship completion.
 
-*Hypotheses 4-6 (click latency by click outcome)*: Trials will be classified based on whether they resulted in hitting a ship (*hit*) or not (*miss*). We will then contrast median click latency between hits and misses separately for pretend and non-pretend games. We will test for a difference in trial latency as a function of outcome on pretend games, on non-pretend games, and for an interaction effect between click outcome (hit or miss) and condition (pretend or non-pretend) on click latency. The same analysis will then be repeated by classifying trials on the basis of whether the previous trial resulted in a hit or a miss (*Hypothesis 5*), and whether the next trial will result in a hit or a miss (*Hypothesis 6*).
+```{r RT_by_accuracy}
+
+N_perm <- 1000;
+bootstrap_error <- function(x, N_perm) {
+  N <- length(x)
+  medians = c();
+  for (i in 1:N_perm) {
+    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median())
+  };
+  return(sd(medians))
+}
+
+
+E2.RT_by_lag3 <- E2.click_log %>%
+  filter(click_number>3) %>%
+  group_by(subj_id,test_part,lag3,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag3,RT,sep='_') %>%
+  mutate(lag3_diff = lag3_TRUE-lag3_FALSE);
+
+E2.RT_by_lag2 <- E2.click_log %>%
+  filter(click_number>2) %>%
+  group_by(subj_id,test_part,lag2,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag2,RT,sep='_') %>%
+  mutate(lag2_diff = lag2_TRUE-lag2_FALSE);
+
+E2.RT_by_lag1 <- E2.click_log %>%
+  filter(click_number>1) %>%
+  group_by(subj_id,test_part,lag1,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE)
+
+E2.RT_by_hit <- E2.click_log %>%
+  filter(click_number>0) %>%
+  group_by(subj_id,test_part,hit_bin,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+
+E2.RT_by_lead1 <- E2.click_log %>%
+  filter(click_number<num_clicks) %>%
+  group_by(subj_id,test_part,lead1,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+E2.RT_by_lead2 <- E2.click_log %>%
+  filter(click_number<num_clicks-1) %>%
+  group_by(subj_id,test_part,lead2,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead2,RT,sep='_') %>%
+  mutate(lead2_diff = lead2_TRUE-lead2_FALSE)
+
+E2.RT_by_lead3 <- E2.click_log %>%
+  filter(click_number<num_clicks-2) %>%
+  group_by(subj_id,test_part,lead3,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead3,RT,sep='_') %>%
+  mutate(lead3_diff = lead3_TRUE-lead3_FALSE)
+
+E2.RT_by_hit_lags <- E2.RT_by_lag3 %>%
+  merge(E2.RT_by_lag2) %>%
+  merge(E2.RT_by_lag1) %>%
+  merge(E2.RT_by_hit) %>%
+  merge(E2.RT_by_lead1) %>%
+  merge(E2.RT_by_lead2) %>%
+  merge(E2.RT_by_lead3);
+
+E2.RT_by_hit_lags_long <- E2.RT_by_hit_lags %>%
+  gather("position","difference",c("lag3_diff","lag2_diff", "lag1_diff", "hit_diff", "lead1_diff", "lead2_diff", "lead3_diff"))%>%
+  mutate(position = ifelse(position=="lag3_diff", 3,
+                           ifelse(position=="lag2_diff",2,
+                                  ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,
+                                                ifelse(position=="lead1_diff",-1,
+                                                       ifelse(position=="lead2_diff",-2,-3
+                                                              ))))))) %>%
+  dplyr::select(subj_id,test_part,genuine_first,position,difference);
+
+p<- E2.RT_by_hit_lags_long %>% 
+  filter(position<2 & position > -1)%>%
+  group_by(test_part,position) %>%
+  summarise(median_difference=median(difference),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  ggplot(aes(x=position,color=test_part,fill=test_part,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=0:1,labels=c('hit on current trial', 'hit on previous trial'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='', y='RT effect (ms) of hit on trial t')+
+  theme_classic()
+
+ggsave('../figures/E2_RT_by_lag_three_only_collapse.pdf',p,width=7)
+ggsave('../figures/E2_RT_by_lag_three_only_collapse.png',p,width=4, height=3.5, dpi=300)
+
+
+
+```
+
+*Hypothesis 4 (click latency by outcome)*: In non-pretend games, trials that resulted in a hit were faster by `r E2.RT_by_hit_lags %>% filter(test_part=='nonpretend')%>%pull(hit_diff)%>%mean()%>%round()%>%abs()` than those that resulted in a miss (pretend-first group: `r E2.RT_by_hit_lags %>% filter(test_part=='nonpretend' & !genuine_first)%>%pull(hit_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend-second group: `r E2.RT_by_hit_lags %>% filter(test_part=='nonpretend' & !genuine_first)%>%pull(hit_diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`) will be classified based on whether they resulted in hitting a ship (*hit*) or not (*miss*). We will then contrast median click latency between hits and misses separately for pretend and non-pretend games. We will test for a difference in trial latency as a function of outcome on pretend games, on non-pretend games, and for an interaction effect between click outcome (hit or miss) and condition (pretend or non-pretend) on click latency. The same analysis will then be repeated by classifying trials on the basis of whether the previous trial resulted in a hit or a miss (*Hypothesis 5*), and whether the next trial will result in a hit or a miss (*Hypothesis 6*).
 
 
 # Exp. 2: Hangman
