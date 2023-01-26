@@ -1,0 +1,7 @@
+Matan, 03/07/2022:
+In the first batch of 220 subjects, the time-locking line in the 
+code was commented out. This was fixed in the second batch. I updated the
+protocol folder with this change to the code.
+This means that the seed for the first 220 subjects was chosen randomly
+(from the date), but for the others it was a function of their participant
+number and protocol sum. 
