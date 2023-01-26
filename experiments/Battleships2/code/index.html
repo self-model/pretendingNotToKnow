@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Battleships</title>
+        <script src="jatos.js"></script>
+        <script src="jquery/jquery.min.js"></script>
+        <script src="jspsych-6.1.0/jspsych.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-preRNG.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-battleships.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-battleships-replay-2players.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-call-function.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-survey-text.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>
+        <script src="p5/p5.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Corben&family=Quicksand&display=swap" rel="stylesheet">
+        <link href="style.css" rel="stylesheet" type="text/css"></link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+        <script src="mersenne-twister.js"></script>
+    </head>
+    <body></body>
+    <script>
+
+    function makeTimeline() {
+
+      timeline = [];
+
+      window.total_points = 0;
+      window.judge_points = 0;
+      window.round_num = 0;
+      window.np_instructions_num = 0;
+      window.comprehend_np = false;
+      window.p_instructions_num = 0;
+      window.comprehend_p = false;
+      window.ntrials = 5;
+
+
+      // shuffle the order of grids
+      var grid_order = shuffle([...Array(window.ntrials*2-1).keys()]);
+      window.genuine_grids = grid_order.slice(0,window.ntrials);
+      window.pretend_grids = grid_order.slice(window.ntrials-1, window.ntrials*2);
+      window.judge_grids = [...Array(5).keys()].map(x=>grid_order[x*2])
+
+      window.max_replay_duration = 1; //maximum duration of replay, in minutes.
+
+      window.genuine_first = Math.random()>0.5;
+      window.choose_pretender = Math.random()>0.5;
+      window.A_genuine = Math.random()>0.5; // for half games
+
+       timeline.push({
+         type: 'fullscreen',
+         fullscreen_mode: true
+       });
+
+      //  var choose_nickname = {
+      //   type: 'survey-text',
+      //   questions: function () {
+      //
+      //   var adjectives = shuffle(['joyful','smiley','ambitious',
+      //   'competitive','winner', 'brave', 'happy']);
+      //
+      //   var nouns =shuffle(['Fungus','ProteinBar','Espresso',
+      // 'FlipFlop','Banana','Pillow','Tortoise','']);
+      //
+      //   var age = shuffle([...Array(10).keys()].map(x=>x*5+23));
+      //
+      //       return [
+      //       {prompt: `<h1>Welcome to the experiment :)</h1>
+      //         Before we start, choose yourself a nickname for our leaderboard:`,
+      //         rows: 1,
+      //         columns: 10,
+      //         placeholder: adjectives[0]+nouns[0]+age[0],
+      //         required: true}
+      //     ]
+      //   },
+      //   on_finish: (data) => {
+      //     window.nickname = JSON.parse(data.responses).Q0;
+      //     jatos.batchSession.add(`/bonuses/${window.participant_number}`,
+      //     {nickname: window.nickname,
+      //     p: [...Array(window.ntrials*2)].map(x=>0)})
+      //     .catch(() => console.log("Batch Session synchronization failed"));
+      //   }
+      // };
+      // timeline.push(choose_nickname);
+
+      var first_instructions = {
+        type: 'instructions',
+        show_clickable_nav: true,
+        pages: ()=>{
+
+          var bonuses = jatos.batchSession.get(`bonuses`);
+          window.bonuses = bonuses;
+          // Sort them in descending order
+          var sortable = [];
+          for (var subj in bonuses) {
+
+              if (bonuses[subj].nickname) {
+
+                bonus = 0;
+                if (bonuses[subj].np) {
+                  bonus += bonuses[subj].np
+                }
+
+                if (bonuses[subj].j) {
+                  bonus += bonuses[subj].j
+                }
+
+                if (bonuses[subj].p) {
+                  bonus += bonuses[subj].p.reduce((a,b)=>a+b,0)
+                }
+
+              sortable.push([bonuses[subj].nickname, bonus])
+            }
+          }
+
+          sortable.sort(function(a, b) {
+              return b[1] - a[1];
+          });
+
+          // In case there are more than 10 participants, take only the top 10.
+          sortable = sortable.slice(0,10);
+
+          var rows = '';
+          $.each(sortable, function(key,item) {
+              var position = key+1
+              var row = '<tr>';
+              row += '<td>' + position + '</td>'; // serial position
+              row += '<td>' + item[0] + '</td>'; // participant name
+              row += '<td>' + item[1] + '</td>'; // bonus
+              rows += row + '<tr>';
+          });
+
+          if (window.np_instructions_num==0) {
+            var instruction_pages = [
+                `<h1>Welcome to the experiment, ${window.nickname} :)</h1>
+                <p>This experiment is based on the game Battleships. It has three parts.
+                Your final number of points in all three parts will determine your bonus payment:
+                you will get an extra 10 cents for every 10 points you make.</p>`,
+                `<body>
+                  <p>You are ${window.nickname}. Here are our all-time best participants:</p>
+                <table id="scores">
+                    <thead>
+                        <tr>
+                            <th id="corner"></th>
+                            <th>Participant</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${rows}
+                    </tbody
+                    <tr>
+                        <td colspan="3" style="text-align:center"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br />
+                </body>`
+            ]
+          } else {
+            var instruction_pages = [`<p>Let's try again.</p>`]
+          }
+
+          instruction_pages.push(`<p>In the game Battleships, your task is to sink all ships located in a
+          grid with as few clicks as possible.</p>
+          <p>What makes the game difficult is that you can’t see the ships; all you can see
+          is a grid of squares, and you have to guess where the ships are. To sink a ship,
+          you need to click on all of the squares it is located in. If you hit part of a
+          ship, the square will turn red. If there is no ship in the square, it will turn
+          blue.</p>`);
+
+          instruction_pages.push(`<p>In this game, ships can touch corners, but their sides can't touch.
+          For example, here are four placements of two patrol boats of size 2 on a 4x4
+          grid. The two placements on the right are illegal because the boats touch sides:</p>
+          <p><img src="assets/configurations.png" width="600" class="center"></p>`)
+
+          return instruction_pages
+        }
+      }
+
+      var multichoice_nonpretend = {
+        type: 'survey-multi-choice',
+        questions: [
+          {prompt: `Just to make sure the instructions are clear, please complete the following sentence:</br></br>
+The goal of the game is to ...`,
+          options: [`... go <b>really fast</b> and finish the game as quick as possible`,
+          '... <b>avoid</b> clicking on the ships',
+          '... sink all ships with as <b>few clicks</b> as possible',
+         '... go <b>really slow</b> and finish the game as slow as possible'], required:true}
+       ],
+       on_finish: (data) => {
+         data.correct = JSON.parse(data.responses).Q0.includes('<b>few clicks</b>'),
+         data.test_part = 'multichoice_nonpretend',
+         window.comprehend_np = data.correct;
+      }
+      }
+
+      timeline.push(
+        {timeline:[first_instructions,multichoice_nonpretend],
+        loop_function: function(data) {
+          window.np_instructions_num++;
+          return !window.comprehend_np}}
+      )
+
+      timeline.push(
+        {type: 'instructions',
+        show_clickable_nav: true,
+        pages:[  `<p>Let’s start with a practice round to get the hang of the game.
+          In this practice round, there will be two patrol boats of size 2 in the water.</p>`]}
+      );
+
+       var practice_gg = {
+           type: "Battleships",
+           cheat: false,
+           grid: [
+   					['0','0','0','0'],
+            ['A','0','B','B'],
+            ['A','0','0','0'],
+            ['0','0','0','0']
+          ],
+          text: `To win, you need to sink two 2-square patrol boats.`
+        };
+       timeline.push(practice_gg);
+
+       var grids = [
+         [
+           ['0','0','0','0','0'],
+           ['0','0','0','0','A'],
+           ['0','B','B','0','A'],
+           ['0','0','0','0','A'],
+           ['C','C','0','0','0']
+         ],
+         [
+           ['C','C','0','0','0'],
+           ['0','0','0','0','0'],
+           ['B','B','0','A','0'],
+           ['0','0','0','A','0'],
+           ['0','0','0','A','0']
+         ],
+         [
+           ['B','B','0','0','0'],
+           ['0','0','0','0','0'],
+           ['A','A','A','0','0'],
+           ['0','0','0','0','0'],
+           ['0','0','0','C','C']
+         ],
+         [
+           ['0','0','0','0','B'],
+           ['0','0','0','0','B'],
+           ['0','A','A','A','0'],
+           ['0','0','0','0','0'],
+           ['0','0','C','C','0']
+         ],
+         [
+           ['0','0','0','0','B'],
+           ['A','A','A','0','B'],
+           ['0','0','0','C','0'],
+           ['0','0','0','C','0'],
+           ['0','0','0','0','0']
+         ],
+         [
+           ['0','0','0','0','0'],
+           ['0','0','0','0','0'],
+           ['C','0','0','0','A'],
+           ['C','0','B','0','A'],
+           ['0','0','B','0','A']
+         ],
+         [
+           ['0','0','0','B','0'],
+           ['0','0','0','B','0'],
+           ['C','C','0','0','A'],
+           ['0','0','0','0','A'],
+           ['0','0','0','0','A']
+         ],
+         [
+           ['0','0','0','C','0'],
+           ['0','0','0','C','0'],
+           ['0','0','0','0','0'],
+           ['A','A','A','0','0'],
+           ['0','0','0','B','B']
+         ],
+         [
+           ['0','A','0','0','0'],
+           ['0','A','0','B','B'],
+           ['0','A','0','0','0'],
+           ['0','0','C','0','0'],
+           ['0','0','C','0','0']
+         ],
+         [
+           ['0','0','0','0','C'],
+           ['0','0','0','0','C'],
+           ['0','B','B','0','0'],
+           ['0','0','0','0','0'],
+           ['0','A','A','A','0']
+         ],
+         [
+           ['0','B','0','C','0'],
+           ['0','B','0','C','0'],
+           ['0','0','0','0','0'],
+           ['0','A','A','A','0'],
+           ['0','0','0','0','0']
+         ],
+         [
+           ['C','0','0','0','0'],
+           ['C','0','0','B','B'],
+           ['0','0','0','0','0'],
+           ['0','A','A','A','0'],
+           ['0','0','0','0','0']
+         ],
+         [
+           ['0','0','0','0','0'],
+           ['C','0','A','0','0'],
+           ['C','0','A','0','0'],
+           ['0','0','A','0','0'],
+           ['0','0','0','B','B']
+         ],
+         [
+           ['0','0','0','0','0'],
+           ['0','0','0','0','A'],
+           ['0','0','0','0','A'],
+           ['C','C','0','0','A'],
+           ['0','0','B','B','0']
+         ],
+         [
+           ['0','C','C','0','0'],
+           ['0','0','0','0','A'],
+           ['0','0','0','0','A'],
+           ['0','B','B','0','A'],
+           ['0','0','0','0','0']
+         ],
+         [
+           ['0','B','0','0','0'],
+           ['0','B','0','0','0'],
+           ['0','0','0','0','0'],
+           ['A','A','A','0','0'],
+           ['0','0','0','C','C']
+         ],
+         [
+           ['0','0','0','0','0'],
+           ['A','0','B','0','C'],
+           ['A','0','B','0','C'],
+           ['A','0','0','0','0'],
+           ['0','0','0','0','0']
+         ],
+         [
+           ['B','0','0','0','0'],
+           ['B','0','A','0','0'],
+           ['0','0','A','0','0'],
+           ['0','0','A','0','C'],
+           ['0','0','0','0','C']
+         ],
+         [
+           ['0','0','0','0','B'],
+           ['0','0','0','0','B'],
+           ['0','0','0','0','0'],
+           ['A','A','A','0','C'],
+           ['0','0','0','0','C']
+         ],
+         [
+           ['B','B','0','C','C'],
+           ['0','0','0','0','0'],
+           ['0','0','A','A','A'],
+           ['0','0','0','0','0'],
+           ['0','0','0','0','0']
+         ]
+       ]
+
+       var half_games = {
+         'A':  {
+           'grid': [
+            ['A','A','A','0','0'],
+            ['0','0','0','0','0'],
+            ['0','B','B','0','0'],
+            ['0','0','0','0','0'],
+            ['C','C','0','0','0']
+          ],
+          'already_clicked': [
+            [2,1],
+            [2,2],
+            [2,3],
+            [2,4],
+            [3,2],
+            [4,0],
+            [4,1]
+          ]
+         },
+         'B':  {
+           'grid': [
+            ['0','0','0','0','0'],
+            ['0','0','0','0','0'],
+            ['B','0','A','0','0'],
+            ['B','0','A','0','C'],
+            ['0','0','A','0','C']
+          ],
+          'already_clicked': [
+            [0,4],
+            [1,2],
+            [2,4],
+            [3,2],
+            [3,3],
+            [4,2],
+            [4,4]
+          ]
+       }
+      }
+
+       var instructions_genuine_g1 = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: () => {
+           num_points = jsPsych.data.get().last(1).values()[0].points;
+           num_clicks = jsPsych.data.get().last(1).values()[0].num_clicks;
+           return [
+`<p>Great. You left ${num_points} squares unclicked,
+so your number of points for this practice round is ${num_points}.</p>
+<p>Now let's play for real. In the next ${window.ntrials+1} games you will sink one 3-square submarine and two 2-square
+patrol boats with as few clicks as possible.</p>
+<p>${window.participant_number>4? `Our all time leader for this first part is <i>${window.np_leader.name}</i> with
+${window.np_leader.points} points.`:''} Good luck!`]}
+       }
+
+       var instructions_cheat_practice = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: () => {
+           // reset round number
+           window.round_num = 0;
+
+           num_points = jsPsych.data.get().last(1).values()[0].points;
+           num_clicks = jsPsych.data.get().last(1).values()[0].num_clicks;
+
+           if (p_instructions_num==0 & window.genuine_first) {
+             instruction_pages = [`<p>${window.nickname}, you won ${window.total_points} points in the first part and this will count toward
+             your bonus.</p>`]
+           } else if (p_instructions_num==0 & !window.genuine_first) {
+             instruction_pages = [`<p>Great. You left ${num_points} squares unclicked,
+             so your number of points for this practice round is ${num_points}.</p>`]
+           } else {
+             instruction_pages = [`<p>Let's try again</p>`]
+           }
+           instruction_pages.push(`<p>In the next part of the experiment, you'll play ${window.ntrials+1}
+           games where you sink one 3-square submarine and two 2-square patrol boats.
+           However, this time your goal is different. </p>`);
+           instruction_pages.push(`<p>In this round, we’re going to tell you where the ships are, but <b>we want you
+           to act like you don’t know this information</b>. <p>
+           <p> We’ve marked the ships’ locations with a cross, so you’ll
+           know where they are the whole time; but your job is to play the game as if
+           these hints aren’t there. <p>`);
+           instruction_pages.push(`<p>To see how good you are at this, we're going to compare your games to the
+            games of people who actually had no hints and see how similar they are. We will
+            measure where and when you clicked; if your clicks look similar to people who played
+            like normal (trying to reveal all ships with as few clicks as possible, but without any hints),
+             you'll get bonus points. But if your games look different, you won't get these bonus points.</p>
+           <p>Do you think you can play like the hints aren't there? Let's do a quick practice round.</p>`)
+           return instruction_pages
+         }
+};
+
+var multichoice_pretend = {
+  type: 'survey-multi-choice',
+  questions: [
+    {prompt: `Just to make sure the instructions are clear, please complete the following sentence:</br></br>
+In this part of the experiment, my goal is to ...`,
+    options: [`... click on <b>only the cross hints</b>.`,
+    '... <b>avoid</b> the cross hints at all costs',
+    '... play the game as if the cross hints <b>were not there</b> so that I look like someone who <b>had no hints</b>',
+   '... play the game as if the cross hints <b>were there</b> so that I look like someone who <b>had hints</b>'], required:true}
+   ],
+   on_finish: (data) => {
+     data.correct = JSON.parse(data.responses).Q0.includes('<b>were not there</b>');
+     window.comprehend_p = data.correct;
+     data.test_part = 'multichoice_pretend'
+  }
+};
+
+       var game = {
+           type: "Battleships",
+           cheat: jsPsych.timelineVariable('cheat'),
+           grid: jsPsych.timelineVariable('grid'),
+           data: jsPsych.timelineVariable('data'),
+           on_finish: jsPsych.timelineVariable('on_finish')
+         };
+
+         var genuine_feedback_screen = {
+           type: 'instructions',
+           show_clickable_nav: true,
+           pages: () => {
+             num_points = jsPsych.data.get().last(1).values()[0].points;
+             num_clicks = jsPsych.data.get().last(1).values()[0].num_clicks;
+             window.total_points += num_points;
+             window.round_num += 1;
+  return [`<p>This time you left ${num_points} squares unclicked, so you get ${num_points}
+    points${window.round_num==1? '.' : ', for a new total of '+window.total_points+ window.genuine_first? '.':' (not including your points from part 1).'}
+    This was round ${window.round_num} out of ${window.ntrials+1}, ${window.round_num<window.ntrials+1? `Let's continue!` : `and the last one for this part.`}</p>`]
+                        }
+         }
+
+
+       gg_vars = window.genuine_grids.map(function(i) {
+         vars={cheat: false,
+           grid:grids[i],
+           data:{grid_number:i,
+                test_part:'non-pretend'},
+           on_finish: (data)=>{
+             if (window.genuine_first) {
+               jatos.batchSession.add(`/genuine_log/${data.grid_number}/${window.participant_number}`,data.click_log)
+               .then(()=>jatos.batchSession.add(`/bonuses/${window.participant_number}/np`,window.total_points))
+               .catch(() => console.log("Batch Session synchronization failed"));
+             }
+           }
+         };
+           return vars});
+
+      var genuine_games = {
+             timeline: [game, genuine_feedback_screen],
+             timeline_variables: gg_vars,
+             repetitions: 1,
+             randomize_order: true
+      }
+
+
+      var instructions_genuine_g2 = {
+        type: 'instructions',
+        show_clickable_nav: true,
+        pages: () => {
+          // reset round number
+          window.round_num = 0;
+          return [
+`<p>${window.nickname}, you finished the first part.</p>
+<p>Now let's play for real. In the next ${window.ntrials+1} games you will sink one 3-square submarine and two 2-square
+patrol boats with as few clicks as possible. No pretending this time.</p>
+<p>${window.participant_number>4? `Our all time leader for revealing all ships with as few clicks as possible is <i>${window.np_leader.name}</i> with
+${window.np_leader.points} points.`:''} Good luck!`]}
+      }
+
+      var instructions_genuine_half_game = {type: 'instructions',
+      show_clickable_nav: true,
+      pages: [
+`<p>For the next game, you will continue the game of another player from where he or she stopped.
+Just like in the previous games, here also there are two 2-square patrol boats and one 3-square submarine hiding in the water,
+and you will get a bonus for revealing all the ships with as few clicks as possible.</p>`]
+      };
+
+      var genuine_half_game = {
+          type: "Battleships",
+          cheat: false,
+          grid: window.A_genuine? half_games.A.grid : half_games.B.grid,
+          already_clicked: window.A_genuine? half_games.A.already_clicked : half_games.B.already_clicked,
+          data:{grid_number:window.A_genuine? 'A':'B',
+                test_part:'nonpretend_half_game'}
+          };
+
+      var practice_cg = {
+          type: "Battleships",
+          cheat: true,
+          grid: [
+           ['0','0','0','0'],
+           ['0','0','B','0'],
+           ['0','0','B','0'],
+           ['A','A','0','0']
+         ],
+         draw_attention_to_instructions_time: 3000,
+         text: `To win, you need to sink two 2-square patrol boats.`
+       };
+
+      var instructions_cheat = {
+        type: 'instructions',
+        show_clickable_nav: true,
+        pages: ()=> {return [`<p>This was just a practice round ${window.nickname}, but
+ your next games will be compared to the games of people who didn't have the hints.</p>
+<p>Whenever your games are similar to the games of people who didn't have the hints, you will get a 10 point bonus.</p>
+<p><b>Your number of clicks in this part will not affect your bonus. Only your
+ability to play like you had no hints.</b></p>`]}
+};
+
+
+      cg_vars = window.pretend_grids.map(function(i) {
+        vars={cheat: true,
+          grid:grids[i],
+          data:{grid_number:i,
+                test_part:'pretend'},
+          on_finish: (data)=>{
+            jatos.batchSession.add(`/cheat_log/${data.grid_number}/${window.participant_number}`,data.click_log)
+            .catch(() => console.log("Batch Session synchronization failed"));
+          }
+        };
+          return vars});
+
+      var cheat_feedback_screen = {
+            type: 'instructions',
+            show_clickable_nav: true,
+            pages: () => {
+              window.round_num += 1;
+    return [`<p>This was round ${window.round_num} out of ${window.ntrials+1}. If this
+      game looks similar to the games of players who had no hints, you will
+      get 10 bonus points for this round. ${window.round_num<window.ntrials+1? `Let's continue!` : `We are ready to move to the ${window.genuine_first? 'last part.' : 'second part.'}`}</p>`]
+                         }
+          }
+
+      var cheat_games = {
+                 timeline: [game, cheat_feedback_screen],
+                 timeline_variables: cg_vars,
+                 repetitions: 1,
+                 randomize_order: true
+      }
+
+      var instructions_cheat_half_game = {type: 'instructions',
+      show_clickable_nav: true,
+      pages: [
+`<p>For the next game, you will continue the game of another player from where he or she stopped.
+Just like in the previous games, here also there are two 2-square patrol boats and one 3-square submarine hiding in the water.
+We marked for you the true locations of the ships with a cross, but your bonus points will depend on your ability to play as if you didn’t have these hints.</p>`]
+      };
+
+      var cheat_half_game = {
+          type: "Battleships",
+          cheat: true,
+          grid: window.A_genuine? half_games.B.grid : half_games.A.grid,
+          already_clicked: window.A_genuine? half_games.B.already_clicked : half_games.A.already_clicked,
+          data:{grid_number:window.A_genuine? 'B':'A',
+                test_part:'pretend_half_game'}
+          };
+
+      if (window.genuine_first) {
+        timeline.push(instructions_genuine_g1);
+        timeline.push(genuine_games);
+        timeline.push(
+          {timeline: [instructions_genuine_half_game,
+            genuine_half_game,
+            genuine_feedback_screen]});
+        timeline.push(
+          {timeline:[instructions_cheat_practice,multichoice_pretend],
+        loop_function: function(data) {
+          window.p_instructions_num++;
+          return !window.comprehend_p}}
+        )
+        timeline.push(practice_cg)
+        timeline.push(instructions_cheat)
+        timeline.push(cheat_games)
+        timeline.push(
+          {timeline: [instructions_cheat_half_game,
+            cheat_half_game,
+            cheat_feedback_screen]});
+      } else {
+        timeline.push(
+          {timeline:[instructions_cheat_practice,multichoice_pretend],
+        loop_function: function(data) {
+          window.p_instructions_num++;
+          return !window.comprehend_p}}
+        )
+        timeline.push(practice_cg)
+        timeline.push(instructions_cheat)
+        timeline.push(cheat_games)
+        timeline.push(
+          {timeline: [instructions_cheat_half_game,
+            cheat_half_game,
+            cheat_feedback_screen]});
+        timeline.push(instructions_genuine_g2);
+        timeline.push(genuine_games);
+        timeline.push(
+          {timeline: [instructions_genuine_half_game,
+            genuine_half_game,
+            genuine_feedback_screen]});
+      }
+
+      if (window.participant_number>20) {
+        var instructions_judge = {
+          type: 'instructions',
+          show_clickable_nav: true,
+          pages: () => {
+            // reset round number
+            window.round_num = 0;
+            return [
+  `<p>In the ${window.genuine_first? 'second':'first'} part of the experiment, you
+  tried to play like you didn't know where the ships were.</p>
+  <p>In this third and last part of the experiment, we ask you to be a judge for previous
+  players, and see if you can tell which of two players was given hints (and acted like they weren't).<p>`,
+  `<p>We will do ${window.ntrials} trials, each featuring two new players, only one
+  of which had hints.</p>
+  <p>We will show you replays of their games side by side. Your task is to decide who ${window.choose_pretender? `had hints (and acted like they didn't)` : `played the game normally (without hints)`}.</p>
+  <p>After you've watched the games of both players, click on the board of the player
+  who ${window.choose_pretender? 'had hints' : 'played normally'}. For each game that you get right, you will receive 10
+   points. Good luck!</p>`]}
+  };
+       timeline.push(instructions_judge);
+
+       var judge_trial = {
+           type: "Battleships_replay_2players",
+           grid: jsPsych.timelineVariable('grid'),
+           click_log: jsPsych.timelineVariable('click_log'),
+           pause_before_first_click:2000,
+           click_on_pretender: window.choose_pretender,
+           data: jsPsych.timelineVariable('data'),
+           on_finish: (data) => {
+             data.correct = (data.cheater==data.decision);
+             if (data.correct) {
+               window.total_points +=10;
+               window.judge_points +=10;
+               jatos.batchSession.add(`/bonuses/${window.participant_number}/j`,window.judge_points)
+               .catch(() => console.log("Batch Session synchronization failed"));
+             } else {
+               // 10 points go to pretender
+               pretender_success_log = jatos.batchSession.find(`/bonuses/${data.cheat_player}/p`);
+               pretender_success_log[data.grid_number]=10;
+               jatos.batchSession.add(`/bonuses/${data.cheat_player}/p`,pretender_success_log)
+               //   .then(()=> {pretender_total_score = jatos.batchSession.find(`/bonuses/${window.cheat_player}/total`}))
+               //   .then(()=> {pretender_total_score = jatos.batchSession.find(`/bonuses/${window.cheat_player}/total`}))
+             }
+         }
+       };
+
+       var judge_feedback_screen = {
+             type: 'instructions',
+             show_clickable_nav: true,
+             pages: () => {
+               window.round_num += 1;
+               correct = jsPsych.data.get().last(1).values()[0].correct;
+               pretender_nickname = jatos.batchSession.find(`/bonuses/${jsPsych.data.get().last(1).values()[0].cheat_player}/nickname`)
+     return [`<p>${correct? `You correctly identified the player ${window.choose_pretender? 'who had hints': 'who had no hints'}, so you get 10 points! ` :
+         `<i>${pretender_nickname}</i> fooled you into thinking they had no hints, so he or she
+         will get 10 points instead of you. `} This was round ${window.round_num} out of ${window.ntrials},
+       ${window.round_num<window.ntrials? `Let's continue!` : ``}</p>`]
+                          }
+           }
+
+         var judge_vars = [];
+
+
+         for (i in window.judge_grids) {
+           grid = grids[i];
+           genuine_games =  jatos.batchSession.find(`/genuine_log/${i}`);
+           delete genuine_games[window.participant];
+           cheat_games = jatos.batchSession.find(`/cheat_log/${i}`);
+           delete cheat_games[window.participant];
+
+          //genuine and cheat players are selected at random from the last 5 participants
+          //who served as a genuine/cheat player in each game.
+          genuine_players = Object.keys(genuine_games);
+
+          //making sure the replay is not too long
+          genuine_log_duration = Infinity;
+          while(genuine_log_duration>window.max_replay_duration*60000) {
+            genuine_player = shuffle(genuine_players.slice(-5))[0];
+            genuine_log = genuine_games[genuine_player];
+            genuine_log_duration = genuine_log.t.slice(-1)[0];
+          }
+
+          cheat_players = Object.keys(cheat_games);
+          cheat_log_duration = Infinity;
+          while(cheat_log_duration>window.max_replay_duration*60000) {
+            cheat_player = shuffle(cheat_players.slice(-5))[0]
+            cheat_log = cheat_games[cheat_player];
+            cheat_log_duration = cheat_log.t.slice(-1)[0];
+          }
+
+          cheater = Math.random()>0.5? 'right' : 'left';
+          noncheater = cheater=='right'? 'left':'right'
+          judge_vars.push({
+            grid: grid,
+            click_log: cheater=='right'?
+              {'right': cheat_log, 'left': genuine_log} :
+              {'right': genuine_log, 'left': cheat_log},
+            data: {grid_number:i,
+                   genuine_player: genuine_player,
+                   cheat_player: cheat_player,
+                   cheater: cheater,
+                   noncheater: noncheater,
+                   test_part: 'judge'}
+          })
+
+         }
+
+         var judge_trials = {
+                    timeline: [judge_trial, judge_feedback_screen],
+                    timeline_variables: judge_vars,
+                    repetitions: 1,
+                    randomize_order: true
+         }
+         timeline.push(judge_trials);
+       }
+
+       var debrief = {
+         type: 'survey-text',
+         preamble: '<h1>Two last questions and we are done<h1>',
+         questions: [{
+         prompt: "Did you have a strategy that you used for pretending you had no hints? How about telling between players with and without hints - did you have a strategy for that?",
+         pleaceholder: "your answers",
+         rows:8,
+         columns:60,
+         name: 'debrief'
+       }]
+     };
+       timeline.push(debrief);
+
+       var worker_comments = {
+         type: 'survey-text',
+         preamble: '<h1>Your Thoughts<h1>',
+         questions: [{
+         prompt: "That's it! Before we thank you, we would appreciate if you could share " +
+         "any thoughts you had about the experiment, or anything we should "+
+         "take into account when analyzing your data.",
+         pleaceholder: "your comments here",
+         rows:8,
+         columns:60,
+         name: 'worker_comments'
+       }]
+     };
+       timeline.push(worker_comments);
+
+
+
+       var instructions = {
+         type: 'instructions',
+         show_clickable_nav: true,
+         pages: ()=>{return [
+       `<p>${window.nickname}, Your current number of points is
+       ${window.total_points}. We will know how many points you got for pretending
+       when we show your games to our next participants. We will update your bonus on the system then.
+       In the meantime, thank you for your participation! Please do not close
+       this window until you are sent back to Prolific.</p>`]}
+       }
+       timeline.push(instructions);
+          return timeline
+        };
+
+
+        function hexToBytes(hex) {
+            for (var bytes = [], c = 0; c < hex.length; c += 2)
+            bytes.push(parseInt(hex.substr(c, 2), 16));
+            return bytes;
+        }
+
+        function shuffle(array) {
+          var currentIndex = array.length, temporaryValue, randomIndex;
+
+          // While there remain elements to shuffle...
+          while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+
+          return array;
+        }
+
+$(window).resize(function() {
+  this.innerWidth = window.innerWidth;
+  this.innerHeight = window.innerHeight;
+  this.width = window.width;
+  this.height = window.height;
+})
+
+  jatos.onLoad(function () {
+    window.participant_number = jatos.batchSession.get(`participant_number`);
+
+    // TIME LOCKING!
+    var m = new MersenneTwister();
+    Math.random = function() {return m.random()};
+    var protocol_sum = jatos.batchSession.get("protocol_sum");
+    var subject_identifier = window.participant_number;
+    subject_sum = hexToBytes(
+      CryptoJS.SHA256(
+        protocol_sum+subject_identifier).toString()
+      );
+    m.init_by_array(subject_sum, subject_sum.length);
+    jsPsych.data.addProperties({'protocol_sum':protocol_sum,
+    'subject_identifier':subject_identifier, 'subject_sum':subject_sum});
+    // !!
+
+    jatos.batchSession.add(`/participant_number`,window.participant_number+1)
+    .then(()=>{
+      window.nickname = 'Player '+window.participant_number;
+      jatos.batchSession.add(`/bonuses/${window.participant_number}`,
+      {nickname: window.nickname,
+      p: [...Array(window.ntrials*2)].map(x=>0)})
+      .catch(() => console.log("Batch Session synchronization failed"));
+    })
+    .catch(() => console.log("Batch Session synchronization failed"));
+    window.genuine_log = jatos.batchSession.get(`genuine_log`);
+    window.cheat_log = jatos.batchSession.get(`cheat_log`);
+    window.bonuses = jatos.batchSession.get('bonuses');
+
+    participants  = Object.keys(window.bonuses);
+    window.np_leader = {name:'default',points:0}
+
+    for (i=0; i<participants.length; i++) {
+      if (window.bonuses[participants[i]].np>window.np_leader.points) {
+        window.np_leader.name = window.bonuses[participants[i]].nickname;
+        window.np_leader.points = window.bonuses[participants[i]].np;
+      }
+    }
+    timeline=makeTimeline()
+    jsPsych.init({
+        timeline: timeline,
+        on_finish: function() {
+            jsPsych.data.addProperties(jatos.urlQueryParameters);
+            jsPsych.data.addProperties({
+              participant_number: window.participant_number,
+              genuine_first:window.genuine_first,
+              choose_pretender: window.choose_pretender,
+              total_points: window.total_points,
+              pretend_instructions: window.p_instructions_num,
+              nonpretend_instructions: window.np_instructions_num});
+              var resultJson = jsPsych.data.get().json();
+              jatos.submitResultData(resultJson, jatos.startNextComponent);
+        }
+  })
+})
+
+
+    </script>
+</html>
+<!-- {
+    "protocol_sum": "changeToTheHashOfTheProtocolFolder",
+    "participant_number":0,
+    "genuine_log":{"0":{},"1":{},"2":{},"3":{},"4":{},"5":{},"6":{},"7":{},"8":{},"9":{}},
+    "cheat_log": {"0":{},"1":{},"2":{},"3":{},"4":{},"5":{},"6":{},"7":{},"8":{},"9":{}},
+    "bonuses":{}
+} -->
