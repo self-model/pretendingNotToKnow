@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Exp. 2: Hangman | Pretending not to know</title>
+  <meta name="description" content="2 Exp. 2: Hangman | Pretending not to know" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Exp. 2: Hangman | Pretending not to know" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Exp. 2: Hangman | Pretending not to know" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="exp.-1-battleship.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html"><i class="fa fa-check"></i><b>1</b> Exp. 1: Battleship</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#methods"><i class="fa fa-check"></i><b>1.1</b> Methods</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#participants"><i class="fa fa-check"></i><b>1.1.1</b> Participants</a></li>
+<li class="chapter" data-level="1.1.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#procedure"><i class="fa fa-check"></i><b>1.1.2</b> Procedure</a></li>
+<li class="chapter" data-level="1.1.3" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#data-analysis"><i class="fa fa-check"></i><b>1.1.3</b> Data analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#results"><i class="fa fa-check"></i><b>1.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-1-game-duration"><i class="fa fa-check"></i><b>1.2.1</b> Hypothesis 1 (game duration)</a></li>
+<li class="chapter" data-level="1.2.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-2-first-click-latency"><i class="fa fa-check"></i><b>1.2.2</b> Hypothesis 2 (first click latency)</a></li>
+<li class="chapter" data-level="1.2.3" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-3-number-of-clicks"><i class="fa fa-check"></i><b>1.2.3</b> Hypothesis 3 (number of clicks)</a></li>
+<li class="chapter" data-level="1.2.4" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-4-click-latency-by-outcome"><i class="fa fa-check"></i><b>1.2.4</b> Hypothesis 4 (click latency by outcome)</a></li>
+<li class="chapter" data-level="1.2.5" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-5-click-latency-by-previous-outcome"><i class="fa fa-check"></i><b>1.2.5</b> Hypothesis 5 (click latency by previous outcome)</a></li>
+<li class="chapter" data-level="1.2.6" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-6-click-latency-by-next-outcome"><i class="fa fa-check"></i><b>1.2.6</b> Hypothesis 6 (click latency by next outcome)</a></li>
+<li class="chapter" data-level="1.2.7" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-7-game-optimality"><i class="fa fa-check"></i><b>1.2.7</b> Hypothesis 7 (game optimality)</a></li>
+<li class="chapter" data-level="1.2.8" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-8-entropy-rt-relation"><i class="fa fa-check"></i><b>1.2.8</b> Hypothesis 8 (entropy-RT relation)</a></li>
+<li class="chapter" data-level="1.2.9" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-9-judge-accuracy"><i class="fa fa-check"></i><b>1.2.9</b> Hypothesis 9 (judge accuracy)</a></li>
+<li class="chapter" data-level="1.2.10" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-10-judge-pretend-relation"><i class="fa fa-check"></i><b>1.2.10</b> Hypothesis 10 (judge-pretend relation)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html"><i class="fa fa-check"></i><b>2</b> Exp. 2: Hangman</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#methods-1"><i class="fa fa-check"></i><b>2.1</b> Methods</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#participants-1"><i class="fa fa-check"></i><b>2.1.1</b> Participants</a></li>
+<li class="chapter" data-level="2.1.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#procedure-1"><i class="fa fa-check"></i><b>2.1.2</b> Procedure</a></li>
+<li class="chapter" data-level="2.1.3" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#non-pretend-games"><i class="fa fa-check"></i><b>2.1.3</b> Non-pretend games</a></li>
+<li class="chapter" data-level="2.1.4" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#pretend-games-1"><i class="fa fa-check"></i><b>2.1.4</b> Pretend games</a></li>
+<li class="chapter" data-level="2.1.5" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#half-games-1"><i class="fa fa-check"></i><b>2.1.5</b> Half games</a></li>
+<li class="chapter" data-level="2.1.6" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#judge-trials-1"><i class="fa fa-check"></i><b>2.1.6</b> Judge trials</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#results-1"><i class="fa fa-check"></i><b>2.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-1-game-duration-1"><i class="fa fa-check"></i><b>2.2.1</b> Hypothesis 1 (Game duration)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-2-first-click-latency-1"><i class="fa fa-check"></i><b>2.2.2</b> Hypothesis 2 (first click latency)</a></li>
+<li class="chapter" data-level="2.2.3" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-3-number-of-misses"><i class="fa fa-check"></i><b>2.2.3</b> Hypothesis 3 (number of misses)</a></li>
+<li class="chapter" data-level="2.2.4" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-4-click-latency-by-outcome-1"><i class="fa fa-check"></i><b>2.2.4</b> Hypothesis 4 (click latency by outcome)</a></li>
+<li class="chapter" data-level="2.2.5" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-5-click-latency-by-previous-outcome-1"><i class="fa fa-check"></i><b>2.2.5</b> Hypothesis 5 (click latency by previous outcome)</a></li>
+<li class="chapter" data-level="2.2.6" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-6-click-latency-by-next-outcome-1"><i class="fa fa-check"></i><b>2.2.6</b> Hypothesis 6 (click latency by next outcome)</a></li>
+<li class="chapter" data-level="2.2.7" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#model-based-analysis"><i class="fa fa-check"></i><b>2.2.7</b> Model based analysis</a></li>
+<li class="chapter" data-level="2.2.8" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-7-optimality"><i class="fa fa-check"></i><b>2.2.8</b> Hypothesis 7 (optimality)</a></li>
+<li class="chapter" data-level="2.2.9" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-8-entropyrt-relationship"><i class="fa fa-check"></i><b>2.2.9</b> Hypothesis 8 (Entropy/RT relationship)</a></li>
+<li class="chapter" data-level="2.2.10" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-9-judge-accuracy-1"><i class="fa fa-check"></i><b>2.2.10</b> Hypothesis 9 (judge accuracy):</a></li>
+<li class="chapter" data-level="2.2.11" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-10-judge-pretend-relation-1"><i class="fa fa-check"></i><b>2.2.11</b> Hypothesis 10 (judge-pretend relation)</a></li>
+<li class="chapter" data-level="2.2.12" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-12-irrational-letter-selections"><i class="fa fa-check"></i><b>2.2.12</b> Hypothesis 12 (irrational letter selections)</a></li>
+<li class="chapter" data-level="2.2.13" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-13-target-word-effect"><i class="fa fa-check"></i><b>2.2.13</b> Hypothesis 13 (target word effect)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>3</b> References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Pretending not to know</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="exp.-2-hangman" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Exp. 2: Hangman<a href="exp.-2-hangman.html#exp.-2-hangman" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="methods-1" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Methods<a href="exp.-2-hangman.html#methods-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) --></p>
+<p>A detailed pre-registration can be accessed at <a href="https://osf.io/3thry">osf.io/3thry</a>. The pre-registration was time-locked using cryptographic randomization-based time-locking <span class="citation">(Mazor, Mazor, and Mukamel 2019)</span>. Due to an error in the experiment code, time-locking took effect only from player number 221 (batch 3) and on (protocol sum: c4929c7fe33df1b7b52f15c789d98eab30a9cee09a8121807a3c59e28e7430a4; <a href="https://github.com/matanmazor/ignorance/blob/f98903f3f2d0e21800497dc65f8d5f823c910c88/experiments/Hangman2/code/index.html#L772-L783">relevant lines in experimental code</a>).</p>
+<div id="participants-1" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Participants<a href="exp.-2-hangman.html#participants-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The research complied with all relevant ethical regulations and was approved by the Research Ethics Committee of Johns Hopkins University. 500 Participants were recruited via Prolific (prolific.co) and gave their informed consent prior to their participation. They were selected based on their acceptance rate (&gt;95%) and for being native English speakers. The entire experiment took approximately 20 minutes to complete. Participants’ pay was equivalent to an hourly wage of 9.50 USD, in addition to a bonus payment of 1 USD that was awarded to 236 players who earned 100 points or more.</p>
+</div>
+<div id="procedure-1" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Procedure<a href="exp.-2-hangman.html#procedure-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="figure"><span style="display:block;" id="fig:hangman-design"></span>
+<img src="figures/Hangman_design.png" alt="Experimental Design: players will play 12 games of the game Hangman in two conditions presented in two blocks of 6 games. The order of blocks will be randomized between players. A: In non-pretend games, players will start the game not knowing the identity of the hidden word, and try to reveal the word with as few letter guesses as possible. B: In pretend games, players will be told the identity of the word, and their task will be to play the game as if they do not have this information. Before pretending, players will verify they had read the hidden word by typing it. C: Lastly, in 5 judge trials players will observe a replay of the game of a previous player, and try to tell whether the player was pretending or not." width="100%" />
+<p class="caption">
+Figure 2.1: Experimental Design: players will play 12 games of the game Hangman in two conditions presented in two blocks of 6 games. The order of blocks will be randomized between players. A: In non-pretend games, players will start the game not knowing the identity of the hidden word, and try to reveal the word with as few letter guesses as possible. B: In pretend games, players will be told the identity of the word, and their task will be to play the game as if they do not have this information. Before pretending, players will verify they had read the hidden word by typing it. C: Lastly, in 5 judge trials players will observe a replay of the game of a previous player, and try to tell whether the player was pretending or not.
+</p>
+</div>
+<p>The first instructions screen informed participants that the experiment, based on the game Hangman, had three parts, and that the points they accumulate translate to a monetary bonus payment. They were then be presented with a leaderboard of previous players. Then, the rules of the game were presented:</p>
+<blockquote>
+<p>In the following game, your task is to reveal a hidden word or phrase by guessing letters. What makes the game difficult is that you can’t see the word; all you can see is a row of squares - a square for each letter. Use your mouse to make letter guesses. We will have five types of words: body parts, numbers, US states, fruit, and famous people. You will start each game with 15 points and lose one point for every guess of a letter that is not in the word.</p>
+</blockquote>
+<p>We then explained that “the words in this game are the kind of words that will be familiar to most English-speaking fifth-graders. We didn’t pick any strange or particularly difficult words”.</p>
+<p>Once they responded correctly to a multi-choice comprehension question (“the goal of the game is to…”: “reveal the word with as few letter guesses as possible”), participants played a practice round, revealing the word PIGEON (see Fig. <a href="exp.-2-hangman.html#fig:hangman-design">2.1</a>A).</p>
+<p>After the main instructions, comprehension question and practice round, participants completed one pretend and one non-pretend block, each followed by one half-game (see below for details). The order of pretend and non-pretend blocks was counterbalanced between participants. Each block comprised five games played with five out of ten different words, and one half-game. The allocation of words to conditions was randomized between participants, with the constraint that both pretend and non-pretend blocks included exactly one word from each category. The order of words within a block was randomized, except for the half-game, which was always delivered at the end.</p>
+<p>The ten words included two number words (ELEVEN, NINETY SIX), two famous people (DALAI LAMA, TAYLOR SWIFT), two fruits (STRAWBERRY, LEMON), two body parts (TOOTH, HEAD), and two US states (MONTANA, IOWA).</p>
+</div>
+<div id="non-pretend-games" class="section level3 hasAnchor" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Non-pretend games<a href="exp.-2-hangman.html#non-pretend-games" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, participants revealed a hidden word with as few letter guesses as possible. An online counter of the number of points was displayed on the screen, deducting one point for every guess of a letter that is not in the target word. After each game, feedback was given about the number of points obtained.</p>
+<p>After completing the five games, participants performed one half-game (see below for details).</p>
+</div>
+<div id="pretend-games-1" class="section level3 hasAnchor" number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span> Pretend games<a href="exp.-2-hangman.html#pretend-games-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Participants were given the following instructions:</p>
+<blockquote>
+<p>In the next part of the experiment, you’ll play 6 games where you reveal a hidden word by guessing letters.</p>
+</blockquote>
+<blockquote>
+<p>However, this time your goal is different.</p>
+</blockquote>
+<blockquote>
+<p>In this round, we’re going to tell you the word in advance, but <strong>we want you to act like you don’t know this information</strong>.</p>
+</blockquote>
+<blockquote>
+<p>To see how good you are at this, we’re going to compare your games to the games of people who played normally, without knowing what the word was, and see how similar they are. We will measure which letters you click and the timing of your guesses; if your clicks look similar to people who played like normal (trying to reveal the word with as few guesses as possible, but without any hints), you’ll get bonus points. But if your games look different, you won’t get these bonus points. Your number of clicks in this part will not affect your bonus. Only your ability to play like you didn’t see the word in advance.</p>
+</blockquote>
+<p>After one practice round, pretending not to know that the hidden word is PIGEON, and one comprehension question (“In this part of the experiment my goal is to…”: “play the game as if I don’t know what the word is so that I look like someone who had no hints”), participants played five pretend games. Each game was preceded by a short message informing subjects about the identity of the target word. To start pretending, players were asked to type in the target word on their keyboard. After pretending, we reminded players that a game that looks similar to the games of participants who had no hints will be awarded 10 bonus points.</p>
+<p>After completing the five games, participants performed one half-game (see below for details).</p>
+</div>
+<div id="half-games-1" class="section level3 hasAnchor" number="2.1.5">
+<h3><span class="header-section-number">2.1.5</span> Half games<a href="exp.-2-hangman.html#half-games-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In order to directly compare participants’ pretend and non-pretend games for identical belief states (true or pretended knowledge about the identity of the word), we asked participants to also complete one pretend and one non-pretend game, given a partly finished game with some letters already guessed (they were told that the computer made these guesses). The two half-game words were one fruit: PAPAYA or BANANA, with guessed letters [A, E, I, O, M, T], and one body part: HAND, or HAIR with guessed letters (A, E, O, M, T, H, P). The assignment of category (fruit or body part) to condition (pretend and non-pretend), as well as the identity of the target word within each category (e.g., PAPAYA or BANANA), was randomized between participants.</p>
+<p>Instructions for the non-pretend half-game were:</p>
+<blockquote>
+<p>For the next game, the computer chose the first letters for you; you can take over from where it left off. Your challenge is to complete the game. Just like in the previous games, here also you will lose one point for each letter that you guess and is not in the word.</p>
+</blockquote>
+<p>Instructions for the pretend half-game were:</p>
+<blockquote>
+<p>For the next game, the computer chose the first letters for you; you can take over from where it left off. Just like in the previous games, here also you will know what the word is, but your bonus points will depend on your ability to play as if you didn’t know the word.</p>
+</blockquote>
+</div>
+<div id="judge-trials-1" class="section level3 hasAnchor" number="2.1.6">
+<h3><span class="header-section-number">2.1.6</span> Judge trials<a href="exp.-2-hangman.html#judge-trials-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the final part of the experiment, participants observed five games of previous players and determined who had hints and who didn’t. Instructions for this part were:</p>
+<blockquote>
+<p>In this third and last part of the experiment, we ask you to be a judge for previous players, and see if you can tell which of the players were shown the word (but acted like they weren’t). We will show you 5 replays of the games of previous players. Your task is to decide whether they played normally or pretended. For each game that you get right, you will receive 10 points. Good luck!</p>
+</blockquote>
+<p>Then, on each judge trial, one game of a previous player was replayed in real time, with the target word presented above. For non-pretend games, only games from the group of participants that pretended in the second block (and played normally in the first block) were chosen for presentation in this part. For both pretend and non-pretend games, only games shorter than 1.5 minutes were presented. Judge participants indicated their decision by pressing the P and N keys on their keyboard. After making a decision, participants were informed whether they received the 10 points. Whenever a pretend game was classified as a non-pretend game, they were informed that the pretender received these 10 points instead of them.</p>
+<p>Lastly, participants were asked the following debrief questions:</p>
+<blockquote>
+<p>Did you have a strategy that you used for pretending you did not see the word? What was most difficult about pretending? How about telling between players who pretenders and who played for real - did you have a strategy for that?</p>
+</blockquote>
+<p>And:</p>
+<blockquote>
+<p>We would appreciate it if you could share any thoughts you had about the experiment, or anything we should take into account when analyzing your data.</p>
+</blockquote>
+</div>
+</div>
+<div id="results-1" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Results<a href="exp.-2-hangman.html#results-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="hypothesis-1-game-duration-1" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Hypothesis 1 (Game duration)<a href="exp.-2-hangman.html#hypothesis-1-game-duration-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The median game duration in non-pretend games was 36 seconds in non-pretend games and 36 seconds in pretend games. Pretend games were significantly shorter among subjects that pretended in the first block (<span class="math inline">\(t(232) = -3.67\)</span>, <span class="math inline">\(p &lt; .001\)</span>) and in the second block (<span class="math inline">\(t(267) = -7.82\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/hangman-duration-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-2-first-click-latency-1" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Hypothesis 2 (first click latency)<a href="exp.-2-hangman.html#hypothesis-2-first-click-latency-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The median time taken to make the first letter selection was 3.32 seconds in pretend games and 4.98 in non-pretend games. First letter selections were slower in non-pretend games in both groups (pretend-first group: <span class="math inline">\(t(232) = 17.93\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(267) = 20.02\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/hangman-h2-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-3-number-of-misses" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Hypothesis 3 (number of misses)<a href="exp.-2-hangman.html#hypothesis-3-number-of-misses" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The median number of misses was 2 in non-pretend games and 2 in pretend games. The difference between the two was significant among players that pretended in the first part (<span class="math inline">\(t(232) = -5.96\)</span>, <span class="math inline">\(p &lt; .001\)</span>), and among those that pretended in the second part (<span class="math inline">\(t(267) = -3.26\)</span>, <span class="math inline">\(p = .001\)</span>).</p>
+<p><img src="figs/hangman-h3-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-4-click-latency-by-outcome-1" class="section level3 hasAnchor" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> Hypothesis 4 (click latency by outcome)<a href="exp.-2-hangman.html#hypothesis-4-click-latency-by-outcome-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, cell selections that resulted in a hit were faster by 386 ms than those that resulted in a miss (pretend-first group: <span class="math inline">\(t(227) = -4.62\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(265) = -4.28\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>In pretend games, cell selections that resulted in a hit were faster by 297 ms than those that resulted in a miss (pretend-first group: <span class="math inline">\(t(228) = -3.36\)</span>, <span class="math inline">\(p = .001\)</span>; pretend-second group: <span class="math inline">\(t(252) = -2.42\)</span>, <span class="math inline">\(p = .016\)</span>). The effect of hitting versus missing a ship was marginally weaker in pretend games in the group that pretended first(<span class="math inline">\(t(223) = 1.98\)</span>, <span class="math inline">\(p = .049\)</span>) but not in the group that played normally first (<span class="math inline">\(t(250) = 0.24\)</span>, <span class="math inline">\(p = .812\)</span>). Crucially, pretend and nonpretend games were not different according to this measure when focusing on the first block only (<span class="math inline">\(t(459.12) = 1.59\)</span>, <span class="math inline">\(p = .112\)</span>).</p>
+</div>
+<div id="hypothesis-5-click-latency-by-previous-outcome-1" class="section level3 hasAnchor" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> Hypothesis 5 (click latency by previous outcome)<a href="exp.-2-hangman.html#hypothesis-5-click-latency-by-previous-outcome-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, cell selections that followed a hit were not faster or slower than those that followed a hit (pretend-first group: <span class="math inline">\(t(231) = 0.25\)</span>, <span class="math inline">\(p = .803\)</span>; pretend-second group: <span class="math inline">\(t(267) = 0.33\)</span>, <span class="math inline">\(p = .741\)</span>).</p>
+<p>In contrast, pretend cell selections that followed in a hit were slower by 667 ms. than those that followed a miss (pretend-first group: <span class="math inline">\(t(229) = 2.84\)</span>, <span class="math inline">\(p = .005\)</span>; pretend-second group: <span class="math inline">\(t(256) = 3.44\)</span>, <span class="math inline">\(p = .001\)</span>). The effect of following a hit versus a miss was not significantly stronger in pretend games (pretend-first group: <span class="math inline">\(t(228) = 1.12\)</span>, <span class="math inline">\(p = .264\)</span>; pretend-second group: <span class="math inline">\(t(256) = 0.15\)</span>, <span class="math inline">\(p = .883\)</span>).</p>
+</div>
+<div id="hypothesis-6-click-latency-by-next-outcome-1" class="section level3 hasAnchor" number="2.2.6">
+<h3><span class="header-section-number">2.2.6</span> Hypothesis 6 (click latency by next outcome)<a href="exp.-2-hangman.html#hypothesis-6-click-latency-by-next-outcome-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Letter selections preceding a hit were faster than those preceding a miss in non-pretend games only in the group that pretended first (<span class="math inline">\(M = -668.25\)</span>, 95% CI <span class="math inline">\([-1,055.98, -280.53]\)</span>, <span class="math inline">\(t(219) = -3.40\)</span>, <span class="math inline">\(p = .001\)</span>) but not in the group that played normally first (<span class="math inline">\(M = -3,456.55\)</span>, 95% CI <span class="math inline">\([-7,119.08, 205.98]\)</span>, <span class="math inline">\(t(257) = -1.86\)</span>, <span class="math inline">\(p = .064\)</span>). This effect was not observed in pretend games (pretend first: <span class="math inline">\(M = -89.30\)</span>, 95% CI <span class="math inline">\([-396.31, 217.71]\)</span>, <span class="math inline">\(t(223) = -0.57\)</span>, <span class="math inline">\(p = .567\)</span>; non-pretend first: <span class="math inline">\(M = -155.30\)</span>, 95% CI <span class="math inline">\([-456.93, 146.32]\)</span>, <span class="math inline">\(t(241) = -1.01\)</span>, <span class="math inline">\(p = .311\)</span>). We find a significant interaction between these effects in the group that pretended first (<span class="math inline">\(M = 631.45\)</span>, 95% CI <span class="math inline">\([178.78, 1,084.12]\)</span>, <span class="math inline">\(t(210) = 2.75\)</span>, <span class="math inline">\(p = .006\)</span>) but not in the other group (<span class="math inline">\(M = 3,457.52\)</span>, 95% CI <span class="math inline">\([-628.97, 7,544.01]\)</span>, <span class="math inline">\(t(231) = 1.67\)</span>, <span class="math inline">\(p = .097\)</span>). The difference was not significant when analyzing first blocks only (<span class="math inline">\(t(260.60) = -1.80\)</span>, <span class="math inline">\(p = .072\)</span>).</p>
+<p><img src="figs/hangman-h4-6-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="model-based-analysis" class="section level3 hasAnchor" number="2.2.7">
+<h3><span class="header-section-number">2.2.7</span> Model based analysis<a href="exp.-2-hangman.html#model-based-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The next analyses were designed to test for differences in game optimality between pretend and non-pretend games, and for a relationship between decision difficulty and click latency. To do so, we approximated optimal behaviour by approximating the posterior probability that a letter appears in the word, given available information. Critically, in modelling pretend games we do not treat hints as part of this available information, because an optimal player should ignore this information in choosing where to click next. Given this posterior, a rational player should choose letters that have a high posterior probability of appearing in the word.</p>
+<p>To approximate the posterior probability of letters given a game state, we followed the following procedure:</p>
+<ol style="list-style-type: decimal">
+<li><p>We used the category information (e.g., ‘a fruit’), to obtain a probability-weighted list of category-compatible words (or names, in the case of famous people). The lists were obtained in the following way: for US states and number names, we used an exhaustive list (in the case of numbers, of numbers of 1-2 words), fruit names were taken from Wikipedia (<a href="https://simple.wikipedia.org/wiki/List_of_fruits">simple.wikipedia.org/wiki/List_of_fruits</a>), famous people names from a <a href="https://docs.google.com/spreadsheets/d/1mWez4KH0wueV_SSzdN16MMUG4qCa_nFFHToJcUvtJIA/edit#gid=4">crowdsourced document</a>, and body-part words from existing prototypicality norms <span class="citation">(<strong>uyeda1980prototypicality?</strong>)</span>. We extended Uyeda and Mandler’s list of body part words by adding all body part words commonly appearing in lists on the internet. In the case of famous people, names were given prior probabilities in proportion to the number of visits their Wikipedia entries received in 2021. The top 100 most popular entries were given a prior probability twice that of the next 100, three times that of the next 100, and so forth. All entries from 600 and on were given the same prior probability, seven times smaller than that of entries at the top 100 positions. In the cases of fruits and body parts, we used prototypicality norms from Uyeda and Mandler (1980) to assign higher prior probability to more prototypical words (mapped to lower numbers on the 1-7 scale used by Uyeda and Mandler). Words that were not included in the norm were given the maximum score (that is, the lowest perceived prototypicality), of 7. Body parts and fruits were included in both singular and plural forms. The plural forms were assigned a prototypicality score of 100, due to the fact that category names were presented in the singular form (‘a fruit’ and ‘a body part’). We then took the reciprocal for each score, and normalized it by the total sum to get a probability distribution over words <span class="math inline">\(p(w)\)</span>. The full prior distributions for each category are included in this pre-registration.</p></li>
+<li><p>The likelihood of a game state given a target word <span class="math inline">\(p(s|w)\)</span> equals 0 when the word is inconsistent with the information available to the player (this includes the word length, the identity of letters that do not appear in the word based on previous guesses, and the identity and position of letters that do appear in the word based on previous guesses). When consistent, the likelihood is a non-zero quantity that is equal for all consistent words. Bayes rule was used to extract the posterior over words given game state <span class="math inline">\(p(w|s)=\frac{p(s|w)p(w)}{\Sigma_{w&#39;}{p(s|w&#39;)p(w&#39;)}}\)</span>. The full non-zero <span class="math inline">\(p(w|s)\)</span> distributions for the initial states of all games are included in this pre-registration.</p></li>
+<li><p>The probability that an individual letter appears in the target word <span class="math inline">\(p(l|s)\)</span> is the sum of posterior probabilities of words that contain this letter <span class="math inline">\(p(l|s)=\Sigma_{w}p(w|s)\times includes(w,l)\)</span> where <span class="math inline">\(includes(w,l)\)</span> returns 1 if <span class="math inline">\(l\)</span> appears in <span class="math inline">\(w\)</span> and 0 otherwise.</p></li>
+<li><p>A posterior probability over letter selections was obtained by dividing the probabilities of individual letters by their total sum <span class="math inline">\(\frac{p(l|s)}{\Sigma_{l}p(l|s)}\)</span>.</p></li>
+</ol>
+<p>To quantify this notion of optimality, before each cell selection we computed the posterior probability that each of the unclicked letters appeared in the target word, given the game state. Then, we ranked letters from highest to lowest according to their posterior probability and recorded the rank of the chosen cell.</p>
+</div>
+<div id="hypothesis-7-optimality" class="section level3 hasAnchor" number="2.2.8">
+<h3><span class="header-section-number">2.2.8</span> Hypothesis 7 (optimality)<a href="exp.-2-hangman.html#hypothesis-7-optimality" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Letter selections in pretend games had a higher posterior probability to be included in the word than in random games (pretend first: <span class="math inline">\(t(232) = -59.66\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(267) = -63.07\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The same was true for letter selections in pretend games (pretend first: <span class="math inline">\(t(232) = -46.83\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(267) = -55.96\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Non-pretend letter selections had a higher posterior probability among players who pretended first (<span class="math inline">\(t(232) = 5.96\)</span>, <span class="math inline">\(p &lt; .001\)</span>) but not in the group that played normally first (<span class="math inline">\(t(267) = 0.72\)</span>, <span class="math inline">\(p = .469\)</span>). Comparing data from the first condition only in a between-subject manner revealed a significant difference (<span class="math inline">\(\Delta M = -0.52\)</span>, 95% CI <span class="math inline">\([-0.77, -0.28]\)</span>, <span class="math inline">\(t(453.21) = -4.25\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>When focusing on misses, non-pretend letter selections were more optimal than random (pretend first: <span class="math inline">\(t(231) = -20.23\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(267) = -22.41\)</span>, <span class="math inline">\(p &lt; .001\)</span>), as well as pretend games (pretend first: <span class="math inline">\(t(229) = -13.46\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(257) = -13.37\)</span>, <span class="math inline">\(p &lt; .001\)</span>). In both cases, non-pretend games were more optimal than pretend games (pretend first: <span class="math inline">\(t(228) = 6.60\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(257) = 5.36\)</span>, <span class="math inline">\(p &lt; .001\)</span>)</p>
+<p><img src="figs/hangman-h7-plot,%20echo-FALSE-1.png" width="960" />
+### Hypothesis 7b (Letter frequency)</p>
+<p>Non-pretenders selected high-frequency letters more than expected by chance (pretend first: <span class="math inline">\(t(232) = -74.25\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(267) = -80.58\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The same was true for letter selections in pretend games (pretend first: <span class="math inline">\(t(232) = -55.33\)</span>, <span class="math inline">\(p &lt; .001\)</span>; non-pretend first: <span class="math inline">\(t(267) = -68.26\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Letters selected by pretenders had a higher overall frequency compared to letters selected by non-pretenders (pretend first: <span class="math inline">\(t(232) = -2.41\)</span>, <span class="math inline">\(p = .017\)</span>; non-pretend first: <span class="math inline">\(t(267) = -5.43\)</span>, <span class="math inline">\(p &lt; .001\)</span>). but not in the group that played normally first (<span class="math inline">\(t(267) = -5.43\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Comparing data from the first condition only in a between-subject manner revealed a significant difference (<span class="math inline">\(\Delta M = -0.52\)</span>, 95% CI <span class="math inline">\([-0.77, -0.28]\)</span>, <span class="math inline">\(t(453.21) = -4.25\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>This was the case also when focusing on misses only ( pretend first: <span class="math inline">\(t(228) = -0.79\)</span>, <span class="math inline">\(p = .433\)</span>; non-pretend first: <span class="math inline">\(t(257) = 5.36\)</span>, <span class="math inline">\(p &lt; .001\)</span>; first block only: <span class="math inline">\(\Delta M = -0.98\)</span>, 95% CI <span class="math inline">\([-1.31, -0.64]\)</span>, <span class="math inline">\(t(489.98) = -5.80\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/hangman-h7b-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-8-entropyrt-relationship" class="section level3 hasAnchor" number="2.2.9">
+<h3><span class="header-section-number">2.2.9</span> Hypothesis 8 (Entropy/RT relationship)<a href="exp.-2-hangman.html#hypothesis-8-entropyrt-relationship" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, high uncertainty was associated with longer decision times (pretend-first group: <span class="math inline">\(t(232) = 9.50\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(267) = 10.68\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The same was true for pretend games (pretend-first group: <span class="math inline">\(t(232) = 4.66\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(267) = 7.65\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The effects were significantly weaker in pretend games (pretend-first group: <span class="math inline">\(t(232) = -2.51\)</span>, <span class="math inline">\(p = .013\)</span>; pretend-second group: <span class="math inline">\(t(232) = -2.51\)</span>, <span class="math inline">\(p = .013\)</span>).</p>
+<p>In non-pretend games, the relationship between uncertainty and RT was negatively quadratic, such that the longest responses were the one associated with intermediate uncertainty levels (pretend-first group: <span class="math inline">\(t(232) = -7.75\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(232) = -7.75\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The same was true for pretend games (pretend-first group: <span class="math inline">\(t(232) = -1.79\)</span>, <span class="math inline">\(p = .075\)</span>; pretend-second group: <span class="math inline">\(t(267) = -3.43\)</span>, <span class="math inline">\(p = .001\)</span>). The effects were significantly weaker in pretend games (pretend-first group: <span class="math inline">\(t(232) = 3.72\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(232) = 3.72\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/hangman-h8-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-9-judge-accuracy-1" class="section level3 hasAnchor" number="2.2.10">
+<h3><span class="header-section-number">2.2.10</span> Hypothesis 9 (judge accuracy):<a href="exp.-2-hangman.html#hypothesis-9-judge-accuracy-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Participants were not significantly above chance in judging which of the two presented games came from a pretender (<span class="math inline">\(M = 0.51\)</span>, 95% CI <span class="math inline">\([0.49, 0.53]\)</span>, <span class="math inline">\(t(452) = 0.57\)</span>, <span class="math inline">\(p = .568\)</span>). This was the case also when focusing on words that judges encountered when pretending (<span class="math inline">\(M = 0.52\)</span>, 95% CI <span class="math inline">\([0.49, 0.55]\)</span>, <span class="math inline">\(t(452) = 1.30\)</span>, <span class="math inline">\(p = .194\)</span>), and when focusing on words that judges encountered when playing normally (<span class="math inline">\(M = 0.49\)</span>, 95% CI <span class="math inline">\([0.46, 0.52]\)</span>, <span class="math inline">\(t(452) = -0.57\)</span>, <span class="math inline">\(p = .572\)</span>).</p>
+<p><em>Hypothesis 9B (judge bias):</em> Participants were slightly biased to classify games as pretend games (<span class="math inline">\(M = 0.53\)</span>, 95% CI <span class="math inline">\([0.51, 0.55]\)</span>, <span class="math inline">\(t(452) = 3.46\)</span>, <span class="math inline">\(p = .001\)</span>).</p>
+</div>
+<div id="hypothesis-10-judge-pretend-relation-1" class="section level3 hasAnchor" number="2.2.11">
+<h3><span class="header-section-number">2.2.11</span> Hypothesis 10 (judge-pretend relation)<a href="exp.-2-hangman.html#hypothesis-10-judge-pretend-relation-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>No significant correlation between judge accuracy and ability to trick others (<span class="math inline">\(r_{\mathrm{s}} = .00\)</span>, <span class="math inline">\(S = 5,089,032.77\)</span>, <span class="math inline">\(p = .941\)</span>), nor with the optimality cost to pretending (<span class="math inline">\(r_{\mathrm{s}} = -.10\)</span>, <span class="math inline">\(S = 5,613,970.32\)</span>, <span class="math inline">\(p = .082\)</span>).</p>
+<p><img src="figs/hangman-h10-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-12-irrational-letter-selections" class="section level3 hasAnchor" number="2.2.12">
+<h3><span class="header-section-number">2.2.12</span> Hypothesis 12 (irrational letter selections)<a href="exp.-2-hangman.html#hypothesis-12-irrational-letter-selections" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, subjects almost always chose letters that made sense (pretend-first group: 0.97; pretend-second group: 0.98). In pretend games, these figures were significantly lower (pretend-first group: 0.73, <span class="math inline">\(p&lt;.001\)</span>; pretend-second group: 0.82, <span class="math inline">\(p&lt;.001\)</span>).</p>
+<p><img src="figs/hangman-h12-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-13-target-word-effect" class="section level3 hasAnchor" number="2.2.13">
+<h3><span class="header-section-number">2.2.13</span> Hypothesis 13 (target word effect)<a href="exp.-2-hangman.html#hypothesis-13-target-word-effect" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Excluding irrational clicks, non-pretenders had an overall preference to select letters that are consistent with the words ‘BANANA’ and ‘HAND’ (pretend-first group: 0.82; pretend-second group: 0.86). Pretenders’ preference for the same letters was weaker (pretend-first group: 0.66, <span class="math inline">\(p&lt;.001\)</span>; pretend-second group: 0.70, <span class="math inline">\(p&lt;.001\)</span>).</p>
+<p>Within pretend games, preference for letters that are consistent with HAND or BANANA was significantly stronger when the word itself was BANANA or HAND, compared to when it was PAPAYA or HAIR (pretend-first group: 0.80 vs. 0.52, <span class="math inline">\(p&lt;.001\)</span>; pretend-second group: 0.97 vs. 0.41, <span class="math inline">\(p&lt;.001\)</span>).</p>
+<p><img src="figs/hangman-h13-plot,%20echo-FALSE-1.png" width="960" /></p>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="exp.-1-battleship.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

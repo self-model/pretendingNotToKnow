@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Pretending not to know</title>
+  <meta name="description" content="Pretending not to know" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Pretending not to know" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Pretending not to know" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+<link rel="next" href="exp.-2-hangman.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html"><i class="fa fa-check"></i><b>1</b> Exp. 1: Battleship</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#methods"><i class="fa fa-check"></i><b>1.1</b> Methods</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#participants"><i class="fa fa-check"></i><b>1.1.1</b> Participants</a></li>
+<li class="chapter" data-level="1.1.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#procedure"><i class="fa fa-check"></i><b>1.1.2</b> Procedure</a></li>
+<li class="chapter" data-level="1.1.3" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#data-analysis"><i class="fa fa-check"></i><b>1.1.3</b> Data analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#results"><i class="fa fa-check"></i><b>1.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-1-game-duration"><i class="fa fa-check"></i><b>1.2.1</b> Hypothesis 1 (game duration)</a></li>
+<li class="chapter" data-level="1.2.2" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-2-first-click-latency"><i class="fa fa-check"></i><b>1.2.2</b> Hypothesis 2 (first click latency)</a></li>
+<li class="chapter" data-level="1.2.3" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-3-number-of-clicks"><i class="fa fa-check"></i><b>1.2.3</b> Hypothesis 3 (number of clicks)</a></li>
+<li class="chapter" data-level="1.2.4" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-4-click-latency-by-outcome"><i class="fa fa-check"></i><b>1.2.4</b> Hypothesis 4 (click latency by outcome)</a></li>
+<li class="chapter" data-level="1.2.5" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-5-click-latency-by-previous-outcome"><i class="fa fa-check"></i><b>1.2.5</b> Hypothesis 5 (click latency by previous outcome)</a></li>
+<li class="chapter" data-level="1.2.6" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-6-click-latency-by-next-outcome"><i class="fa fa-check"></i><b>1.2.6</b> Hypothesis 6 (click latency by next outcome)</a></li>
+<li class="chapter" data-level="1.2.7" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-7-game-optimality"><i class="fa fa-check"></i><b>1.2.7</b> Hypothesis 7 (game optimality)</a></li>
+<li class="chapter" data-level="1.2.8" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-8-entropy-rt-relation"><i class="fa fa-check"></i><b>1.2.8</b> Hypothesis 8 (entropy-RT relation)</a></li>
+<li class="chapter" data-level="1.2.9" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-9-judge-accuracy"><i class="fa fa-check"></i><b>1.2.9</b> Hypothesis 9 (judge accuracy)</a></li>
+<li class="chapter" data-level="1.2.10" data-path="exp.-1-battleship.html"><a href="exp.-1-battleship.html#hypothesis-10-judge-pretend-relation"><i class="fa fa-check"></i><b>1.2.10</b> Hypothesis 10 (judge-pretend relation)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html"><i class="fa fa-check"></i><b>2</b> Exp. 2: Hangman</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#methods-1"><i class="fa fa-check"></i><b>2.1</b> Methods</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#participants-1"><i class="fa fa-check"></i><b>2.1.1</b> Participants</a></li>
+<li class="chapter" data-level="2.1.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#procedure-1"><i class="fa fa-check"></i><b>2.1.2</b> Procedure</a></li>
+<li class="chapter" data-level="2.1.3" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#non-pretend-games"><i class="fa fa-check"></i><b>2.1.3</b> Non-pretend games</a></li>
+<li class="chapter" data-level="2.1.4" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#pretend-games-1"><i class="fa fa-check"></i><b>2.1.4</b> Pretend games</a></li>
+<li class="chapter" data-level="2.1.5" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#half-games-1"><i class="fa fa-check"></i><b>2.1.5</b> Half games</a></li>
+<li class="chapter" data-level="2.1.6" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#judge-trials-1"><i class="fa fa-check"></i><b>2.1.6</b> Judge trials</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#results-1"><i class="fa fa-check"></i><b>2.2</b> Results</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-1-game-duration-1"><i class="fa fa-check"></i><b>2.2.1</b> Hypothesis 1 (Game duration)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-2-first-click-latency-1"><i class="fa fa-check"></i><b>2.2.2</b> Hypothesis 2 (first click latency)</a></li>
+<li class="chapter" data-level="2.2.3" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-3-number-of-misses"><i class="fa fa-check"></i><b>2.2.3</b> Hypothesis 3 (number of misses)</a></li>
+<li class="chapter" data-level="2.2.4" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-4-click-latency-by-outcome-1"><i class="fa fa-check"></i><b>2.2.4</b> Hypothesis 4 (click latency by outcome)</a></li>
+<li class="chapter" data-level="2.2.5" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-5-click-latency-by-previous-outcome-1"><i class="fa fa-check"></i><b>2.2.5</b> Hypothesis 5 (click latency by previous outcome)</a></li>
+<li class="chapter" data-level="2.2.6" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-6-click-latency-by-next-outcome-1"><i class="fa fa-check"></i><b>2.2.6</b> Hypothesis 6 (click latency by next outcome)</a></li>
+<li class="chapter" data-level="2.2.7" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#model-based-analysis"><i class="fa fa-check"></i><b>2.2.7</b> Model based analysis</a></li>
+<li class="chapter" data-level="2.2.8" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-7-optimality"><i class="fa fa-check"></i><b>2.2.8</b> Hypothesis 7 (optimality)</a></li>
+<li class="chapter" data-level="2.2.9" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-8-entropyrt-relationship"><i class="fa fa-check"></i><b>2.2.9</b> Hypothesis 8 (Entropy/RT relationship)</a></li>
+<li class="chapter" data-level="2.2.10" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-9-judge-accuracy-1"><i class="fa fa-check"></i><b>2.2.10</b> Hypothesis 9 (judge accuracy):</a></li>
+<li class="chapter" data-level="2.2.11" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-10-judge-pretend-relation-1"><i class="fa fa-check"></i><b>2.2.11</b> Hypothesis 10 (judge-pretend relation)</a></li>
+<li class="chapter" data-level="2.2.12" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-12-irrational-letter-selections"><i class="fa fa-check"></i><b>2.2.12</b> Hypothesis 12 (irrational letter selections)</a></li>
+<li class="chapter" data-level="2.2.13" data-path="exp.-2-hangman.html"><a href="exp.-2-hangman.html#hypothesis-13-target-word-effect"><i class="fa fa-check"></i><b>2.2.13</b> Hypothesis 13 (target word effect)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>3</b> References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Pretending not to know</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Pretending not to know</h1>
+<p class="author multi-author"><em>Matan Mazor</em></p>
+<address class="author_afil">
+1<br>
+<a class="author_email" href="mailto:#"><a href="mailto:mtnmzor@gmail.com" class="email">mtnmzor@gmail.com</a></a>
+</address>
+<p class="author multi-author"><em>Chaz Firestone</em></p>
+<address class="author_afil">
+2<br>
+</address>
+<p class="author multi-author"><em>Ian Phillips</em></p>
+<address class="author_afil">
+2<br>
+</address>
+</div>
+<div id="exp.-1-battleship" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">1</span> Exp. 1: Battleship<a href="exp.-1-battleship.html#exp.-1-battleship" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="methods" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Methods<a href="exp.-1-battleship.html#methods" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) --></p>
+<p>A detailed pre-registration can be accessed at <a href="https://osf.io/v9zsb">osf.io/v9zsb</a>. The pre-registration was time-locked using cryptographic randomization-based time-locking <span class="citation">(Mazor, Mazor, and Mukamel 2019)</span> (protocol sum: 60c270410375e8a192468fc1a0e9c93da60d5e203eb2760b621a8631a26f4c5c; <a href="https://github.com/matanmazor/ignorance/blob/44ef964c0d7d4a8f3b76ec52316a8e624c41a047/experiments/Battleships2/code/index.html#L865-L876">link to relevant lines in experimental code</a>).</p>
+<div id="participants" class="section level3 hasAnchor" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> Participants<a href="exp.-1-battleship.html#participants" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The research complied with all relevant ethical regulations and was approved by the Research Ethics Committee of Johns Hopkins University. 500 Participants were recruited via Prolific (prolific.co) and gave their informed consent prior to their participation. They were selected based on their acceptance rate (&gt;95%) and for being native English speakers. The entire experiment took approximately 20 minutes to complete. Participants’ pay was equivalent to an hourly wage of 9.50 USD, in addition to a bonus payment (0.2 - 2 USD, mean = 0.90).</p>
+</div>
+<div id="procedure" class="section level3 hasAnchor" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> Procedure<a href="exp.-1-battleship.html#procedure" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Participants were first instructed that the experiment, based on the game Battleships, had three parts, and that they could accumulate ‘points’ that would later translate to a monetary bonus payment. They were then presented with a leaderboard of previous players, and given the rules of the game:</p>
+<blockquote>
+<p>“In the game Battleships, your task is to sink all ships located in a grid with as few clicks as possible. What makes the game difficult is that you can’t see the ships; all you can see is a grid of squares, and you have to guess where the ships are. To sink a ship, you need to click on all of the squares it is located in. If you hit part of a ship, the square will turn red. If there is no ship in the square, it will turn blue.”</p>
+</blockquote>
+<p>We further explained that in this version of the game, ships can touch corners, but their sides can’t touch. This explanation was accompanied by a visual presentation of legal and illegal ship configurations.</p>
+<p>After completing a comprehension question and a practice round, participants completed one ‘pretend’ and one ‘non-pretend’ block, each comprising five full games and one half game (see below for details). The order of pretend and non-pretend blocks was counterbalanced between participants. The allocation of boards (spatial configurations of ships; see Fig. 1A) to conditions was randomized between participants such that exactly one board was played in both pretend and non-pretend conditions, and this common board was different for different participants. The order of boards within a block was fully randomized, with the exception that half-games were always played last.</p>
+<div id="non-pretend-normal-games" class="section level4 hasAnchor" number="1.1.2.1">
+<h4><span class="header-section-number">1.1.2.1</span> Non-pretend (normal) games<a href="exp.-1-battleship.html#non-pretend-normal-games" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In non-pretend games (Fig. 1B), participants aimed to sink two 2-square patrol boats and one 3-square submarine with as few clicks as possible. An online counter of the number of clicks was displayed on the screen. After each game, feedback was given about the number of clicks and resulting number of points obtained.</p>
+</div>
+<div id="pretend-games" class="section level4 hasAnchor" number="1.1.2.2">
+<h4><span class="header-section-number">1.1.2.2</span> Pretend games<a href="exp.-1-battleship.html#pretend-games" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Participants in pretend games were given the same explanation of Battleships, and played a practice round. However, they were then given an additional twist:</p>
+<blockquote>
+<p>“This time your goal is different. In this round, we’re going to tell you where the ships are, but <strong>we want you to act like you don’t know this information</strong>. We’ve marked the ships’ locations with a cross, so you’ll know where they are the whole time; but your job is to play the game as if these hints aren’t there. To see how good you are at this, we’re going to compare your games to the games of people who actually had no hints, and see how similar they are. We will measure where and when you clicked; if your clicks look similar to people who played like normal (trying to reveal all ships with as few clicks as possible, but without any hints), you’ll get bonus points. But if your games look different, you won’t get these bonus points. Your number of clicks in this part will not affect your bonus. Only your ability to play like you had no hints.”</p>
+</blockquote>
+<p>We informed participants that both the location and timing of their cell clicks will be measured. After one practice round and one comprehension question, participants played five pretend games (Fig. 1C), followed by one pretend half-game. Each game was followed by a short message, reminding them that a game that looks similar to the games of participants who had no hints would be awarded 10 bonus points.</p>
+<div class="figure"><span style="display:block;" id="fig:battleship-design"></span>
+<img src="figures/Battleships_design.png" alt="Experimental Design. See Methods for details." width="100%" />
+<p class="caption">
+Figure 1.1: Experimental Design. See Methods for details.
+</p>
+</div>
+</div>
+<div id="half-games" class="section level4 hasAnchor" number="1.1.2.3">
+<h4><span class="header-section-number">1.1.2.3</span> Half games<a href="exp.-1-battleship.html#half-games" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In order to directly compare participants’ pretend and non-pretend games for identical belief states (genuine or pretended ignorance about where the ships are hidden), participants completed one pretend and one non-pretend game given a partly finished board with the content of 7 cells already revealed (see Fig. 1D). We designed our half games to produce a strong expectation to find a ship in specific cells, but not in others. The assignment of half-completed boards to pretend and non-pretend conditions was randomized between participants.</p>
+</div>
+<div id="judge-trials" class="section level4 hasAnchor" number="1.1.2.4">
+<h4><span class="header-section-number">1.1.2.4</span> Judge trials<a href="exp.-1-battleship.html#judge-trials" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In the final part of the experiment, participants observed the games of previous players and tried to determine who had hints and who didn’t. On each trial, two empty grids were presented side by side, with a smaller grid on top, displaying the hidden positions of ships on the grid (Fig. 1F). The two grids corresponded to the true games of two previous players who played a version of the top grid either as pretenders or as non-pretenders. Only games shorter than one minute were chosen for presentation in this part. For non-pretend games, only games from the group of participants that pretended in the second block (and played normally in the first block) were chosen for presentation in this part. Judge participants observed a real time replay of the two grids, showing not only where participants clicked, but also when. After making a decision, participants were informed whether they would receive the 10 bonus points, or alternatively, whether the pretender would receive them in the event the pretender managed to trick them.</p>
+<p>A more detailed description of the study procedure is provided in the study <a href="https://osf.io/v9zsb">pre-registration document</a>. Readers are also invited to try a <a href="https://jatos.mindprobe.eu/publix/NervzpM0Y0z">demo of the experiment</a>.</p>
+</div>
+</div>
+<div id="data-analysis" class="section level3 hasAnchor" number="1.1.3">
+<h3><span class="header-section-number">1.1.3</span> Data analysis<a href="exp.-1-battleship.html#data-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We used R <span class="citation">(Version 4.2.2; <strong>R-base?</strong>)</span> and the R-packages <em>}egg</em> [@}R-egg], <em>afex</em> <span class="citation">(Version 1.2.0; <strong>R-afex?</strong>)</span>, <em>BayesFactor</em> <span class="citation">(Version 0.9.12.4.4; <strong>R-BayesFactor?</strong>)</span>, <em>brms</em> <span class="citation">(Version 2.18.0; <strong>R-brms_a?</strong>; <strong>R-brms_b?</strong>)</span>, <em>broom</em> <span class="citation">(Version 1.0.1; <strong>R-broom?</strong>)</span>, <em>caret</em> <span class="citation">(Version 6.0.93; <strong>R-caret?</strong>)</span>, <em>cocor</em> <span class="citation">(Version 1.1.4; <strong>R-cocor?</strong>)</span>, <em>coda</em> <span class="citation">(Version 0.19.4; <strong>R-coda?</strong>)</span>, <em>cowplot</em> <span class="citation">(Version 1.1.1; <strong>R-cowplot?</strong>)</span>, <em>dplyr</em> <span class="citation">(Version 1.0.10; <strong>R-dplyr?</strong>)</span>, <em>fddm</em> <span class="citation">(Version 0.5.2; <strong>R-fddm?</strong>)</span>, <em>forcats</em> <span class="citation">(Version 0.5.2; <strong>R-forcats?</strong>)</span>, <em>ggplot2</em> <span class="citation">(Version 3.4.0; <strong>R-ggplot2?</strong>)</span>, <em>ggrepel</em> <span class="citation">(Version 0.9.2; <strong>R-ggrepel?</strong>)</span>, <em>gridExtra</em> <span class="citation">(Version 2.3; <strong>R-gridExtra?</strong>)</span>, <em>groundhog</em> <span class="citation">(Version 2.1.0; <strong>R-groundhog?</strong>)</span>, <em>jsonlite</em> <span class="citation">(Version 1.8.3; <strong>R-jsonlite?</strong>)</span>, <em>kernlab</em> <span class="citation">(Version 0.9.31; <strong>R-kernlab?</strong>)</span>, <em>knitr</em> <span class="citation">(Version 1.41; <strong>R-knitr?</strong>)</span>, <em>lattice</em> <span class="citation">(Version 0.20.45; <strong>R-lattice?</strong>)</span>, <em>lme4</em> <span class="citation">(Version 1.1.31; <strong>R-lme4?</strong>)</span>, <em>lmerTest</em> <span class="citation">(Version 3.1.3; <strong>R-lmerTest?</strong>)</span>, <em>lsr</em> <span class="citation">(Version 0.5.2; <strong>R-lsr?</strong>)</span>, <em>ltm</em> <span class="citation">(Version 1.2.0; <strong>R-ltm?</strong>)</span>, <em>magrittr</em> <span class="citation">(Version 2.0.3; <strong>R-magrittr?</strong>)</span>, <em>MASS</em> <span class="citation">(Version 7.3.58.1; <strong>R-MASS?</strong>)</span>, <em>Matrix</em> <span class="citation">(Version 1.5.3; <strong>R-Matrix?</strong>)</span>, <em>memoise</em> <span class="citation">(Version 2.0.1; <strong>R-memoise?</strong>)</span>, <em>MESS</em> <span class="citation">(Version 0.5.9; <strong>R-MESS?</strong>)</span>, <em>modeest</em> <span class="citation">(<strong>R-modeest?</strong>)</span>, <em>msm</em> <span class="citation">(Version 1.7; <strong>R-msm?</strong>)</span>, <em>osfr</em> <span class="citation">(<strong>R-osfr?</strong>)</span>, <em>papaja</em> <span class="citation">(Version 0.1.1; <strong>R-papaja?</strong>)</span>, <em>png</em> <span class="citation">(Version 0.1.8; <strong>R-png?</strong>)</span>, <em>polycor</em> <span class="citation">(Version 0.8.1; <strong>R-polycor?</strong>)</span>, <em>ppcor</em> <span class="citation">(<strong>R-ppcor?</strong>)</span>, <em>pracma</em> <span class="citation">(<strong>R-pracma?</strong>)</span>, <em>psych</em> <span class="citation">(Version 2.2.9; <strong>R-psych?</strong>)</span>, <em>purrr</em> <span class="citation">(Version 0.3.5; <strong>R-purrr?</strong>)</span>, <em>pwr</em> <span class="citation">(Version 1.3.0; <strong>R-pwr?</strong>)</span>, <em>RColorBrewer</em> <span class="citation">(Version 1.1.3; <strong>R-RColorBrewer?</strong>)</span>, <em>Rcpp</em> <span class="citation">(Version 1.0.9; <strong>R-Rcpp_a?</strong>; <strong>R-Rcpp_b?</strong>)</span>, <em>readr</em> <span class="citation">(Version 2.1.3; <strong>R-readr?</strong>)</span>, <em>reticulate</em> <span class="citation">(Version 1.26; <strong>R-reticulate?</strong>)</span>, <em>rstatix</em> <span class="citation">(Version 0.7.1; <strong>R-rstatix?</strong>)</span>, <em>stringr</em> <span class="citation">(Version 1.4.1; <strong>R-stringr?</strong>)</span>, <em>svglite</em> <span class="citation">(Version 2.1.0; <strong>R-svglite?</strong>)</span>, <em>thesisdown</em> <span class="citation">(<strong>R-thesisdown?</strong>)</span>, <em>tibble</em> <span class="citation">(Version 3.1.8; <strong>R-tibble?</strong>)</span>, <em>tidyr</em> <span class="citation">(Version 1.2.1; <strong>R-tidyr?</strong>)</span>, <em>tidyverse</em> <span class="citation">(Version 1.3.2; <strong>R-tidyverse?</strong>)</span>, <em>tinylabels</em> <span class="citation">(Version 0.2.3; <strong>R-tinylabels?</strong>)</span>, <em>varhandle</em> <span class="citation">(<strong>R-varhandle?</strong>)</span>, <em>xtable</em> <span class="citation">(Version 1.8.4; <strong>R-xtable?</strong>)</span>, and <em>zoo</em> <span class="citation">(Version 1.8.11; <strong>R-zoo?</strong>)</span> for all our analyses.</p>
+</div>
+</div>
+<div id="results" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Results<a href="exp.-1-battleship.html#results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We designed our analyses to explore subjects’ capacity for self-simulation under a counterfactual knowledge state, and the limits of this capacity. We focused on where subjects clicked and when, and asked whether this differed between pretend and non-pretend games. All analyses were pre-registered unless otherwise specified. In our pre-registration document, we committed to separately analyzing participants according to whether they pretended before or after completing a non-pretend block. Whenever there is a mismatch between the two groups, we focus on the first block of each participant (only pretend games from participants who pretended first, and only standard games from participants who played normally first). We do so to ensure that any successful pretending is not due to memory of one’s own behavior in a previous block, and that non-pretend games are not biased by experience with the pretend block.</p>
+<div id="hypothesis-1-game-duration" class="section level3 hasAnchor" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Hypothesis 1 (game duration)<a href="exp.-1-battleship.html#hypothesis-1-game-duration" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Pretend games were longer than non-pretend games by 6 seconds on average. This was true in the pretend-first group (<span class="math inline">\(t(233) = 11.59\)</span>, <span class="math inline">\(p &lt; .001\)</span>), and in the pretend-second groups (<span class="math inline">\(t(245) = 6.41\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/battleship-h1-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-2-first-click-latency" class="section level3 hasAnchor" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Hypothesis 2 (first click latency)<a href="exp.-1-battleship.html#hypothesis-2-first-click-latency" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The first click in pretend games took longer to execute by 321 ms. This was true in the pretend-first group (<span class="math inline">\(t(233) = 8.24\)</span>, <span class="math inline">\(p &lt; .001\)</span>), but not in the pretend-second groups (<span class="math inline">\(t(245) = -1.03\)</span>, <span class="math inline">\(p = .306\)</span>). As per our pre-registration document, we focused our analysis on the first blocks only, using a between-subject t-test. This test revealed a significant difference in the first click latency (<span class="math inline">\(\Delta M = 750.61\)</span>, 95% CI <span class="math inline">\([374.56, 1,126.67]\)</span>, <span class="math inline">\(t(391.22) = 3.92\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p><img src="figs/battleship-h2-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-3-number-of-clicks" class="section level3 hasAnchor" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Hypothesis 3 (number of clicks)<a href="exp.-1-battleship.html#hypothesis-3-number-of-clicks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a median total click number of 23, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a median total click number of 14. Among our players, the median number of clicks was 16 in both pretend and non-pretend games.</p>
+<p>No significant difference in the total number of clicks was observed in the pretend-first group (<span class="math inline">\(t(243) = 1.43\)</span>, <span class="math inline">\(p = .153\)</span>), but a significant difference was observed in the pretend-second group (<span class="math inline">\(t(255) = -3.71\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Note that the two effects point in opposite directions, reflecting a tendency to make fewer clicks in the second block of the game. Crucially, when focusing on the first block only, We observed no significant difference in the number of clicks between the two conditions (<span class="math inline">\(t(440.10) = 0.41\)</span>, <span class="math inline">\(p = .682\)</span>).</p>
+<p>In 62 pretend games from 20 players, games were completed after 7 clicks only, without ever missing a ship. This never happened in non-pretend games. We assumed that these participants did not follow the task instructions, and excluded them from all analyses.</p>
+<p><img src="figs/battleship-h3-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-4-click-latency-by-outcome" class="section level3 hasAnchor" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> Hypothesis 4 (click latency by outcome)<a href="exp.-1-battleship.html#hypothesis-4-click-latency-by-outcome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, cell selections that resulted in a hit were faster by 109 ms. than those that resulted in a miss (pretend-first group: <span class="math inline">\(t(233) = -8.73\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -8.80\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>In pretend games, cell selections that resulted in a hit were faster by 293 ms. than those that resulted in a miss (pretend-first group: <span class="math inline">\(t(233) = -11.83\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -11.32\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The effect of hitting versus missing a ship was significantly stronger in pretend games (pretend-first group: <span class="math inline">\(t(233) = -8.90\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -6.20\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+</div>
+<div id="hypothesis-5-click-latency-by-previous-outcome" class="section level3 hasAnchor" number="1.2.5">
+<h3><span class="header-section-number">1.2.5</span> Hypothesis 5 (click latency by previous outcome)<a href="exp.-1-battleship.html#hypothesis-5-click-latency-by-previous-outcome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, cell selections that followed a hit were slower by 182 ms. than those that followed a miss (pretend-first group: <span class="math inline">\(t(233) = 10.83\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = 8.19\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>In pretend games, cell selections that followed in a hit were slower by 236 ms. than those that followed a miss (pretend-first group: <span class="math inline">\(t(233) = 7.96\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = 9.52\)</span>, <span class="math inline">\(p &lt; .001\)</span>). The effect of following a hit versus a miss was significantly stronger in pretend games only in the pretend-second group (<span class="math inline">\(t(245) = 2.70\)</span>, <span class="math inline">\(p = .007\)</span>; pretend-first group: <span class="math inline">\(t(233) = 1.40\)</span>, <span class="math inline">\(p = .162\)</span>). Crucially, the effect was significantly stronger when focusing on the first blocks only (<span class="math inline">\(t(377.12) = 2.75\)</span>, <span class="math inline">\(p = .006\)</span>).</p>
+</div>
+<div id="hypothesis-6-click-latency-by-next-outcome" class="section level3 hasAnchor" number="1.2.6">
+<h3><span class="header-section-number">1.2.6</span> Hypothesis 6 (click latency by next outcome)<a href="exp.-1-battleship.html#hypothesis-6-click-latency-by-next-outcome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In non-pretend games, cell selections that preceded a hit were slower than those that preceded a miss only in the group that played normally first (pretend-second group: <span class="math inline">\(M = -78.17\)</span>, 95% CI <span class="math inline">\([-103.34, -53.00]\)</span>, <span class="math inline">\(t(245) = -6.12\)</span>, <span class="math inline">\(p &lt; .001\)</span>), but not in the group that pretended first (<span class="math inline">\(M = 4.57\)</span>, 95% CI <span class="math inline">\([-22.11, 31.26]\)</span>, <span class="math inline">\(t(233) = 0.34\)</span>, <span class="math inline">\(p = .736\)</span>).</p>
+<p>In pretend games, the timing of cell selections did not covary with the outcomes of future cell selections (pretend-first group: <span class="math inline">\(t(233) = 1.13\)</span>, <span class="math inline">\(p = .261\)</span>; pretend-second group: <span class="math inline">\(t(245) = 1.43\)</span>, <span class="math inline">\(p = .155\)</span>). The effect of the next outcome was significantly weaker in pretend games only in the pretend-second group (<span class="math inline">\(t(245) = 3.95\)</span>, <span class="math inline">\(p &lt; .001\)</span>) but not in the pretend-first group (<span class="math inline">\(t(233) = 0.94\)</span>, <span class="math inline">\(p = .346\)</span>). Crucially, the effect was significantly weaker when focusing on the first blocks only (<span class="math inline">\(t(301.81) = 3.26\)</span>, <span class="math inline">\(p = .001\)</span>).</p>
+<p><img src="figs/battleship-h4-6-plot,%20echo-FALSE-1.png" width="960" />
+### Model based analysis</p>
+<p>Pretend games were similar to non pretend games in the total number of clicks — but were they also similar in <em>where</em> participants clicked? More specifically, did cell selections in pretend games make sense given the limited information those participants pretended to have? To ask this, we approximated optimal behavior by calculating the probability that a ship is hidden in each cell given available information, <span class="math inline">\(p(ship(x_{i}))\)</span>, and the posterior probability that one should click on a square, assuming a uniform prior over cells <span class="math inline">\(P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}\)</span>. Critically, in modeling pretend games we did not treat hints as part of this available information for extracting <span class="math inline">\(p(ship(x_{i}))\)</span>, because an optimal player should ignore hints in choosing where to click next. Given this posterior map, a rational player should choose cells where <span class="math inline">\(P(x_{i})\)</span> is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; <span class="citation">(<strong>audinot2014optimal?</strong>)</span>, Section 3.3]. To quantify optimality, before each cell selection we computed the posterior probability map for all ‘unknown’ cells. Then, we ranked cells from high to low according to their posterior probability and recorded the rank of the chosen cell: a lower rank indicating more optimal behavior.</p>
+</div>
+<div id="hypothesis-7-game-optimality" class="section level3 hasAnchor" number="1.2.7">
+<h3><span class="header-section-number">1.2.7</span> Hypothesis 7 (game optimality)<a href="exp.-1-battleship.html#hypothesis-7-game-optimality" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The mean posterior rank of non-pretend cell selections was 6.44 and significantly lower (more optimal) than that of a simulated random agent (9.19, <span class="math inline">\(t(479) = -49.18\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Pretend games were significantly less optimal than non-pretend games (6.93; pretend-first group: <span class="math inline">\(t(233) = 8.49\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = 7.11\)</span>, <span class="math inline">\(p &lt; .001\)</span>), but still more optimal than those of a random agent (<span class="math inline">\(t(479) = -38.51\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Critically, the same pattern was observed when restricting analysis to cell selections that resulted in a miss (non-pretend - pretend: <span class="math inline">\(t(469.71) = -6.30\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend - random: <span class="math inline">\(t(479) = -10.25\)</span>, <span class="math inline">\(p &lt; .001\)</span>). In other words, the optimality of pretend games relative to random cell selection was not merely due to the fact that pretenders clicked on ships more than expected by chance. Even when missing a ship, their cell selections made sense given the limited information they pretended to have.</p>
+<p><img src="figs/battleship-h7-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-8-entropy-rt-relation" class="section level3 hasAnchor" number="1.2.8">
+<h3><span class="header-section-number">1.2.8</span> Hypothesis 8 (entropy-RT relation)<a href="exp.-1-battleship.html#hypothesis-8-entropy-rt-relation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When playing Battleships, it is sometimes clear what the next cell selection should be, and sometimes more difficult to decide where to click next. To capture this notion of decision uncertainty, we calculated the entropy of the posterior distribution over cell selections <span class="math inline">\(H(P)=-\sum_{i=1}^{k}P(x_i) \log P(x_{i})\)</span>, where <span class="math inline">\(P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}\)</span>, and asked how this measure relates to decision latency, or the time taken to click on the next cell. <span class="math inline">\(H(P)\)</span> is high when players need to decide between multiple cells with a similar probability of hiding a ship, and low when there are only a few candidates with a high probability of hiding a ship. For every player and condition separately, we fitted a multiple linear regression to predict decision latency based on <span class="math inline">\(H(P)\)</span> and <span class="math inline">\(H(P)^2\)</span>. The resulting coefficients were then subjected to a group-level inference. The first cell selection of each game was excluded from this analysis, because entropy was constant for the first click.</p>
+<p>In non-pretend games, we found no evidence for a linear relation between decision entropy and decision latency among participants who played normally in the first block (<span class="math inline">\(t(245) = -0.06\)</span>, <span class="math inline">\(p = .950\)</span>). In contrast, a significantly negative linear modulation was observed in the group that pretended in the first and played normally in the second block (<span class="math inline">\(t(233) = -10.24\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>In pretend games, this negative relation between <span class="math inline">\(H(P)\)</span> and click latency was significant in both groups (pretend-first group: <span class="math inline">\(t(233) = -4.93\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -5.54\)</span>, <span class="math inline">\(p &lt; .001\)</span>). We found no significant difference between the magnitude of the linear effect in pretend and non-pretend games (pretend-first group: <span class="math inline">\(t(233) = 0.63\)</span>, <span class="math inline">\(p = .528\)</span>; pretend-second group: <span class="math inline">\(t(245) = -1.77\)</span>, <span class="math inline">\(p = .079\)</span>).</p>
+<p>Similarly, we found no evidence for a quadratic relation between decision entropy and decision latency in non-pretend games of participants who played normally in the first block (<span class="math inline">\(t(245) = -1.33\)</span>, <span class="math inline">\(p = .184\)</span>). Again, a significantly negative quadratic modulation was observed in the non-pretend games of players who pretended in the first and played normally in the second block (<span class="math inline">\(t(233) = -13.26\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Like the linear effect, this negative quadratic relation was significant in the pretend games of both groups (pretend-first group: <span class="math inline">\(t(233) = -10.21\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -12.14\)</span>, <span class="math inline">\(p &lt; .001\)</span>). This negative quadratic effect was stronger in pretend compared to non-pretend games (pretend-first group: <span class="math inline">\(t(233) = -4.32\)</span>, <span class="math inline">\(p &lt; .001\)</span>; pretend-second group: <span class="math inline">\(t(245) = -3.49\)</span>, <span class="math inline">\(p = .001\)</span>).</p>
+<p><img src="figs/battleship-h8-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+<div id="hypothesis-9-judge-accuracy" class="section level3 hasAnchor" number="1.2.9">
+<h3><span class="header-section-number">1.2.9</span> Hypothesis 9 (judge accuracy)<a href="exp.-1-battleship.html#hypothesis-9-judge-accuracy" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Participants were not significantly above chance in judging which of the two presented games came from a pretender (mean accuracy: 51%; t test against 50: <span class="math inline">\(t(499) = 1.45\)</span>, <span class="math inline">\(p = .147\)</span>).</p>
+<p>For a subset of 288 players, one of the five boards presented in the judging block was already presented both in the pretend and in the non-pretend blocks. Still, even this subset of participants who had just experienced a board both as pretenders and as non-pretenders were not significantly above chance in telling which of two other players had hints for this same board (mean accuracy: 55%, <span class="math inline">\(p=.141\)</span>).</p>
+</div>
+<div id="hypothesis-10-judge-pretend-relation" class="section level3 hasAnchor" number="1.2.10">
+<h3><span class="header-section-number">1.2.10</span> Hypothesis 10 (judge-pretend relation)<a href="exp.-1-battleship.html#hypothesis-10-judge-pretend-relation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Pretense quality was quantified as the number of pretend games that were misclassified by other participants as non-pretend games, divided by the number of pretend games that were presented to other participants. Due to randomization, this denominator is different for different participants. We tested for a correlation between pretense quality and judge accuracy at the group level. To maximize statistical power, this hypothesis was tested on the pooled data from both groups of participants. We find no evidence for such a correlation (<span class="math inline">\(r = -.03\)</span>, 95% CI <span class="math inline">\([-.13, .07]\)</span>, <span class="math inline">\(t(352) = -0.56\)</span>, <span class="math inline">\(p = .573\)</span>). Furthermore, we find no significant correlation between participants’ accuracy in detecting the pretender and their decision optimality in pretend games (measured as the mean rank posterior probability of their cell selections; <span class="math inline">\(r = .01\)</span>, 95% CI <span class="math inline">\([-.08, .10]\)</span>, <span class="math inline">\(t(478) = 0.18\)</span>, <span class="math inline">\(p = .854\)</span>), nor with the cost to optimality relative to non-pretend games (<span class="math inline">\(r = .02\)</span>, 95% CI <span class="math inline">\([-.07, .11]\)</span>, <span class="math inline">\(t(478) = 0.47\)</span>, <span class="math inline">\(p = .641\)</span>).</p>
+<p><img src="figs/battleship-h10-plot,%20echo-FALSE-1.png" width="960" /></p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+<a href="exp.-2-hangman.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
