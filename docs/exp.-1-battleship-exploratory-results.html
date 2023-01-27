@@ -93,8 +93,15 @@ div.csl-indent {
 <li class="chapter" data-level="1.1" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#ship-completion"><i class="fa fa-check"></i><b>1.1</b> Ship completion</a></li>
 <li class="chapter" data-level="1.2" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#half-games"><i class="fa fa-check"></i><b>1.2</b> Half games</a></li>
 <li class="chapter" data-level="1.3" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#within-participant-click-entropy"><i class="fa fa-check"></i><b>1.3</b> Within-participant click entropy</a></li>
+<li class="chapter" data-level="1.4" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#suppression-or-simulation"><i class="fa fa-check"></i><b>1.4</b> Suppression or simulation?</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#click-optimality"><i class="fa fa-check"></i><b>1.4.1</b> Click optimality</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="exp.-2-hangman-exploratory-results.html"><a href="exp.-2-hangman-exploratory-results.html"><i class="fa fa-check"></i><b>2</b> Exp. 2: Hangman; Exploratory results</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="exp.-2-hangman-exploratory-results.html"><a href="exp.-2-hangman-exploratory-results.html"><i class="fa fa-check"></i><b>2</b> Exp. 2: Hangman; Exploratory results</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="exp.-2-hangman-exploratory-results.html"><a href="exp.-2-hangman-exploratory-results.html#within-participant-click-entropy-1"><i class="fa fa-check"></i><b>2.1</b> Within-participant click entropy</a></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>3</b> References</a></li>
 </ul>
 
@@ -157,6 +164,17 @@ Figure 1.1: Half games. First column: the two boards, as they appeared to preten
 <p><img src="figs/battleship-flexibility-plot-1.png" width="960" /></p>
 <p>Flexibility scores increased as a function of click number for both pretend and non-pretend games, as expected if players adjust their behaviour based on the outcomes of previous clicks. This process reached a plateau of around <span class="math inline">\(H=2.1\)</span> at click number 6.</p>
 <p>Importantly, before that point, flexibility was persistently lower in pretend games (click #1: <span class="math inline">\(t(479) = -3.93\)</span>, <span class="math inline">\(p &lt; .001\)</span>; click #2: <span class="math inline">\(t(479) = -3.40\)</span>, <span class="math inline">\(p = .001\)</span>; click #3: <span class="math inline">\(t(479) = -4.88\)</span>, <span class="math inline">\(p &lt; .001\)</span>; click #4: <span class="math inline">\(t(479) = -3.26\)</span>, <span class="math inline">\(p = .001\)</span>; click #5: <span class="math inline">\(t(479) = -2.64\)</span>, <span class="math inline">\(p = .009\)</span>).</p>
+<p>We reasoned that this tendency to rigidly follow a pre-defined plan may underlie at least some of the difference in game optimality between pretend and non-pretend games. Interestingly, however, we find no significant correlation between the pretend/non-pretend differences in flexibility and optimality in the first 5 clicks (<span class="math inline">\(r = -.07\)</span>, 95% CI <span class="math inline">\([-.15, .02]\)</span>, <span class="math inline">\(t(478) = -1.44\)</span>, <span class="math inline">\(p = .150\)</span>).</p>
+</div>
+<div id="suppression-or-simulation" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Suppression or simulation?<a href="exp.-1-battleship-exploratory-results.html#suppression-or-simulation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>At the end of the experiment, players were asked whether they had a strategy for pretending or for detecting pretense. I (MM) manually labeled their responses according to three criteria: mentions of suppression (e.g., “Trying to ignore the hints”), simulation (e.g., “Trying to imagine how I would react”), and rules (e.g., “Checking the corners and center before random selection of tiles”). Some answers got more than one label and some got none. Overall, 32 mentioned using suppression, 127 mentioned using simulation, and 220 mentioned following rules.</p>
+<p>In the following analysis, we focus on the first two labels and carve out two sets of players: 23 players who reported using suppression but not simulation, and 118 who reported using simulation but no suppression.</p>
+<div id="click-optimality" class="section level3 hasAnchor" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> Click optimality<a href="exp.-1-battleship-exploratory-results.html#click-optimality" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="figs/battleship-p_click-sup-sim-1.png" width="960" />
+The mean negative optimality score of non-pretend games was 6.4524288 among suppressors and 6.3259544 among simulators (<span class="math inline">\(t(25.42) = 0.45\)</span>, <span class="math inline">\(p = .655\)</span>). The mean negative optimality score of pretend games was 7.138416 among suppressors and 6.6400715 among simulators (<span class="math inline">\(t(28.77) = 1.94\)</span>, <span class="math inline">\(p = .062\)</span>). To the very least, simulators did as well as suppressors in pretending.</p>
+</div>
 </div>
 </div>
             </section>

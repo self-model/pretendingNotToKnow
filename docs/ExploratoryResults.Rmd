@@ -1,0 +1,438 @@
+---
+title             : "Pretending not to know: exploratory analyses"
+shorttitle        : "Pretending not to know"
+
+author: 
+  - name          : "Matan Mazor"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Malet St., London WC1E 7HX"
+    email         : "mtnmzor@gmail.com"
+  - name          : "Chaz Firestone"
+    affiliation   : "2"
+  - name          : "Ian Phillips"
+    affiliation   : "2"
+
+affiliation:
+  - id            : "1"
+    institution   : "Birkbeck, University of London"
+  - id            : "2"
+    institution   : "Johns Hopkins University"
+
+authornote: |
+
+abstract: |
+
+keywords          : "pretense, theory of mind, metacognition, self-model, self-simulation"
+wordcount         : "X"
+
+floatsintext      : no
+linenumbers       : yes
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : bookdown::gitbook
+bibliography: references.bib
+---
+
+```{r global_options, include=FALSE}
+set.seed(42)
+knitr::opts_chunk$set(fig.crop = F, fig.pos = "tb", fig.path='figs/',
+                      echo=F, warning=F, cache=T, 
+                      message=F, sanitize = T, 
+                      fig.width = 10, fig.height = 5)
+```
+
+```{r, libraries, echo=FALSE, warning=FALSE, cache=F}
+
+library(groundhog)
+
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel' #for word scatterplots
+), '2022-12-01')
+
+```
+
+# Exp. 1: Battleship; Exploratory results
+
+```{r battleship-load, warning=FALSE}
+
+E2.df <- read.csv('../experiments/Battleships2/data/batch1/jatos_results_batch1.csv',na.strings=c(""," ","NA")) %>%
+  mutate(subj_id = paste(as.character(participant_number),substr(PROLIFIC_PID,1,4),sep='')) %>%
+  mutate(subj_id = factor(subj_id)) %>%
+  # the dash is breaking r
+  mutate(test_part = ifelse(test_part=='non-pretend','nonpretend',test_part)) %>%
+  mutate(genuine_first=genuine_first=='True');
+
+E2.click_df <- E2.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         grid_number, 
+         num_clicks,
+         click_log,
+         genuine_first) %>%
+  mutate(click_log = gsub("\'","\"", click_log)) %>%
+  filter(test_part=='pretend' | test_part=='nonpretend');
+
+E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%unique();
+
+E2.click_log <- readRDS('../experiments/Battleships2/data/batch1/click_log.Rda');
+
+load('E2.click_log_with_boards.RData')
+
+```
+
+```{r functions, warning=FALSE}
+
+N_perm <- 1000;
+bootstrap_error <- function(x, N_perm) {
+  N <- length(x)
+  medians = c();
+  for (i in 1:N_perm) {
+    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median())
+  };
+  return(sd(medians))
+}
+
+all_possible_boards <- read.csv('../analysis/flat_boards.csv',header=FALSE);
+
+create_board_states <- function(flat_positions,hit) {
+  
+  board_state = rep(NA,25)
+  board_states = c();
+  for (p in seq_along(flat_positions)) {
+    board_states = c(board_states, paste(board_state,collapse=','));
+    board_state[flat_positions[p]]=ifelse(hit[p],1,0);
+  }
+  
+  return(board_states)
+};
+
+get_likelihood <- function(board_state) {
+  
+  board_state = scan(text= board_state, what = numeric(), sep="," , quiet = TRUE);
+  
+  revealed_positions <- which(!is.na(board_state));
+  
+  boards_to_remove = c();
+  
+  for (position in revealed_positions) {
+    boards_to_remove = union(boards_to_remove, which(all_possible_boards[,position] != board_state[position]))
+  }
+  
+  survived_boards = setdiff(1:nrow(all_possible_boards), boards_to_remove);
+  likelihood = all_possible_boards[survived_boards,]%>%colMeans();
+  likelihood[revealed_positions]=NA;
+  
+  return(paste(likelihood,collapse=','))
+  
+};
+
+get_posterior <- function(likelihood) {
+    likelihood = scan(text= likelihood, what = numeric(), sep="," , quiet = TRUE);
+    posterior = likelihood/sum(likelihood,na.rm=TRUE); # assuming a uniform prior
+    return(paste(posterior,collapse=','))
+}
+
+
+get_p_click <- function(posterior, flat_position) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  return(posterior[flat_position])
+}
+
+get_p_click_rank <- function(posterior, flat_position) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  rank_posterior = rank(-posterior)
+  return(rank_posterior[flat_position])
+}
+
+get_posterior_entropy <- function(posterior) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  posterior[which(posterior==0)]=NA; #to avoid infinity*0
+  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+  return(entropy);
+}
+
+```
+
+## Ship completion
+
+```{r, child=c('../analysis/shipCompletion.Rmd')}
+```
+
+
+
+To get at subtler dynamics in a more direct way, in a follow-up exploratory analysis we focused on decision latencies following a hit. We categorized hits into four types: first hit on a ship, second hit on a ship when the size-three submarine hasn't been sunk yet, second hit on a ship when the size-three submarine has already been sunk, and third hit on a submarine. In the first case, players know the ship must continue in one of the neighboring cells. In the second case, there is a good chance the ship continues (if this ship turns out to be a submarine). In the third and fourth cases, it is clear that the ship is fully sunk.
+
+In non-pretend games, participants were significantly slower to select the next cell when they knew they had just completed a ship (categories 3 and 4) compared to when they just hit a ship, but were not sure (category 2) or knew they had not completely sunk it (category 1; `r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Specifically, we find that participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`).
+
+Strikingly, we found the exact same pattern in pretend games. Players were faster to make the next cell selection when they pretended to think that the current ship might not be fully sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=first+second-secondlast-thirdlast)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`). This was not merely a difference between the first, second and third hits: participants were slower by `r E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%median(na.rm=TRUE)%>%round()` ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (`r apa_print(E2.RT_by_hit_order%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`). Further analysis confirmed that this effect remained significant when controlling for click number (`r apa_print(E2.corrected_RT_by_hit_order%>%spread(prev_hit_type,corrected_RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='nonpretend')%>%pull(diff)%>%t.test())$statistic`), and when restricting the analysis to the second hit of a ship that is in fact of size-two (`r apa_print(E2.RT_by_hit_order_boats_only%>%spread(prev_hit_type,RT)%>%mutate(diff=secondlast-second)%>%filter(test_part=='pretend')%>%pull(diff)%>%t.test())$statistic`).
+
+This last finding bears emphasizing: In both classes two and three, pretenders *knew* that they had just sunk a size-two ship, but in the second case they *pretended not to know* this fact, and this affected their their response latency in the same way it would have been affected had they been in a non-pretend game.
+
+```{r battleship-ship-completion-plot}
+
+E2.RT_by_hit_order %>%
+  filter(!is.na(prev_hit_type))%>%
+  mutate(prev_hit_type = factor(prev_hit_type,levels=c('first','second','secondlast','thirdlast'), labels = c('first','second','second and last','third')))%>%
+  group_by(test_part,prev_hit_type) %>%
+  summarise(RT = median(RT),
+            sem_RT = bootstrap_error(RT,N_perm)) %>%
+  ggplot(aes(x=prev_hit_type,y=RT,fill=test_part)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  geom_bar(stat='identity',color='black',position=position_dodge()) +
+  geom_errorbar(aes(ymin=RT-sem_RT,ymax=RT+sem_RT),width=.2,position=position_dodge(.9))+
+  labs(fill=' ',x='previous hit', y='median RT')+
+  theme_classic()
+
+```
+
+## Half games
+
+Our optimality analysis showed that pretenders' click selections closely resemble those of non-pretenders, at least in that they are not random, but rather guided by where a ship might be. However, due to the high number of possible board configurations, data from full games provide limited opportunity to compare cell selections for specific game states. In addition to asking, "What guides cell selections in pretend and non-pretend games?", we also wanted to ask, "Where exactly would pretenders and non-pretenders click, given a specific board configuration?".
+
+To achieve this, the sixth game in each block started not with an empty grid, but with the contents of some cells already revealed by a previous player. As before, pretenders also knew where the remaining ships were hidden, but tried to play as if they only knew what was known to this previous player. Having cell selections from 250 players for each board configuration and condition allowed us to plot and compare the distribution of clicks under a genuine, or pretend, knowledge state.
+
+```{r, child=c('half_games.Rmd')}
+```
+
+In the third column we plot the distribution of clicks for non-pretend players. This distribution is in agreement with the hit probability map (board A: `r cor_A_nonpretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_nonpretend%>%apa_print()%>%'$'(full_result)`). Finally, in the fourth column we plot the distribution of cell selections for pretend players. Although noisier, this distribution is also in agreement with the hit probability map (board A: `r cor_A_pretend%>%apa_print()%>%'$'(full_result)`; board B: `r cor_B_pretend%>%apa_print()%>%'$'(full_result)`), and more importantly, with the hit distribution of non-pretenders for the same board configuration (board A: `r cor_A_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`, board B: `r cor_B_pretend_nonpretend%>%apa_print()%>%'$'(full_result)`).
+
+```{r half-games, echo=FALSE, out.width = '100%', fig.cap = "Half games. First column: the two boards, as they appeared to pretenders. Second column: objective hit probability, given game state. Third and fourth columns: empirical click probabilities in non-pretend and pretend games, respectively."}
+knitr::include_graphics("figures/Half_games.png")
+```
+
+## Within-participant click entropy
+
+```{r, child=c('../analysis/clickEntropyBattleship.Rmd')}
+```
+
+In this analysis, we asked how flexible players were in their click sequences, across games. We quantified flexibility as the Shannon entropy of cell selections across games, for a given click number. For example, if a player always started their games by clicking in the top left corner, their flexibility score for the first click will be $H([1,1,1,1,1])=0$. Flexibility was quantified separately for pretend and non-pretend games.  
+
+```{r battleship-flexibility-plot}
+
+E2.click_entropy_by_serial_position_summary %>%
+  filter(test_part %in% c('pretend','nonpretend') & click_number<=20) %>%
+  ggplot(aes(x=click_number,y=mean_entropy,color=test_part,group=test_part)) +
+  geom_line() +
+  geom_ribbon(aes(ymax=mean_entropy+se_entropy,ymin=mean_entropy-se_entropy, fill=test_part),alpha=0.5) +
+  scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", "black")) +
+  scale_color_manual(values=c("#69b3a2", "#404080", "black", "black")) +
+  labs(x='click number', y='flexibility score (Shannon entropy)') +
+  theme_classic() +
+  scale_x_continuous(breaks=seq(20))
+
+```
+
+Flexibility scores increased as a function of click number for both pretend and non-pretend games, as expected if players adjust their behaviour based on the outcomes of previous clicks. This process reached a plateau of around $H=2.1$ at click number 6. 
+
+Importantly, before that point, flexibility was persistently lower in pretend games (click #1: `r apa_print(E2.click_entropy_by_serial_position_wide %>% filter(click_number==1)%>%pull(diff)%>%t.test())$statistic`; click #2: `r apa_print(E2.click_entropy_by_serial_position_wide %>% filter(click_number==2)%>%pull(diff)%>%t.test())$statistic`; click #3: `r apa_print(E2.click_entropy_by_serial_position_wide %>% filter(click_number==3)%>%pull(diff)%>%t.test())$statistic`; click #4: `r apa_print(E2.click_entropy_by_serial_position_wide %>% filter(click_number==4)%>%pull(diff)%>%t.test())$statistic`; click #5: `r apa_print(E2.click_entropy_by_serial_position_wide %>% filter(click_number==5)%>%pull(diff)%>%t.test())$statistic`). 
+
+We reasoned that this tendency to rigidly follow a pre-defined plan may underlie at least some of the difference in game optimality between pretend and non-pretend games. Interestingly, however, we find no significant correlation between the pretend/non-pretend differences in flexibility and optimality in the first 5 clicks (`r apa_print(cor.test(E2.entropy_cost$entropy_cost, E2.entropy_cost$p_click_cost))$full_result`). 
+
+## Suppression or simulation?
+
+```{r suppression-or-simulation}
+
+E2.debrief_labeled <- read.csv('..\\experiments\\Battleships2\\data\\debrief.csv',na.strings=c(""," ","NA")) %>%
+  dplyr::select(-subj_id) %>%
+  merge(E2.debrief <- E2.df %>%
+          filter(!is.na(responses) & is.na(test_part)) %>%
+          dplyr::select(subj_id,responses) %>%
+          mutate(comments = map(responses, ~fromJSON(.) %>%as.data.frame()))%>%
+          unnest(comments)%>%
+          dplyr::select(subj_id,debrief)%>%
+          filter(!is.na(debrief) & debrief != "")%>%
+          mutate(debrief = gsub("[\r\n]", "",debrief)))
+
+E4.debrief_labeled <- read.csv('..\\experiments\\Hangman2\\data\\debrief.csv',na.strings=c(""," ","NA"))
+
+E2.simulators <- E2.debrief_labeled %>%
+  filter(simulation==1 & suppression==0) %>%
+  pull(subj_id)
+
+E2.suppressors <- E2.debrief_labeled %>%
+  filter(simulation==0 & suppression==1) %>%
+  pull(subj_id)
+
+E4.simulators <- E4.debrief_labeled %>%
+  filter(simulation==1 & suppression==0) %>%
+  pull(subj_id)
+
+E4.suppressors <- E4.debrief_labeled %>%
+  filter(simulation==0 & suppression==1) %>%
+  pull(subj_id)
+
+```
+
+At the end of the experiment, players were asked whether they had a strategy for pretending or for detecting pretense. I (MM) manually labeled their responses according to three criteria: mentions of suppression (e.g., "Trying to ignore the hints"), simulation (e.g., "Trying to imagine how I would react"), and rules (e.g., "Checking the corners and center before random selection of tiles"). Some answers got more than one label and some got none. Overall, `r E2.debrief_labeled$suppression%>%sum()` mentioned using suppression, `r E2.debrief_labeled$simulation%>%sum()` mentioned using simulation, and `r E2.debrief_labeled$rules%>%sum()` mentioned following rules. 
+
+In the following analysis, we focus on the first two labels and carve out two sets of players: `r E2.suppressors%>%length` players who reported using suppression but not simulation, and `r E2.simulators%>%length` who reported using simulation but no suppression. 
+
+### Click optimality
+
+```{r battleship-p_click-sup-sim, echo = FALSE, cache=TRUE}
+
+E2.sup_sim.mean_P_click_rank <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal) %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  ungroup() %>%
+  filter(subj_id %in% c(E2.simulators, E2.suppressors)) %>%
+  mutate(group = ifelse(subj_id %in% E2.simulators, 'simulators','suppressors')) %>%
+  group_by(subj_id,test_part, group) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E2.sup_sim.mean_P_click_rank_misses_only <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal) %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  ungroup() %>%
+  filter(subj_id %in% c(E2.simulators, E2.suppressors) & !hit_bin) %>%
+  mutate(group = ifelse(subj_id %in% E2.simulators, 'simulators','suppressors')) %>%
+  group_by(subj_id,test_part, group) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E2.sup_sim.mean_P_click_rank %>%
+    filter(test_part != 'optimal') %>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~group, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('figures/E2_pclick_rank_by_heuristic.pdf')
+ggsave('figures/E2_pclick_rank_by_heuristic.png',width=5,height=2,dpi=300)
+
+p<- E2.sup_sim.mean_P_click_rank %>%
+    filter(test_part != 'optimal') %>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    scale_x_continuous(limits=c(0,15))+
+    theme(legend.position=c(0.10,0.85)) +
+    facet_wrap(~group, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('figures/E2_pclick_rank_by_heuristic_misses_only.pdf',p)
+ggsave('figures/E2_pclick_rank_by_heuristic_misses_only.png',p,width=5,height=2,dpi=300)
+
+```
+The mean negative optimality score of non-pretend games was `r E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='nonpretend') %>%pull(p_click_rank)%>%mean()` among suppressors and `r E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='nonpretend') %>%pull(p_click_rank)%>%mean()` among simulators (`r apa_print(t.test(E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='nonpretend') %>%pull(p_click_rank), E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='nonpretend') %>%pull(p_click_rank)))$statistic`). The mean negative optimality score of pretend games was `r E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='pretend') %>%pull(p_click_rank)%>%mean()` among suppressors and `r E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='pretend') %>%pull(p_click_rank)%>%mean()` among simulators (`r apa_print(t.test(E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='pretend') %>%pull(p_click_rank), E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='pretend') %>%pull(p_click_rank)))$statistic`). To the very least, simulators did as well as suppressors in pretending.
+
+
+
+
+# Exp. 2: Hangman; Exploratory results
+
+```{r hangman-load, warning=FALSE}
+
+E4.df <- read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch2.csv',na.strings=c(""," ","NA")) %>%
+  rbind(read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch1.csv',na.strings=c(""," ","NA"))) %>%
+  mutate(subj_id = paste(as.character(participant_number),substr(PROLIFIC_PID,1,5),sep='')) %>%
+  mutate(subj_id = factor(subj_id)) %>%
+  # the dash is breaking r
+  mutate(test_part = ifelse(test_part=='non-pretend','nonpretend',test_part)) %>%
+  filter(PROLIFIC_PID != '5ec4a156bc5aac3819ac52f2' & #reported some of the letters not showing up on their screen
+        PROLIFIC_PID != '58211fc787f6b90001f13f9' & #reported some of the letters not showing up on their screen
+        PROLIFIC_PID != '6149256f6335b06ade3723e0' &  # due a PROLFIIC bug, participated twice
+        PROLIFIC_PID != '615ddab1e4f013092538b6c5')# due a PROLFIIC bug, participated twice
+
+E4.click_df <- E4.df %>%
+  dplyr::select(subj_id, 
+         PROLIFIC_PID,
+         test_part, 
+         category,
+         word,
+         num_clicks,
+         click_log,
+         genuine_first,
+         trial_type) %>%
+  rowwise()%>%
+  mutate(num_hits = strsplit(gsub(' ','',word),split='')[[1]]%>%unique()%>%length(),
+         genuine_first= genuine_first=='True',
+         num_misses = num_clicks-num_hits,
+         click_log = gsub("\'","\"", click_log),
+         click_log = gsub("None","null", click_log),
+         word = factor(word,levels=c(
+           'eleven',
+           'ninety six',
+           'dalai lama',
+           'taylor swift',
+           'strawberry',
+           'lemon',
+           'tooth',
+           'head',
+           'iowa',
+           'montana'
+         ))) %>%
+  filter(test_part=='pretend' | test_part=='nonpretend') %>%
+  filter(trial_type=='Hangman')
+
+
+load('E4.click_log.RData')
+
+load('E4.click_log_with_boards.RData') 
+
+load('E4.judge_df.RData')
+
+```
+
+## Within-participant click entropy
+
+```{r, child=c('../analysis/clickEntropyHangman.Rmd')}
+```
+
+```{r hangman-flexibility-plot}
+
+E4.click_entropy_by_serial_position_summary %>%
+  filter(test_part %in% c('pretend','nonpretend') & click_number<=10) %>%
+  ggplot(aes(x=click_number,y=mean_entropy,color=test_part,group=test_part)) +
+  geom_line() +
+  geom_ribbon(aes(ymax=mean_entropy+se_entropy,ymin=mean_entropy-se_entropy, fill=test_part),alpha=0.5) +
+  scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", "black")) +
+  scale_color_manual(values=c("#69b3a2", "#404080", "black", "black")) +
+  labs(x='click number', y='flexibility score (Shannon entropy)') +
+  theme_classic() +
+  scale_x_continuous(breaks=seq(20))
+
+```
+
+Like for Battleship, flexibility scores increased as a function of click number for both pretend and non-pretend games, as expected if players adjust their behaviour based on the outcomes of previous clicks. This process reached a plateau of around $H=2$ and click number 6. 
+
+Importantly, before that point, flexibility was persistently lower in pretend games (click #1: `r apa_print(E4.click_entropy_by_serial_position_wide %>% filter(click_number==1)%>%pull(diff)%>%t.test())$statistic`; click #2: `r apa_print(E4.click_entropy_by_serial_position_wide %>% filter(click_number==2)%>%pull(diff)%>%t.test())$statistic`; click #3: `r apa_print(E4.click_entropy_by_serial_position_wide %>% filter(click_number==3)%>%pull(diff)%>%t.test())$statistic`; click #4: `r apa_print(E4.click_entropy_by_serial_position_wide %>% filter(click_number==4)%>%pull(diff)%>%t.test())$statistic`; click #5: `r apa_print(E4.click_entropy_by_serial_position_wide %>% filter(click_number==5)%>%pull(diff)%>%t.test())$statistic`). 
+
+We reasoned that this tendency to rigidly follow a pre-defined plan may underlie at least some of the difference in game optimality between pretend and non-pretend games. We find evidence for such a correlation (`r apa_print(cor.test(E4.entropy_cost$entropy_cost, E4.entropy_cost$p_click_cost))$full_result`). Note that the direction is negative because high optimality is mapped to low values, but high flexibility is mapped to high values. 
+
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
