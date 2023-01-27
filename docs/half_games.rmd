@@ -1,0 +1,172 @@
+
+```{r}
+
+
+plot_posterior <- function(posterior,file_name) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  board_df <- data.frame(i=rep(c(1,2,3,4,5),each=5),j=rep(c(1,2,3,4,5),5),posterior=posterior);
+  p <- ggplot(board_df,aes(x=j,y=i,fill=posterior)) +
+    geom_tile() +
+    coord_equal() +
+    scale_x_continuous(breaks=c()) +
+    scale_y_continuous(breaks=c(),trans='reverse') +
+    scale_fill_gradient(low='#649bc8',high='#c83237', na.value ='white')+
+    labs(x='',y='') +
+    theme_classic();
+  
+  ggsave(paste('figures/',file_name,'.png',sep=''),width=5,dpi=300);
+    ggsave(paste('figures/',file_name,'.svg',sep=''),width=5,dpi=300);
+
+}
+
+boardA <- "NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,1,0,0,NA,NA,0,NA,NA,1,1,NA,NA,NA"
+posteriorA <- boardA%>%get_likelihood()%>%get_posterior();
+plot_posterior(posteriorA,'posteriorA');
+
+boardB <- "NA,NA,NA,NA,0,NA,NA,0,NA,NA,NA,NA,NA,NA,0,NA,NA,1,0,NA,NA,NA,1,NA,1"
+posteriorB <- boardB%>%get_likelihood()%>%get_posterior();
+plot_posterior(posteriorB,'posteriorB');
+
+```
+
+```{r}
+
+E2.half_game_click_df <- E2.df %>%
+  dplyr::select(subj_id, 
+         test_part, 
+         grid_number, 
+         num_clicks,
+         click_log,
+         genuine_first) %>%
+  mutate(click_log = gsub("\'","\"", click_log)) %>%
+  filter(test_part=='pretend_half_game' | test_part=='nonpretend_half_game');
+
+E2.half_game_click_log <- data.frame(matrix(ncol=10,nrow=0, 
+                               dimnames=list(NULL, 
+                                             c("subj_id",
+                                              "test_part", 
+                                              "grid_number", 
+                                              "num_clicks",
+                                              "i",
+                                              "j",
+                                              "hit",
+                                              "t",
+                                              "click_number",
+                                              "genuine_first"))))
+
+
+for (row in 1:nrow(E2.half_game_click_df)) {
+  
+    subject_click_log <- data.frame(fromJSON(E2.half_game_click_df[row, ]$click_log)) %>%
+    mutate(
+      click_number = 1:n(),
+      subj_id = E2.half_game_click_df[row, ]$subj_id,
+      test_part = E2.half_game_click_df[row, ]$test_part,
+      grid_number = E2.half_game_click_df[row, ]$grid_number,
+      num_clicks = E2.half_game_click_df[row, ]$num_clicks,
+      genuine_first = E2.half_game_click_df[row, ]$genuine_first
+    )
+    
+    E2.half_game_click_log <- rbind(E2.half_game_click_log, subject_click_log);
+}
+    
+
+E2.half_game_click_log <- E2.half_game_click_log %>%
+  relocate(subj_id, .before = i) %>%
+  relocate(genuine_first, .before = i) %>% 
+  relocate(test_part, .before=i) %>% 
+  relocate(grid_number, .before=i) %>% 
+  relocate(click_number, .before=i) %>%
+  group_by(subj_id,test_part,grid_number) %>%
+  mutate(RT=t-lag(t,default=0)) %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))
+
+```
+
+```{r}
+
+E2.half_game_first_clicks <- E2.half_game_click_log %>%
+  filter(click_number==1) %>%
+  group_by(i,j, grid_number,test_part) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  complete(i,j,grid_number,test_part,fill=list(n=0)) %>%
+  group_by(grid_number,test_part) %>%
+  mutate(n=n/sum(n), x=i*5+j);
+
+p<- E2.half_game_first_clicks %>%
+  ggplot(aes(x=j,y=i,fill=n)) +
+  geom_tile(color='black') +
+  # geom_text(aes(label=printnum(n)))+
+  coord_equal() +
+  scale_x_continuous(breaks=c()) +
+  scale_y_continuous(breaks=c(),trans='reverse') +
+  scale_fill_gradient(low='#649bc8',high='#c83237', na.value ='white')+
+  labs(x='',y='') +
+  theme_classic() + 
+  facet_wrap(~grid_number+test_part, nrow=2);
+
+  
+
+ggsave('figures/E2_half_game_first_clicks.png',width=10,height=10,dpi=300)
+ggsave('figures/E2_half_game_first_clicks.svg',width=10,height=10,dpi=300)
+
+
+p<- E2.half_game_first_clicks %>%
+  group_by(grid_number,test_part) %>%
+  mutate(p=n/sum(n)) %>%
+  ggplot(aes(x=j,y=i)) +
+  geom_tile(color='black',fill = NA) +
+  # geom_text(aes(label=printnum(n)))+
+  coord_equal() +
+  # Area fills, convert factors to numeric
+  geom_rect(
+    aes(xmin = as.numeric(j) - 0.5, 
+        xmax = as.numeric(j) + 0.5,
+        ymin = as.numeric(i) + 0.5-p,
+        ymax = as.numeric(i) + 0.5),
+    fill='black',alpha=1
+    
+  )+
+  scale_x_continuous(breaks=c()) +
+  scale_y_continuous(breaks=c(),trans='reverse') +
+  labs(x='',y='') +
+  theme_classic() + 
+  facet_wrap(~grid_number+test_part, nrow=2);
+
+
+ggsave('figures/E2_half_game_first_clicks_height.svg',width=10,height=10,dpi=300)
+
+## check correlation with posterior
+
+cor_A_nonpretend <- cor.test(E2.half_game_first_clicks %>%
+                               filter(test_part=='nonpretend_half_game' & grid_number=='A') %>% 
+                               pull(n),scan(text= posteriorA, what = numeric(), sep="," , quiet = TRUE));
+
+cor_A_pretend <- cor.test(E2.half_game_first_clicks %>%
+                               filter(test_part=='pretend_half_game' & grid_number=='A') %>% 
+                               pull(n),scan(text= posteriorA, what = numeric(), sep="," , quiet = TRUE));
+
+cor_A_pretend_nonpretend <- cor.test(E2.half_game_first_clicks %>%
+             filter(test_part=='nonpretend_half_game' & grid_number=='A') %>% 
+             pull(n), 
+             E2.half_game_first_clicks %>%
+             filter(test_part=='pretend_half_game' & grid_number=='A') %>% 
+             pull(n))
+
+cor_B_nonpretend <- cor.test(E2.half_game_first_clicks %>%
+                               filter(test_part=='nonpretend_half_game' & grid_number=='B') %>% 
+                               pull(n),scan(text= posteriorB, what = numeric(), sep="," , quiet = TRUE));
+
+cor_B_pretend <- cor.test(E2.half_game_first_clicks %>%
+                               filter(test_part=='pretend_half_game' & grid_number=='B') %>% 
+                               pull(n),scan(text= posteriorB, what = numeric(), sep="," , quiet = TRUE));
+
+cor_B_pretend_nonpretend <- cor.test(E2.half_game_first_clicks %>%
+             filter(test_part=='nonpretend_half_game' & grid_number=='B') %>% 
+             pull(n), 
+             E2.half_game_first_clicks %>%
+             filter(test_part=='pretend_half_game' & grid_number=='B') %>% 
+             pull(n))
+
+```

@@ -24,3 +24,9 @@ It might be subjects that go over the board systematically that decrease this me
 The important thing is that early on, entropy seems to be higher for nonpretend games.
 
 Oddly, the difference is already apparent in the first click 🤔
+
+## Analysis of decision conformity (2023-01-20)
+
+A similar pattern is found in hangman!
+
+![](docs/figures/decision_entropy_with_stars_hangman.png){width="615"}

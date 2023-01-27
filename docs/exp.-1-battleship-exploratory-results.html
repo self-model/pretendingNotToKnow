@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Pretending not to know: exploratory analyses</title>
+  <meta name="description" content="Pretending not to know: exploratory analyses" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Pretending not to know: exploratory analyses" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Pretending not to know: exploratory analyses" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+<link rel="next" href="exp.-2-hangman-exploratory-results.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html"><i class="fa fa-check"></i><b>1</b> Exp. 1: Battleship; Exploratory results</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#ship-completion"><i class="fa fa-check"></i><b>1.1</b> Ship completion</a></li>
+<li class="chapter" data-level="1.2" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#half-games"><i class="fa fa-check"></i><b>1.2</b> Half games</a></li>
+<li class="chapter" data-level="1.3" data-path="exp.-1-battleship-exploratory-results.html"><a href="exp.-1-battleship-exploratory-results.html#within-participant-click-entropy"><i class="fa fa-check"></i><b>1.3</b> Within-participant click entropy</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="exp.-2-hangman-exploratory-results.html"><a href="exp.-2-hangman-exploratory-results.html"><i class="fa fa-check"></i><b>2</b> Exp. 2: Hangman; Exploratory results</a></li>
+<li class="chapter" data-level="3" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>3</b> References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Pretending not to know: exploratory analyses</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Pretending not to know: exploratory analyses</h1>
+<p class="author multi-author"><em>Matan Mazor</em></p>
+<address class="author_afil">
+1<br>
+<a class="author_email" href="mailto:#"><a href="mailto:mtnmzor@gmail.com" class="email">mtnmzor@gmail.com</a></a>
+</address>
+<p class="author multi-author"><em>Chaz Firestone</em></p>
+<address class="author_afil">
+2<br>
+</address>
+<p class="author multi-author"><em>Ian Phillips</em></p>
+<address class="author_afil">
+2<br>
+</address>
+</div>
+<div id="exp.-1-battleship-exploratory-results" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">1</span> Exp. 1: Battleship; Exploratory results<a href="exp.-1-battleship-exploratory-results.html#exp.-1-battleship-exploratory-results" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="ship-completion" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Ship completion<a href="exp.-1-battleship-exploratory-results.html#ship-completion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To get at subtler dynamics in a more direct way, in a follow-up exploratory analysis we focused on decision latencies following a hit. We categorized hits into four types: first hit on a ship, second hit on a ship when the size-three submarine hasn’t been sunk yet, second hit on a ship when the size-three submarine has already been sunk, and third hit on a submarine. In the first case, players know the ship must continue in one of the neighboring cells. In the second case, there is a good chance the ship continues (if this ship turns out to be a submarine). In the third and fourth cases, it is clear that the ship is fully sunk.</p>
+<p>In non-pretend games, participants were significantly slower to select the next cell when they knew they had just completed a ship (categories 3 and 4) compared to when they just hit a ship, but were not sure (category 2) or knew they had not completely sunk it (category 1; <span class="math inline">\(t(404) = -16.82\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Specifically, we find that participants were slower by 728 ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (<span class="math inline">\(t(404) = 13.45\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>Strikingly, we found the exact same pattern in pretend games. Players were faster to make the next cell selection when they pretended to think that the current ship might not be fully sunk (<span class="math inline">\(t(369) = -14.47\)</span>, <span class="math inline">\(p &lt; .001\)</span>). This was not merely a difference between the first, second and third hits: participants were slower by 754 ms to make the next cell selection after hitting the second cell of a ship if the size-three submarine had already been sunk (<span class="math inline">\(t(404) = 13.45\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Further analysis confirmed that this effect remained significant when controlling for click number (<span class="math inline">\(t(404) = 11.28\)</span>, <span class="math inline">\(p &lt; .001\)</span>), and when restricting the analysis to the second hit of a ship that is in fact of size-two (<span class="math inline">\(t(366) = 3.91\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<p>This last finding bears emphasizing: In both classes two and three, pretenders <em>knew</em> that they had just sunk a size-two ship, but in the second case they <em>pretended not to know</em> this fact, and this affected their their response latency in the same way it would have been affected had they been in a non-pretend game.</p>
+<p><img src="figs/battleship-ship-completion-plot-1.png" width="960" /></p>
+</div>
+<div id="half-games" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Half games<a href="exp.-1-battleship-exploratory-results.html#half-games" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Our optimality analysis showed that pretenders’ click selections closely resemble those of non-pretenders, at least in that they are not random, but rather guided by where a ship might be. However, due to the high number of possible board configurations, data from full games provide limited opportunity to compare cell selections for specific game states. In addition to asking, “What guides cell selections in pretend and non-pretend games?”, we also wanted to ask, “Where exactly would pretenders and non-pretenders click, given a specific board configuration?”.</p>
+<p>To achieve this, the sixth game in each block started not with an empty grid, but with the contents of some cells already revealed by a previous player. As before, pretenders also knew where the remaining ships were hidden, but tried to play as if they only knew what was known to this previous player. Having cell selections from 250 players for each board configuration and condition allowed us to plot and compare the distribution of clicks under a genuine, or pretend, knowledge state.</p>
+<p>In the third column we plot the distribution of clicks for non-pretend players. This distribution is in agreement with the hit probability map (board A: <span class="math inline">\(r = .81\)</span>, 95% CI <span class="math inline">\([.55, .93]\)</span>, <span class="math inline">\(t(16) = 5.48\)</span>, <span class="math inline">\(p &lt; .001\)</span>; board B: <span class="math inline">\(r = .87\)</span>, 95% CI <span class="math inline">\([.68, .95]\)</span>, <span class="math inline">\(t(16) = 7.01\)</span>, <span class="math inline">\(p &lt; .001\)</span>). Finally, in the fourth column we plot the distribution of cell selections for pretend players. Although noisier, this distribution is also in agreement with the hit probability map (board A: <span class="math inline">\(r = .49\)</span>, 95% CI <span class="math inline">\([.03, .78]\)</span>, <span class="math inline">\(t(16) = 2.27\)</span>, <span class="math inline">\(p = .037\)</span>; board B: <span class="math inline">\(r = .73\)</span>, 95% CI <span class="math inline">\([.40, .89]\)</span>, <span class="math inline">\(t(16) = 4.28\)</span>, <span class="math inline">\(p = .001\)</span>), and more importantly, with the hit distribution of non-pretenders for the same board configuration (board A: <span class="math inline">\(r = .63\)</span>, 95% CI <span class="math inline">\([.31, .82]\)</span>, <span class="math inline">\(t(23) = 3.89\)</span>, <span class="math inline">\(p = .001\)</span>, board B: <span class="math inline">\(r = .87\)</span>, 95% CI <span class="math inline">\([.73, .94]\)</span>, <span class="math inline">\(t(23) = 8.60\)</span>, <span class="math inline">\(p &lt; .001\)</span>).</p>
+<div class="figure"><span style="display:block;" id="fig:half-games"></span>
+<img src="figures/Half_games.png" alt="Half games. First column: the two boards, as they appeared to pretenders. Second column: objective hit probability, given game state. Third and fourth columns: empirical click probabilities in non-pretend and pretend games, respectively." width="100%" />
+<p class="caption">
+Figure 1.1: Half games. First column: the two boards, as they appeared to pretenders. Second column: objective hit probability, given game state. Third and fourth columns: empirical click probabilities in non-pretend and pretend games, respectively.
+</p>
+</div>
+</div>
+<div id="within-participant-click-entropy" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Within-participant click entropy<a href="exp.-1-battleship-exploratory-results.html#within-participant-click-entropy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In this analysis, we asked how flexible players were in their click sequences, across games. We quantified flexibility as the Shannon entropy of cell selections across games, for a given click number. For example, if a player always started their games by clicking in the top left corner, their flexibility score for the first click will be <span class="math inline">\(H([1,1,1,1,1])=0\)</span>. Flexibility was quantified separately for pretend and non-pretend games.</p>
+<p><img src="figs/battleship-flexibility-plot-1.png" width="960" /></p>
+<p>Flexibility scores increased as a function of click number for both pretend and non-pretend games, as expected if players adjust their behaviour based on the outcomes of previous clicks. This process reached a plateau of around <span class="math inline">\(H=2.1\)</span> at click number 6.</p>
+<p>Importantly, before that point, flexibility was persistently lower in pretend games (click #1: <span class="math inline">\(t(479) = -3.93\)</span>, <span class="math inline">\(p &lt; .001\)</span>; click #2: <span class="math inline">\(t(479) = -3.40\)</span>, <span class="math inline">\(p = .001\)</span>; click #3: <span class="math inline">\(t(479) = -4.88\)</span>, <span class="math inline">\(p &lt; .001\)</span>; click #4: <span class="math inline">\(t(479) = -3.26\)</span>, <span class="math inline">\(p = .001\)</span>; click #5: <span class="math inline">\(t(479) = -2.64\)</span>, <span class="math inline">\(p = .009\)</span>).</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+<a href="exp.-2-hangman-exploratory-results.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": false,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
