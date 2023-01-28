@@ -2359,7 +2359,7 @@ E4.judge_summary_df <- E4.judge_df %>%
 
 ### Hypothesis 9 (judge accuracy):
 
-Participants were not significantly above chance in judging which of the two presented games came from a pretender (`r apa_print(t.test(E4.judge_summary_df$accuracy, mu=0.5))$full_result`). This was the case also when focusing on words that judges encountered when pretending (`r apa_print(t.test(E4.judge_summary_df$accuracy_pretend_words, mu=0.5))$full_result`), and when focusing on words that judges encountered when playing normally (`r apa_print(t.test(E4.judge_summary_df$accuracy_nonpretend_words, mu=0.5))$full_result`).
+Participants were not significantly above chance in judging whether the presented game came from a pretender (`r apa_print(t.test(E4.judge_summary_df$accuracy, mu=0.5))$full_result`). This was the case also when focusing on words that judges encountered when pretending (`r apa_print(t.test(E4.judge_summary_df$accuracy_pretend_words, mu=0.5))$full_result`), and when focusing on words that judges encountered when playing normally (`r apa_print(t.test(E4.judge_summary_df$accuracy_nonpretend_words, mu=0.5))$full_result`).
 
 *Hypothesis 9B (judge bias):* Participants were slightly biased to classify games as pretend games (`r apa_print(E4.judge_summary_df$bias%>%t.test(mu=0.5))$full_result`). 
 
