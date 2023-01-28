@@ -110,9 +110,9 @@ bootstrap_error <- function(x, N_perm) {
   N <- length(x)
   medians = c();
   for (i in 1:N_perm) {
-    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median())
+    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median(na.rm=T))
   };
-  return(sd(medians))
+  return(sd(medians,na.rm=T))
 }
 
 all_possible_boards <- read.csv('../analysis/flat_boards.csv',header=FALSE);
@@ -254,7 +254,7 @@ We reasoned that this tendency to rigidly follow a pre-defined plan may underlie
 
 ## Suppression or simulation?
 
-```{r suppression-or-simulation}
+```{r battleship-suppression-or-simulation}
 
 E2.debrief_labeled <- read.csv('..\\experiments\\Battleships2\\data\\debrief.csv',na.strings=c(""," ","NA")) %>%
   dplyr::select(-subj_id) %>%
@@ -267,7 +267,6 @@ E2.debrief_labeled <- read.csv('..\\experiments\\Battleships2\\data\\debrief.csv
           filter(!is.na(debrief) & debrief != "")%>%
           mutate(debrief = gsub("[\r\n]", "",debrief)))
 
-E4.debrief_labeled <- read.csv('..\\experiments\\Hangman2\\data\\debrief.csv',na.strings=c(""," ","NA"))
 
 E2.simulators <- E2.debrief_labeled %>%
   filter(simulation==1 & suppression==0) %>%
@@ -277,19 +276,11 @@ E2.suppressors <- E2.debrief_labeled %>%
   filter(simulation==0 & suppression==1) %>%
   pull(subj_id)
 
-E4.simulators <- E4.debrief_labeled %>%
-  filter(simulation==1 & suppression==0) %>%
-  pull(subj_id)
-
-E4.suppressors <- E4.debrief_labeled %>%
-  filter(simulation==0 & suppression==1) %>%
-  pull(subj_id)
-
 ```
 
 At the end of the experiment, players were asked whether they had a strategy for pretending or for detecting pretense. I (MM) manually labeled their responses according to three criteria: mentions of suppression (e.g., "Trying to ignore the hints"), simulation (e.g., "Trying to imagine how I would react"), and rules (e.g., "Checking the corners and center before random selection of tiles"). Some answers got more than one label and some got none. Overall, `r E2.debrief_labeled$suppression%>%sum()` mentioned using suppression, `r E2.debrief_labeled$simulation%>%sum()` mentioned using simulation, and `r E2.debrief_labeled$rules%>%sum()` mentioned following rules. 
 
-In the following analysis, we focus on the first two labels and carve out two sets of players: `r E2.suppressors%>%length` players who reported using suppression but not simulation, and `r E2.simulators%>%length` who reported using simulation but no suppression. 
+In the following analysis, we focus on the first two labels and carve out two sets of players: `r E2.suppressors%>%length` players who reported using suppression but not simulation, and `r E2.simulators%>%length` who reported using simulation but not suppression. 
 
 ### Click optimality
 
@@ -343,9 +334,109 @@ ggsave('figures/E2_pclick_rank_by_heuristic_misses_only.pdf',p)
 ggsave('figures/E2_pclick_rank_by_heuristic_misses_only.png',p,width=5,height=2,dpi=300)
 
 ```
+
 The mean negative optimality score of non-pretend games was `r E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='nonpretend') %>%pull(p_click_rank)%>%mean()` among suppressors and `r E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='nonpretend') %>%pull(p_click_rank)%>%mean()` among simulators (`r apa_print(t.test(E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='nonpretend') %>%pull(p_click_rank), E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='nonpretend') %>%pull(p_click_rank)))$statistic`). The mean negative optimality score of pretend games was `r E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='pretend') %>%pull(p_click_rank)%>%mean()` among suppressors and `r E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='pretend') %>%pull(p_click_rank)%>%mean()` among simulators (`r apa_print(t.test(E2.sup_sim.mean_P_click_rank%>%filter(group=='suppressors' & test_part=='pretend') %>%pull(p_click_rank), E2.sup_sim.mean_P_click_rank%>%filter(group=='simulators' & test_part=='pretend') %>%pull(p_click_rank)))$statistic`). To the very least, simulators did as well as suppressors in pretending.
 
+### RT by outcome
 
+```{r RT_by_accuracy-sup-sim}
+
+E2.RT_by_lag3 <- E2.click_log %>%
+  filter(click_number>3) %>%
+  group_by(subj_id,test_part,lag3,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag3,RT,sep='_') %>%
+  mutate(lag3_diff = lag3_TRUE-lag3_FALSE);
+
+E2.RT_by_lag2 <- E2.click_log %>%
+  filter(click_number>2) %>%
+  group_by(subj_id,test_part,lag2,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag2,RT,sep='_') %>%
+  mutate(lag2_diff = lag2_TRUE-lag2_FALSE);
+
+E2.RT_by_lag1 <- E2.click_log %>%
+  filter(click_number>1) %>%
+  group_by(subj_id,test_part,lag1,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE)
+
+E2.RT_by_hit <- E2.click_log %>%
+  filter(click_number>0) %>%
+  group_by(subj_id,test_part,hit_bin,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+E2.RT_by_lead1 <- E2.click_log %>%
+  filter(click_number<num_clicks) %>%
+  group_by(subj_id,test_part,lead1,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+E2.RT_by_lead2 <- E2.click_log %>%
+  filter(click_number<num_clicks-1) %>%
+  group_by(subj_id,test_part,lead2,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead2,RT,sep='_') %>%
+  mutate(lead2_diff = lead2_TRUE-lead2_FALSE)
+
+E2.RT_by_lead3 <- E2.click_log %>%
+  filter(click_number<num_clicks-2) %>%
+  group_by(subj_id,test_part,lead3,genuine_first)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead3,RT,sep='_') %>%
+  mutate(lead3_diff = lead3_TRUE-lead3_FALSE)
+
+E2.RT_by_hit_lags <- E2.RT_by_lag3 %>%
+  merge(E2.RT_by_lag2) %>%
+  merge(E2.RT_by_lag1) %>%
+  merge(E2.RT_by_hit) %>%
+  merge(E2.RT_by_lead1) %>%
+  merge(E2.RT_by_lead2) %>%
+  merge(E2.RT_by_lead3);
+
+E2.RT_by_hit_lags_long <- E2.RT_by_hit_lags %>%
+  gather("position","difference",c("lag3_diff","lag2_diff", "lag1_diff", "hit_diff", "lead1_diff", "lead2_diff", "lead3_diff"))%>%
+  mutate(position = ifelse(position=="lag3_diff", 3,
+                           ifelse(position=="lag2_diff",2,
+                                  ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,
+                                                ifelse(position=="lead1_diff",-1,
+                                                       ifelse(position=="lead2_diff",-2,-3
+                                                              ))))))) %>%
+  dplyr::select(subj_id,test_part,genuine_first,position,difference);
+
+E2.RT_by_hit_lags_long %>% 
+  filter(position<2 & position > -2)%>%
+  filter(subj_id %in% E2.simulators | subj_id %in% E2.suppressors) %>%
+  mutate(group = ifelse(subj_id %in% E2.simulators, 
+                        'simulators','suppressors')) %>%
+  group_by(test_part,position, group) %>%
+  summarise(median_difference=median(difference),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  ggplot(aes(x=position,color=test_part,fill=test_part,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-1:1,labels=c('hit on next trial', 'hit on current trial', 'hit on previous trial'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='', y='RT effect (ms) of hit on trial t')+
+  theme_classic() +
+  facet_wrap(~group, nrow=2)
+
+
+ggsave('figures/E2_RT_by_lag_sim_sup.pdf',width=7)
+ggsave('figures/E2_RT_by_lag.png_sim_sup.png',width=4, height=3.5, dpi=300)
+
+
+
+```
+
+Visual inspection reveals similar temporal profiles in both groups (the higher standard error among suppressors is due to the lower number of subjects in this group). Specifically, in pretend games, cell selections that resulted in a hit were faster than those that resulted in a miss in both groups (suppressors: `r apa_print(E2.RT_by_hit_lags %>% filter(test_part=='pretend' & subj_id %in% E2.suppressors)%>%pull(hit_diff)%>%t.test())$full_result`; simulators:  `r apa_print(E2.RT_by_hit_lags %>% filter(test_part=='pretend' & subj_id %in% E2.simulators)%>%pull(hit_diff)%>%t.test())$full_result`), and cell selections that followed a hit were slower than those that followed a miss in both groups (suppressors: `r apa_print(E2.RT_by_hit_lags %>% filter(test_part=='pretend' & subj_id %in% E2.suppressors)%>%pull(lag1_diff)%>%t.test())$full_result`; simulators:  `r apa_print(E2.RT_by_hit_lags %>% filter(test_part=='pretend' & subj_id %in% E2.simulators)%>%pull(lag1_diff)%>%t.test())$full_result`).
 
 
 # Exp. 2: Hangman; Exploratory results
@@ -429,6 +520,150 @@ Importantly, before that point, flexibility was persistently lower in pretend ga
 
 We reasoned that this tendency to rigidly follow a pre-defined plan may underlie at least some of the difference in game optimality between pretend and non-pretend games. We find evidence for such a correlation (`r apa_print(cor.test(E4.entropy_cost$entropy_cost, E4.entropy_cost$p_click_cost))$full_result`). Note that the direction is negative because high optimality is mapped to low values, but high flexibility is mapped to high values. 
 
+## Suppression or simulation?
+
+```{r hangman-suppression-or-simulation}
+
+
+E4.debrief_labeled <- read.csv('..\\experiments\\Hangman2\\data\\debrief.csv',na.strings=c(""," ","NA"))
+
+E4.simulators <- E4.debrief_labeled %>%
+  filter(simulation==1 & suppression==0) %>%
+  pull(subj_id)
+
+E4.suppressors <- E4.debrief_labeled %>%
+  filter(simulation==0 & suppression==1) %>%
+  pull(subj_id)
+
+```
+
+At the end of the experiment, players were asked whether they had a strategy for pretending or for detecting pretense. I (MM) manually labeled their responses according to three criteria: mentions of suppression (e.g., "Trying to ignore the hints"), simulation (e.g., "Trying to imagine how I would react"), and rules (e.g., "Checking the corners and center before random selection of tiles"). Some answers got more than one label and some got none. Overall, `r E4.debrief_labeled$suppression%>%sum()` mentioned using suppression, `r E4.debrief_labeled$simulation%>%sum()` mentioned using simulation, and `r E4.debrief_labeled$heuristic%>%sum()` mentioned following a heuristic. 
+
+Since there were only `r E4.suppressors%>%length` players who reported using suppression but not simulation, we focus our analysis only on the `r E4.simulators%>%length` who reported using simulation but no suppression. 
+
+### Click optimality
+
+```{r battleship-p_click-sim, echo = FALSE, cache=TRUE}
+
+E4.sim.mean_P_click_rank <- E4.click_log_with_boards %>%
+  rbind(E4.click_log_with_boards_random) %>%
+  ungroup() %>%
+  filter(as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators)) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E4.sim.mean_P_click_rank_misses_only <- E4.click_log_with_boards %>%
+  rbind(E4.click_log_with_boards_random) %>%
+  ungroup() %>%
+  filter(as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators) & !hit_bin) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E4.sim.mean_P_click_rank %>%
+    filter(test_part != 'optimal') %>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(letter in word) - rank', y='number of players', title='Simulators only')+
+    theme(legend.position=c(0.10,0.85)) +
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('figures/E4_pclick_rank_sim_only.pdf')
+ggsave('figures/E4_pclick_rank_sim_only.png',width=5,height=2,dpi=300)
+
+p<- E4.sim.mean_P_click_rank_misses_only %>%
+    filter(test_part != 'optimal') %>%
+    ggplot(aes(x=p_click_rank,fill=test_part))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(letter in word) - rank', y='number of players', title='Simulators only: misses')+
+    theme(legend.position=c(0.10,0.85)) +
+    # scale_x_reverse() +
+    theme_classic();
+
+ggsave('figures/E4_pclick_rank_sim_only_misses_only.pdf',p)
+ggsave('figures/E4_pclick_rank_sim_only_misses_only.png',p,width=5,height=2,dpi=300)
+
+```
+
+Among simulators, pretend games were significantly more optimal than non-pretend games (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`) even when restricting the analysis to letter selections that resulted in a miss (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`). Like in the full sapmle, simulators were more optimal when playing normally than when pretending (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`), also when focusing on misses (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`).
+
+### RT by outcome
+
+```{r hangman-RT-by-accuracy-sim}
+
+
+E4.click_log <- E4.click_log %>%
+  group_by(subj_id,test_part,word) %>%
+ mutate(hit_bin = hit !=0,
+        lag3 = lag(hit,3)!=0,
+        lag2 = lag(hit,2)!=0,
+        lag1 = lag(hit,1)!=0,
+        lead1 = lead(hit,1)!=0,
+        lead2 = lead(hit,2)!=0,
+        lead3 = lead(hit,3)!=0)
+
+E4.RT_by_lag1 <- E4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,lag1)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE)
+
+E4.RT_by_hit <- E4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,hit_bin)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+
+E4.RT_by_lead1 <- E4.click_log %>%
+  filter(click_number>1 & click_number<num_clicks-1) %>%
+  group_by(genuine_first,subj_id,test_part,lead1)%>%
+  summarise(RT=median(RT, na.rm=T))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+
+E4.RT_by_hit_lags <- E4.RT_by_lag1 %>%
+  merge(E4.RT_by_hit) %>%
+  merge(E4.RT_by_lead1) 
+
+E4.RT_by_hit_lags_long <- E4.RT_by_hit_lags %>%
+  gather("position","difference",c("lag1_diff", "hit_diff", "lead1_diff"))%>%
+  mutate(position = ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,-1))) %>%
+  dplyr::select(genuine_first,subj_id,test_part,position,difference);
+
+E4.RT_by_hit_lags_long %>%
+  filter(as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators)) %>%
+  group_by(test_part,position) %>%
+  summarise(median_difference=median(difference, na.rm=T),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  ggplot(aes(x=position,color=test_part,fill=test_part,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-3:3,labels=c('t-3','t-2','t-1','t','t+1','t+2','t+3'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_vline(xintercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='Relative serial position', y='RT difference (ms) between hit or miss on timepoint t', title='Simulators only')+
+  theme_classic()
+
+ggsave('figures/Hangman2/RT_by_lag_acc_sim.pdf',width=7)
+ggsave('figures/Hangman2/RT_by_lag_acc_sim.png',width=5, height=3, dpi=300)
+
+E4.sim.RT_by_hit_lags_by_condition <- E4.RT_by_hit_lags_long %>%
+  filter(as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators)) %>%
+  spread(test_part,difference) %>%
+  mutate(interaction = pretend-nonpretend)
+
+```
+
+The simulators group showed a similar temporal profile to that of the entire sample. Specifically, in pretend games, cell selections that resulted in a hit were faster than those that resulted in a miss (`r apa_print(E4.RT_by_hit_lags %>% filter(test_part=='pretend' & as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators))%>%pull(hit_diff)%>%t.test())$full_result`), and cell selections that followed a hit were slower than those that followed a miss (`r apa_print(E4.RT_by_hit_lags %>% filter(test_part=='pretend' & as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators))%>%pull(lag1_diff)%>%t.test())$full_result`).
 
 \newpage
 

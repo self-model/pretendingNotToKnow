@@ -1,5 +1,5 @@
 ---
-title             : "Pretending not to know"
+title             : "Pretending not to know: pre-registered analyses"
 shorttitle        : "Pretending not to know"
 
 author: 
@@ -2118,13 +2118,15 @@ E4.mean_P_click_rank %>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( color="black", alpha=0.6, position = 'identity') +
     scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
-    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    labs(x='p(letter in word) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     # facet_wrap(~genuine_first, nrow=2)+
     # scale_x_reverse() +
     theme_classic();
 
 ```
+
+
 ### Hypothesis 7b (Letter frequency)
 
 Non-pretenders selected high-frequency letters more than expected by chance (pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). The same was true for letter selections in pretend games (pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). Letters selected by pretenders had a higher overall frequency compared to letters selected by non-pretenders (pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(!genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`; non-pretend first: `r E4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`). but not in the group that played normally first (`r E4.mean_letter_prob_P_click_rank_wide%>%filter(genuine_first)%>%pull(p_vs_np)%>%t.test()%>%apa_print%>%'$'(statistic)`). Comparing data from the first condition only in a between-subject manner revealed a significant difference (`r t.test(E4.mean_P_click_rank_wide%>%filter(genuine_first)%>%pull(nonpretend),E4.mean_P_click_rank_wide%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print%>%'$'(full_result)`).
@@ -2139,7 +2141,7 @@ E4.mean_letter_prob_P_click_rank %>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( color="black", alpha=0.6, position = 'identity') +
     scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
-    labs(x='p(ship in clicked square) - rank', y='number of players')+
+    labs(x='p(letter in English text) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     # facet_wrap(~genuine_first, nrow=2)+
     # scale_x_reverse() +
