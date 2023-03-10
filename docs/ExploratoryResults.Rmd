@@ -494,6 +494,36 @@ load('E4.judge_df.RData')
 
 ```
 
+## Correlation in number of misses
+
+```{r hangman-misses-per-word}
+
+E4.misses_per_word <- E4.click_df %>%
+  group_by(test_part,word) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  spread(test_part,num_misses)
+
+```
+
+Some words were more difficult to reveal. This required in players making more unsuccessful letter guesses in attempting to reveal some words compared to others. When pretending, players made more unsuccessful letter guesses for the exact same words `r cor.test(E4.misses_per_word$pretend, E4.misses_per_word$nonpretend,method='spearman')%>%apa_print()%>%'$'(full_result)`.  
+
+
+```{r hangman-correlation-plot}
+
+E4.misses_per_word %>%
+  ggplot(aes(x=nonpretend,y=pretend, label=word)) +
+  geom_abline(intercept=0,slope=1) +
+  geom_point()+
+  geom_text_repel()+
+  coord_fixed(ratio=1)+
+  scale_x_continuous(limits=c(0,5.5), breaks=seq(0,5))+
+  scale_y_continuous(limits=c(0,5.5), breaks=seq(0,5)) +
+  theme(legend.position = 'none')+
+  theme_bw() +
+  labs(title='number of misses')
+
+```
+
 ## Within-participant click entropy
 
 ```{r, child=c('../analysis/clickEntropyHangman.Rmd')}
