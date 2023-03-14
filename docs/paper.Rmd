@@ -1,0 +1,147 @@
+---
+title             : "Pretending not to know"
+shorttitle        : "Pretending not to know"
+
+author: 
+  - name          : "Matan Mazor"
+    affiliation   : "1,2"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Malet Street, London WC1E 7HX"
+    email         : "mtnmzor@gmail.com"
+  #   role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
+  #     - Conceptualization
+  #     - Writing - Original Draft Preparation
+  #     - Writing - Review & Editing
+  
+  - name          : "Chaz Firestone"
+    affiliation   : "3"
+    
+  - name          : "Ian Phillips"
+    affiliation   : "3"
+    # role:
+    #   - Writing - Review & Editing
+
+affiliation:
+  - id            : "1"
+    institution   : "Birkbeck, University of London"
+  - id            : "2"
+    institution   : "Wellcome Centre for Human Neuroimaging, UCL"
+  - id            : "3"
+    institution   : "Johns Hopkins University"
+
+
+abstract: |
+  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+  
+  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
+  
+  One sentence clearly stating the **general problem** being addressed by  this particular study.
+  
+  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
+  
+  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
+  
+  One or two sentences to put the results into a more **general context**.
+  
+  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "pretense; metacognition; theory of mind"
+wordcount         : "X"
+
+bibliography      : "r-references.bib"
+
+floatsintext      : no
+linenumbers       : yes
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : papaja::apa6_word
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+# Load packages with groundhog
+library(groundhog)
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel' #for word scatterplots
+), '2022-12-01')
+
+# Load workspace (after running preregisteredMethodsAndResults.Rmd, 
+# exploratoryResults.Rmd, and all the scripts that are linked to from these 
+# documents). 
+load('../.RData')
+```
+
+# Introduction
+
+
+# Results 
+
+In two experiments, players played online versions of two information-seeking games: Battleship and Hangman. In these games, players' goal is to reveal an unknown world state (grid configuration in Battleship, a hidden word in Hangman) with as few steps (cell or letter selections) as possible. Critically, in addition to playing five games in their standard version, players also completed five pretend games in which the true world state was known to them all along, but their task was to behave as if it was not (see Fig. \@ref(fig:design)). We measured subjects' capacity to simulate a counterfactual knowledge state by comparing patterns of decisions and decision times in pretend and non-pretend games. Our full pre-registered results are available [online](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship.html). 
+
+As a first gross measure of pretense quality, we compared the total number of guesses in pretend and non-pretend games. Among Battleship players, the number of cell selections was similar in pretend (mean = `r E2.median_clicks%>%pull(pretend)%>%mean()`) and non-pretend games (mean = `r E2.median_clicks%>%pull(nonpretend)%>%mean()`), with no difference between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend)-7,E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend)-7)%>%apa_print()%>%'$'(statistic)`). In Hangman, pretenders tended to make slightly more letter guesses on average, controlling for word length (mean = `r E4.median_misses%>%pull(pretend)%>%mean()`) than did non-pretenders (mean = `r E4.median_misses%>%pull(nonpretend)%>%mean()`; `r t.test(E4.median_misses%>%filter(genuine_first)%>%pull(pretend),E4.median_misses%>%filter(!genuine_first)%>%pull(nonpretend))%>%apa_print()%>%'$'(statistic)`). 
+
+Furthermore, the ten target words we used in Hangman differed in difficulty: some required more letter guesses than others, controlling for word length. Strikingly, pretenders were highly successful in making more letter guesses when attempting to reveal those words that would have been easier to guess had they been playing for real (`r cor.test(E4.misses_per_word$pretend, E4.misses_per_word$nonpretend,method='spearman')%>%apa_print()%>%'$'(full_result)`). This correlation provides a first clue of an impressive capacity to act in accordance with how one would have acted if they didn't know what they know.
+
+Having established that pretenders were able to mimic the total number of guesses in standard games, we next turned to the content of pretend and non-pretend guesses. In order to directly compare pretend and non-pretend guesses for the same board state, Battleship players completed two half-games in which they were instructed to continue the game from a half-completed state. Hundreds of cell selections for the same board state revealed a strong correlation between the spatial distributions of pretend and non-pretend guesses (), confirming that pretenders were sensitive not only to the number of guesses they would have made had they been playing for real, but also to their content.
+
+To further examine the decisional processes behind this strong alignment, we compared the degree to which pretend and non-pretend guesses made sense within the context of the game. We approximated guess rationality by calculating the probability that a guess will be successful (in revealing a ship or word letters) given available information, $p(hit(x_{i}))$, and the posterior probability that one should make a guess, assuming a uniform prior over cells or letters $P(x_{i})=\frac{p(hit(x_i))}{\sum_{j=1}^{k}p(hit(x_j))}$. Given this posterior map, it makes sense to guess cells or letters for which $P(x_{i})$ is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; @audinot2014optimal, Section 3.3]. In the non-pretend versions of both games, guesses were more rational than expected by chance (Battleship:, Hangman:). Despite being less rational than non-pretend guesses, pretend guesses were more rational than expected by chance (Battleship:, Hangman:). Critically, the same was true when restricting the analysis to unsuccessful guesses (Battleship:, Hangman:): even when missing ships or letters, pretend guesses made sense given the limited information players pretended to have.
+
+
+
+
+# Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+
+## Participants
+
+## Material
+
+## Procedure
+
+## Data analysis
+We used `r cite_r("r-references.bib")` for all our analyses.
+
+
+# Results
+
+# Discussion
+
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
