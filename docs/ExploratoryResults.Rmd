@@ -170,7 +170,7 @@ get_p_click_rank <- function(posterior, flat_position) {
 get_posterior_entropy <- function(posterior) {
   posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
   posterior[which(posterior==0)]=NA; #to avoid infinity*0
-  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+  entropy <- -sum(unlist(posterior)*(unlist(log2(posterior))),na.rm=TRUE);
   return(entropy);
 }
 

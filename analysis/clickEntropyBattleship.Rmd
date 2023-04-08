@@ -1,5 +1,5 @@
 
-```{r entropy-by-serial-position, echo=FALSE, cache=TRUE}
+```{r battleship-entropy-by-serial-position, echo=FALSE, cache=TRUE}
 
 #compute Shannon entropy, but only until the first timepoint at which some gamed ended
 entropy <- function(target) {
@@ -47,17 +47,17 @@ ggsave('../docs/figures/E2_entropy_by_click_nnumber.png',p,width=7,height=5,dpi=
 
 ```
 
-```{r entropy-pclick-correlation, echo=FALSE, cache=TRUE}
+```{r battleship-entropy-pclick-correlation, echo=FALSE, cache=TRUE}
 
 E2.entropy_summary <- E2.click_entropy_by_serial_position %>%
-  filter(click_number<8) %>%
+  filter(click_number<6) %>%
   group_by(subj_id,test_part) %>%
   summarise(entropy=mean(entropy,na.rm=T))
 
 E2.p_click_summary <- E2.click_log_with_boards %>%
   rbind(E2.click_log_with_boards_random) %>%
   ungroup() %>%
-  filter(click_number<8) %>%
+  filter(click_number<6) %>%
   group_by(subj_id,test_part) %>%
   summarise(p_click_rank=mean(p_click_rank))
 

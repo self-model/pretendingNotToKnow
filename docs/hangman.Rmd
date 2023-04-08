@@ -41,7 +41,7 @@ draft             : no
 
 documentclass     : "apa6"
 classoption       : "man"
-output            : papaja::apa6_word
+output            : bookdown::html_book
 ---
 
 ```{r setup, include = FALSE}
@@ -66,7 +66,7 @@ groundhog.library(c(
   'jsonlite', # parsing data from sort_trial
   'caret', #for cross validation
   'ggrepel', #for ggplot words
-  'caret' #for cross validation
+  'caret', #for cross validation
   'kernlab' #for SVM
 ), '2022-12-01')
 
@@ -1588,7 +1588,7 @@ bonus.df %>%
   filter(bonus>0)%>%
   dplyr::select(PROLIFIC_PID,bonus)%>%
   write.table('..\\experiments\\Hangman2\\data\\bonuses\\prolific_export3.csv', 
-              sep=',',col.names = F, row.names=F, quote=F)
+              sep=',', row.names=F, quote=F)
 
 export_4_ss <- e4.export4$participant_id %>%
   unique()

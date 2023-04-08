@@ -266,7 +266,7 @@ get_p_click_rank <- function(posterior, flat_position) {
 get_posterior_entropy <- function(posterior) {
   posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
   posterior[which(posterior==0)]=NA; #to avoid infinity*0
-  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+  entropy <- -sum(unlist(posterior)*(unlist(log2(posterior))),na.rm=TRUE);
   return(entropy);
 }
 
@@ -712,6 +712,8 @@ Pretend games were similar to non pretend games in the total number of clicks --
 #          p_click_rank = get_p_click_rank(posterior,flat_position));
 
 E2.click_log_with_boards <- readRDS('../experiments/Battleships2/data/batch1/click_log_with_boards.Rda')
+
+
 
 get_random_flat_position <- function(board_state) {
   
@@ -1745,37 +1747,19 @@ body_df <-  read.csv('../analysis/word_lists/bodypart.csv')
 celebrity_df <- read.csv('../analysis/word_lists/celebrities.csv')
 letter_df <- read.csv('../analysis/word_lists/letters.csv')
 
+get_word_state <- function(word, asked) {
+  word_state = ''
+  for (letter in strsplit(word,'')[[1]]) {
+    value <- ifelse(grepl(toupper(letter), paste(toupper(asked),' ', sep='')), letter, '_')
+    word_state <- paste(word_state, value, sep='')
+  }
+  return(toupper(word_state))
+}
 
 word_is_consistent <- function(word_state, asked,  word) {
-
-  word_state = strsplit(toupper(word_state),'')[[1]];
-  word = strsplit(toupper(word),'')[[1]];
-  asked = strsplit(toupper(asked),'')[[1]];
-  not_in_word = asked[!(asked %in% word_state)]
-
-  # check if number of letters is consistent
-  if (length(word_state) != length(word)) {
-    return(FALSE)
-  }
-
-  # check if the letters in the masked word are consistent
-  for (i in seq_along(word)) {
-    if (word_state[i] != word[i]) {
-      if (word_state[i] != '_' | word[i] == ' ' | word[i] == '.') {
-      return(FALSE)
-      }
-    }
-  }
-
-  # check if any of the misses appear in the candidate word
-  if (length(Reduce(intersect,list(word,not_in_word)))>0) {
-    return(FALSE)
-  }
-
-  #if the function hasn't returned FALSE, return TRUE
-  return(TRUE)
-
+  return(get_word_state(word,asked)==toupper(word_state))
 }
+
 
 get_word_prior <- function(category) {
 
@@ -1790,82 +1774,82 @@ get_word_prior <- function(category) {
 }
 
 get_word_probabilities <- function(word_state, asked, category) {
-
-  word_probabilities <- get_word_prior(category) %>%
-    rowwise() %>%
-    mutate(likelihood = ifelse(word_is_consistent(word_state, asked,word),1, 0),
-           pword = prior * likelihood) %>%
-    ungroup() %>%
-    mutate(posterior = pword/sum(pword))%>%
-    filter(posterior>0) %>%
-    arrange(desc(posterior))
-
-
-  return(word_probabilities)
-
-};
+  
+    word_probabilities <- get_word_prior(category) %>%
+      rowwise() %>%
+      mutate(likelihood = ifelse(word_is_consistent(word_state, asked,word),1, 0),
+             pword = prior * likelihood) %>%
+      ungroup() %>%
+      mutate(posterior = pword/sum(pword))%>%
+      filter(posterior>0) %>%
+      arrange(desc(posterior))
+  
+  
+    return(word_probabilities)
+  
+  };
 
 
 
 get_letter_posterior <- function(word_state, asked, category) {
 
-  word_probabilities <- get_word_probabilities(word_state, asked, category);
-
-  letter_probabilities = c();
-  for (letter in toupper(letters)) {
-    if (grepl(letter,asked)) {
-      letter_probabilities = c(letter_probabilities,
-                               NA)
-    } else {
-      letter_probabilities = c(letter_probabilities,
-                             word_probabilities %>%
-                               filter(grepl(letter,toupper(word))) %>%
-                               pull(posterior) %>%
-                               sum()
-    )
+    word_probabilities <- get_word_probabilities(word_state, asked, category);
+  
+    letter_probabilities = c();
+    for (letter in toupper(letters)) {
+      if (grepl(letter,asked)) {
+        letter_probabilities = c(letter_probabilities,
+                                 NA)
+      } else {
+        letter_probabilities = c(letter_probabilities,
+                               word_probabilities %>%
+                                 filter(grepl(letter,toupper(word))) %>%
+                                 pull(posterior) %>%
+                                 sum()
+      )
+      }
     }
+    posterior = letter_probabilities/sum(letter_probabilities, na.rm=T)
+  
+    return(paste(posterior,collapse=','))
+  
   }
-  posterior = letter_probabilities/sum(letter_probabilities, na.rm=T)
-
-  return(paste(posterior,collapse=','))
-
-};
 
 get_letter_prob_posterior <- function(asked) {
 
-  letter_probabilities <- letter_df %>%
-    rowwise() %>%
-    mutate(prob = ifelse(
-      grepl(toupper(letter),toupper(asked)),
-      NA,
-      frequency)
-      ) %>%
-    ungroup()%>%
-    mutate(
-      posterior = prob/sum(prob,na.rm=T)
-    )
-
-  return(paste(letter_probabilities$posterior,collapse=','))
-
-};
+    letter_probabilities <- letter_df %>%
+      rowwise() %>%
+      mutate(prob = ifelse(
+        grepl(toupper(letter),toupper(asked)),
+        NA,
+        frequency)
+        ) %>%
+      ungroup()%>%
+      mutate(
+        posterior = prob/sum(prob,na.rm=T)
+      )
+  
+    return(paste(letter_probabilities$posterior,collapse=','))
+  
+  }
 
 get_p_letter <- function(posterior, letter) {
-  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
-  return(posterior[which(toupper(letters)==letter)])
-}
+    posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+    return(posterior[which(toupper(letters)==letter)])
+  }
 
 get_p_letter_rank <- function(posterior, letter) {
-  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
-  rank_posterior = rank(-posterior)
-  return(rank_posterior[which(toupper(letters)==letter)])
-}
+    posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+    rank_posterior = rank(-posterior)
+    return(rank_posterior[which(toupper(letters)==letter)])
+  }
 
 get_letter_posterior_entropy <- function(posterior) {
-  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
-  posterior[which(posterior==0)]=NA; #to avoid infinity*0
-  entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
-  return(entropy);
-}
+    posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+    posterior[which(posterior==0)]=NA; #to avoid infinity*0
+    entropy <- -sum(unlist(posterior)*(unlist(log2(posterior))),na.rm=TRUE);
+    return(entropy);
+  }
 
 # E4.click_log_with_boards <- E4.click_log %>%
 #   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
@@ -1911,7 +1895,7 @@ get_most_frequent_letter <- function(asked) {
 #          p_click_rank = get_p_letter_rank(posterior,letter),
 #          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
 #          test_part='most_frequent');
-
+ 
 # E4.letter_prob_click_log_with_boards <- E4.click_log %>%
 #   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
 #   rowwise()%>%
@@ -1919,8 +1903,8 @@ get_most_frequent_letter <- function(asked) {
 #          p_click = get_p_letter(posterior,letter),
 #          entropy = get_letter_posterior_entropy(posterior),
 #          p_click_rank = get_p_letter_rank(posterior,letter));
+# 
 
- 
 # E4.letter_prob_click_log_with_boards_random <- E4.letter_prob_click_log_with_boards %>%
 #   mutate(letter = get_random_letter(asked),
 #          p_click = get_p_letter(posterior,letter),
@@ -2287,7 +2271,7 @@ In non-pretend games, the relationship between uncertainty and RT was negatively
 
 E4.click_log_with_boards %>%
   filter(click_number>1) %>%
-  mutate(entropy_bin=round(entropy*3)/3) %>%
+  mutate(entropy_bin=round(entropy*2)/2) %>%
   group_by(test_part,subj_id,entropy_bin) %>% 
   summarise(RT=median(RT)) %>%
   group_by(test_part,entropy_bin) %>%
