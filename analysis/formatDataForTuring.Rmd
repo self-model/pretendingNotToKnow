@@ -1,0 +1,459 @@
+---
+title: "Format Datan For Turing"
+author: "Matan Mazor"
+date: "2023-04-07"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+# Load packages with groundhog
+library(groundhog)
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel', #for word scatterplots
+  'pracma' # for GramSchmidt
+), '2022-12-01')
+
+# Load workspace (after running preregisteredMethodsAndResults.Rmd, 
+# exploratoryResults.Rmd, and all the scripts that are linked to from these 
+# documents). 
+load('../.RData')
+```
+## Calculate information gain
+
+```{r hangman-information-gain, echo=FALSE}
+
+
+get_word_state <- function(word, asked) {
+  word_state = ''
+  for (letter in strsplit(word,'')[[1]]) {
+    value <- ifelse(grepl(toupper(letter), paste(toupper(asked),' ', sep='')), letter, '_')
+    word_state <- paste(word_state, value, sep='')
+  }
+  return(toupper(word_state))
+}
+
+word_is_consistent <- function(word_state, asked,  word) {
+  return(get_word_state(word,asked)==toupper(word_state))
+}
+
+get_word_entropy <- function(word_probabilities) {
+
+    entropy <- -sum(unlist(word_probabilities$posterior)*
+                    (unlist(log2(word_probabilities$posterior))),na.rm=TRUE);
+  return(entropy)
+};
+
+
+get_letter_eig <- function(word_state, asked, category, 
+                                          entropy, word_probabilities, letter) {
+  
+  if (grepl(toupper(letter),toupper(asked))) {
+    return(NA)
+  } else {
+    word_probabilities <- word_probabilities %>%
+      rowwise() %>%
+      mutate(new_state = get_word_state(word,paste(asked,letter,sep=''))) %>%
+      group_by(new_state) %>%
+      summarize(prob = sum(posterior),
+                entropy = -sum(unlist(posterior)*
+                    (unlist(log2(posterior/sum(posterior)))),na.rm=TRUE))
+    expected_entropy = sum(unlist(word_probabilities$prob)*unlist(word_probabilities$entropy))
+    return(entropy-expected_entropy)
+  }
+}
+
+#expected information gain
+get_eig <- function(word_state,asked,category) {
+  print(word_state)
+  word_probabilities = get_word_probabilities(word_state,asked,category);
+  entropy = get_word_entropy(word_probabilities)
+  #if entropy is 0 there is no more uncertainty to resolve
+  if (entropy==0) {
+    print('entropy is 0')
+    return(paste(rep(0,26),collapse=','))
+  } else {
+    letter_eig = c();
+    for (letter in toupper(letters)) {
+      if (grepl(letter,asked)) {
+        letter_eig = c(letter_eig,
+                                 NA)
+      } else {
+        letter_eig = c(letter_eig,
+                               get_letter_eig(word_state,asked,category,entropy, 
+                                              word_probabilities, letter)
+      )
+      }
+    }
+  }
+  return(paste(letter_eig,collapse=','))
+}
+
+# E4.click_log_with_information_gain <- E4.click_log %>%
+#   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
+#   rowwise()%>%
+#   mutate(eig = get_eig(word_state,asked,category))
+
+load('E4eig.RData')
+
+# get_letter_posterior <- function(word_state, asked, category) {
+# 
+#   word_probabilities <- get_word_probabilities(word_state, asked, category);
+# 
+#   letter_probabilities = c();
+#   for (letter in toupper(letters)) {
+#     if (grepl(letter,asked)) {
+#       letter_probabilities = c(letter_probabilities,
+#                                NA)
+#     } else {
+#       letter_probabilities = c(letter_probabilities,
+#                              word_probabilities %>%
+#                                filter(grepl(letter,toupper(word))) %>%
+#                                pull(posterior) %>%
+#                                sum()
+#     )
+#     }
+#   }
+#   posterior = letter_probabilities/sum(letter_probabilities, na.rm=T)
+# 
+#   return(paste(posterior,collapse=','))
+# 
+# };
+# 
+# get_letter_prob_posterior <- function(asked) {
+# 
+#   letter_probabilities <- letter_df %>%
+#     rowwise() %>%
+#     mutate(prob = ifelse(
+#       grepl(toupper(letter),toupper(asked)),
+#       NA,
+#       frequency)
+#       ) %>%
+#     ungroup()%>%
+#     mutate(
+#       posterior = prob/sum(prob,na.rm=T)
+#     )
+# 
+#   return(paste(letter_probabilities$posterior,collapse=','))
+# 
+# };
+# 
+# get_p_letter <- function(posterior, letter) {
+#   posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+#   return(posterior[which(toupper(letters)==letter)])
+# }
+# 
+# get_p_letter_rank <- function(posterior, letter) {
+#   posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+#   rank_posterior = rank(-posterior)
+#   return(rank_posterior[which(toupper(letters)==letter)])
+# }
+# 
+# get_letter_posterior_entropy <- function(posterior) {
+#   posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+#   posterior[which(posterior==0)]=NA; #to avoid infinity*0
+#   entropy <- -sum(unlist(posterior)*(unlist(log(posterior))),na.rm=TRUE);
+#   return(entropy);
+# }
+
+# E4.click_log_with_boards <- E4.click_log %>%
+#   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
+#   rowwise()%>%
+#   mutate(posterior = get_letter_posterior(word_state,asked,category),
+#          p_click = get_p_letter(posterior,letter),
+#          entropy = get_letter_posterior_entropy(posterior),
+#          p_click_rank = get_p_letter_rank(posterior,letter));
+
+# get_random_letter <- function(asked) {
+# 
+#   asked = strsplit(tolower(asked),'')[[1]];
+#   not_asked = setdiff(letters,asked)
+#   return(toupper(not_asked)%>%sample(1))
+# 
+# }
+# 
+# get_most_frequent_letter <- function(asked) {
+# 
+#    lp <- letter_df %>%
+#     rowwise() %>%
+#     mutate(prob = ifelse(
+#       grepl(toupper(letter),toupper(asked)),
+#       NA,
+#       frequency)
+#       ) %>%
+#     ungroup()
+# 
+#      return(lp[which.max(lp$prob),]$letter%>%toupper())
+# 
+# }
+
+# E4.click_log_with_boards_random <- E4.click_log_with_boards %>%
+#   mutate(letter = get_random_letter(asked),
+#          p_click = get_p_letter(posterior,letter),
+#          p_click_rank = get_p_letter_rank(posterior,letter),
+#          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+#          test_part='random');
+
+# E4.click_log_with_boards_most_frequent <- E4.click_log_with_boards %>%
+#   mutate(letter = get_most_frequent_letter(asked),
+#          p_click = get_p_letter(posterior,letter),
+#          p_click_rank = get_p_letter_rank(posterior,letter),
+#          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+#          test_part='most_frequent');
+
+# E4.letter_prob_click_log_with_boards <- E4.click_log %>%
+#   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
+#   rowwise()%>%
+#   mutate(posterior = get_letter_prob_posterior(asked),
+#          p_click = get_p_letter(posterior,letter),
+#          entropy = get_letter_posterior_entropy(posterior),
+#          p_click_rank = get_p_letter_rank(posterior,letter));
+
+ 
+# E4.letter_prob_click_log_with_boards_random <- E4.letter_prob_click_log_with_boards %>%
+#   mutate(letter = get_random_letter(asked),
+#          p_click = get_p_letter(posterior,letter),
+#          p_click_rank = get_p_letter_rank(posterior,letter),
+#          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+#          test_part='random');
+
+# save(E4.click_log_with_boards,
+#      E4.click_log_with_boards_random,
+#      E4.click_log_with_boards_most_frequent,
+#      E4.letter_prob_click_log_with_boards,
+#      E4.letter_prob_click_log_with_boards_random,
+#      file='E4.click_log_with_boards.RData')
+
+load('../docs/E4.click_log_with_boards.RData') # this file includes all the above dataframes.
+
+```
+
+
+```{r format}
+
+E4.letters_posterior_wide <- E4.click_log_with_boards %>% 
+  dplyr::select(subj_id, test_part,word,posterior,letter, hit_bin) %>%
+  separate(posterior, sep=",", into=paste0("post_",LETTERS)) %>%
+  mutate_at(vars(post_A:post_Z), as.numeric) %>% 
+  mutate(across(starts_with("post"), ~ifelse(is.na(.), 0, 1), .names = "{sub('post', 'mask', .col)}"),
+         across(starts_with("post"), ~ifelse(is.na(.), 0, .)))
+
+E4.letters_prior_wide <- E4.letter_prob_click_log_with_boards %>% 
+  dplyr::select(subj_id, test_part,word,posterior,letter) %>%
+  separate(posterior, sep=",", into=paste0("prior_",LETTERS)) %>%
+  mutate_at(vars(prior_A:prior_Z), as.numeric) %>% 
+  mutate(across(starts_with("prior"), ~ifelse(is.na(.), 0, 1), .names = "{sub('prior', 'mask', .col)}"),
+         across(starts_with("prior"), ~ifelse(is.na(.), 0, .)))
+
+E4.letters_eig_wide <- E4.click_log_with_information_gain %>% 
+  dplyr::select(subj_id, test_part,word,eig,letter) %>%
+  separate(eig, sep=",", into=paste0("eig_",LETTERS)) %>%
+  mutate_at(vars(eig_A:eig_Z), as.numeric) %>% 
+  mutate(across(starts_with("eig"), ~ifelse(is.na(.), 0, .)))
+
+E4.letters_features_wide <- E4.letters_posterior_wide %>%
+  merge(E4.letters_prior_wide) %>%
+  merge(E4.letters_eig_wide)
+
+E4.letters_features_wide %>%
+  write.csv('dataForTuring/E4.csv')
+```
+
+```{r normalize-features}
+E4.letters_features_normalized <- E4.letters_features_wide;
+
+post_columns <- paste0("post_",LETTERS)
+prior_columns <- paste0("prior_",LETTERS)
+eig_columns <- paste0("eig_",LETTERS)
+
+for (subj in E4.letters_features_normalized$subj_id%>%unique()) {
+  
+  subj_rows <- which(E4.letters_features_normalized$subj_id==subj)
+  post_subset <- E4.letters_features_normalized[subj_rows,post_columns];
+  # Calculate the global mean and standard deviation for the subset
+  post_mean <- mean(as.vector(unlist((post_subset))), na.rm = TRUE)
+  post_sd <- sd(as.vector(unlist((post_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_post_subset <- post_subset %>% mutate(across(everything(), ~ (. - post_mean) / post_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_normalized[subj_rows, post_columns] <- normalized_post_subset
+  
+  prior_subset <- E4.letters_features_normalized[subj_rows,prior_columns];
+  # Calculate the global mean and standard deviation for the subset
+  prior_mean <- mean(as.vector(unlist((prior_subset))), na.rm = TRUE)
+  prior_sd <- sd(as.vector(unlist((prior_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_prior_subset <- prior_subset %>% mutate(across(everything(), ~ (. - prior_mean) / prior_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_normalized[subj_rows, prior_columns] <- normalized_prior_subset
+  
+  eig_subset <- E4.letters_features_normalized[subj_rows,eig_columns];
+  # Calculate the global mean and standard deviation for the subset
+  eig_mean <- mean(as.vector(unlist((eig_subset))), na.rm = TRUE)
+  eig_sd <- sd(as.vector(unlist((eig_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_eig_subset <- eig_subset %>% mutate(across(everything(), ~ (. - eig_mean) / eig_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_normalized[subj_rows, eig_columns] <- normalized_eig_subset;
+}
+
+E4.letters_features_normalized %>%
+  write.csv('dataForTuring/E4norm.csv')
+
+```
+
+
+```{r orthogonalize-eig}
+E4.letters_features_orth <- E4.letters_features_normalized;
+
+post_columns <- paste0("post_",LETTERS)
+prior_columns <- paste0("prior_",LETTERS)
+eig_columns <- paste0("eig_",LETTERS)
+mask_columns <- paste0("mask_", LETTERS)
+
+num_rows <- nrow(E4.letters_features_orth)
+
+pb = txtProgressBar(min = 0, max = num_rows, initial = 0) 
+
+for (i_row in 1:num_rows) {
+  
+  mask_subset <- unlist(E4.letters_features_orth[i_row,mask_columns], use.names=F);
+  mask_indices <- which(mask_subset==1);
+  post_subset <- unlist(E4.letters_features_orth[i_row,post_columns[mask_indices]], use.names=F);
+  prior_subset <- unlist(E4.letters_features_orth[i_row,prior_columns[mask_indices]], use.names=F);
+  eig_subset <- unlist(E4.letters_features_orth[i_row,eig_columns[mask_indices]], use.names=F);
+
+    matrix <- matrix(c(post_subset,prior_subset,eig_subset),length(mask_indices),3)
+    if (Rank(mask_indices)==3) {
+    orthogonalized_matrix <- gramSchmidt(matrix)$Q
+    
+    orth_post_subset <- orthogonalized_matrix[,1];
+    orth_prior_subset <- orthogonalized_matrix[,2];
+    orth_eig_subset <- orthogonalized_matrix[,3];
+  } else {
+    orth_post_subset <- post_subset;
+    orth_prior_subset <- prior_subset;
+    orth_eig_subset <- eig_subset;
+  }
+
+ # Replace the original columns with the orthogonalized ones
+  E4.letters_features_orth[i_row, post_columns[mask_indices]] <- orth_post_subset
+  E4.letters_features_orth[i_row, prior_columns[mask_indices]] <- orth_prior_subset
+  E4.letters_features_orth[i_row, eig_columns[mask_indices]] <- orth_eig_subset
+  
+  setTxtProgressBar(pb, i_row)
+
+}
+
+close(pb)
+
+# NORMALIZE!
+
+num_subj <- E4.letters_features_orth$subj_id%>%unique()%>%length()
+pb = txtProgressBar(min = 0, max = num_subj, initial = 0) 
+
+i_subj=0
+for (subj in E4.letters_features_orth$subj_id%>%unique()) {
+  i_subj = i_subj+1
+  subj_rows <- which(E4.letters_features_orth$subj_id==subj)
+  post_subset <- E4.letters_features_orth[subj_rows,post_columns];
+  # Calculate the global mean and standard deviation for the subset
+  post_mean <- mean(as.vector(unlist((post_subset))), na.rm = TRUE)
+  post_sd <- sd(as.vector(unlist((post_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_post_subset <- post_subset %>% mutate(across(everything(), ~ (. - post_mean) / post_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_orth[subj_rows, post_columns] <- normalized_post_subset
+  
+  prior_subset <- E4.letters_features_orth[subj_rows,prior_columns];
+  # Calculate the global mean and standard deviation for the subset
+  prior_mean <- mean(as.vector(unlist((prior_subset))), na.rm = TRUE)
+  prior_sd <- sd(as.vector(unlist((prior_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_prior_subset <- prior_subset %>% mutate(across(everything(), ~ (. - prior_mean) / prior_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_orth[subj_rows, prior_columns] <- normalized_prior_subset
+  
+  eig_subset <- E4.letters_features_orth[subj_rows,eig_columns];
+  # Calculate the global mean and standard deviation for the subset
+  eig_mean <- mean(as.vector(unlist((eig_subset))), na.rm = TRUE)
+  eig_sd <- sd(as.vector(unlist((eig_subset))), na.rm = TRUE)
+  
+  # Normalize the selected columns
+  normalized_eig_subset <- eig_subset %>% mutate(across(everything(), ~ (. - eig_mean) / eig_sd))
+  
+  # Replace the original columns with the normalized ones
+  E4.letters_features_orth[subj_rows, eig_columns] <- normalized_eig_subset;
+  
+  setTxtProgressBar(pb, i_subj)
+
+}
+
+
+E4.letters_features_orth %>%
+  write.csv('dataForTuring/E4orth.csv')
+
+```
+
+```{r}
+
+E4.letters_features_wide_misses <- E4.letters_features_wide %>%
+  filter(!hit_bin) 
+
+E4.subjects_with_enough_misses <- E4.letters_features_wide_misses %>%
+  group_by(subj_id,test_part) %>%
+  summarise(n=n()) %>%
+  group_by(subj_id) %>%
+  summarise(n=min(n)) %>%
+  filter(n>5) %>%
+  pull(subj_id)
+
+E4.letters_features_wide_misses %>%
+  filter(subj_id %in% E4.subjects_with_enough_misses) %>%
+  write.csv('dataForTuring/E4misses.csv')
+
+
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
