@@ -354,7 +354,7 @@ for (i_row in 1:num_rows) {
   eig_subset <- unlist(E4.letters_features_orth[i_row,eig_columns[mask_indices]], use.names=F);
 
     matrix <- matrix(c(post_subset,prior_subset,eig_subset),length(mask_indices),3)
-    if (Rank(mask_indices)==3) {
+    if (Rank(matrix)==3) {
     orthogonalized_matrix <- gramSchmidt(matrix)$Q
     
     orth_post_subset <- orthogonalized_matrix[,1];
@@ -380,7 +380,7 @@ close(pb)
 # NORMALIZE!
 
 num_subj <- E4.letters_features_orth$subj_id%>%unique()%>%length()
-pb = txtProgressBar(min = 0, max = num_subj, initial = 0) 
+pb = txtProgressBar(min = 0, max = num_subj, initial = 0)
 
 i_subj=0
 for (subj in E4.letters_features_orth$subj_id%>%unique()) {
@@ -390,35 +390,35 @@ for (subj in E4.letters_features_orth$subj_id%>%unique()) {
   # Calculate the global mean and standard deviation for the subset
   post_mean <- mean(as.vector(unlist((post_subset))), na.rm = TRUE)
   post_sd <- sd(as.vector(unlist((post_subset))), na.rm = TRUE)
-  
+
   # Normalize the selected columns
   normalized_post_subset <- post_subset %>% mutate(across(everything(), ~ (. - post_mean) / post_sd))
-  
+
   # Replace the original columns with the normalized ones
   E4.letters_features_orth[subj_rows, post_columns] <- normalized_post_subset
-  
+
   prior_subset <- E4.letters_features_orth[subj_rows,prior_columns];
   # Calculate the global mean and standard deviation for the subset
   prior_mean <- mean(as.vector(unlist((prior_subset))), na.rm = TRUE)
   prior_sd <- sd(as.vector(unlist((prior_subset))), na.rm = TRUE)
-  
+
   # Normalize the selected columns
   normalized_prior_subset <- prior_subset %>% mutate(across(everything(), ~ (. - prior_mean) / prior_sd))
-  
+
   # Replace the original columns with the normalized ones
   E4.letters_features_orth[subj_rows, prior_columns] <- normalized_prior_subset
-  
+
   eig_subset <- E4.letters_features_orth[subj_rows,eig_columns];
   # Calculate the global mean and standard deviation for the subset
   eig_mean <- mean(as.vector(unlist((eig_subset))), na.rm = TRUE)
   eig_sd <- sd(as.vector(unlist((eig_subset))), na.rm = TRUE)
-  
+
   # Normalize the selected columns
   normalized_eig_subset <- eig_subset %>% mutate(across(everything(), ~ (. - eig_mean) / eig_sd))
-  
+
   # Replace the original columns with the normalized ones
   E4.letters_features_orth[subj_rows, eig_columns] <- normalized_eig_subset;
-  
+
   setTxtProgressBar(pb, i_subj)
 
 }

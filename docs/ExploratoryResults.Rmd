@@ -550,6 +550,146 @@ Importantly, before that point, flexibility was persistently lower in pretend ga
 
 We reasoned that this tendency to rigidly follow a pre-defined plan may underlie at least some of the difference in game optimality between pretend and non-pretend games. We find evidence for such a correlation (`r apa_print(cor.test(E4.entropy_cost$entropy_cost, E4.entropy_cost$p_click_cost))$full_result`). Note that the direction is negative because high optimality is mapped to low values, but high flexibility is mapped to high values. 
 
+## Model-based analysis
+
+We considered three factors that contribute to letter selections in Hangman:
+
+1. The prior probability of a letter in the English language $p(X)$.
+2. The posterior probability that a letter is present in the target word, given the game state $S$ and the category $p(X|S)$.
+3. The expected information gain this letter provides regarding the identity of the target word $H(S)-\sum p(x_v)H(S,x_v)$ (where $x_v$ is one potential outcome of guessing the letter $X$, for example, finding it in the second and fifth positions).
+
+To quantify the contribution of each of these factors to letter selection, we fitted a multinomial logistic regression model to the data of each player. We compared the ensuing coefficients in 'pretend' and 'non-pretend' conditions. 
+
+```{r hangman-load-coefficients, echo=FALSE}
+
+#get list of subjects
+E4.data_for_turing <- read.csv('../analysis/dataForTuring/E4norm.csv')
+E4.subjects <- E4.data_for_turing$subj_id%>%unique()
+
+#initialize
+E4.model_coefficients_raw <- data.frame()
+
+#fill the array
+for (i_subj in 1:length(E4.subjects)) {
+  E4.model_coefficients_raw <- E4.model_coefficients_raw %>%
+    rbind(read.csv(sprintf('../analysis/model_fits/E4/subj%d_normalized.csv',i_subj)) %>%
+            mutate(subj_id=E4.subjects[i_subj]) %>%
+            dplyr::select(subj_id,term,estimate))
+}
+
+# Organize in a more convenient form
+# non-pretend dataframe
+
+E4.np_coefficients <- E4.model_coefficients_raw %>% 
+  group_by(subj_id) %>% 
+  summarize(test_part = 'nonpretend',
+            prior = estimate[term == 'coef_prior'],
+            post = estimate[term == 'coef_post'],
+            eig = estimate[term == 'coef_eig'])
+
+E4.p_coefficients <- E4.model_coefficients_raw %>% 
+  group_by(subj_id) %>% 
+  summarize(test_part='pretend',
+            prior = estimate[term == 'coef_prior'] +
+              estimate[term == 'coef_prior_delta'],
+            post = estimate[term == 'coef_post'] +
+              estimate[term == 'coef_post_delta'],
+            eig = estimate[term == 'coef_eig'] +
+              estimate[term == 'coef_eig_delta'])
+
+E4.model_coefficients <- E4.np_coefficients %>%
+  rbind(E4.p_coefficients)
+```
+
+
+```{r hangman-coefficients_plot, echo-FALSE, cache=TRUE, fig.width=10,fig.height=5}
+
+E4.model_coefficients %>%
+  gather('term','coefficient',prior,post,eig) %>%
+  mutate(test_part = factor(test_part, levels=c('nonpretend','pretend'),
+                            labels=c('non-pretend','pretend')),
+         term = factor(term, levels = c('prior','post','eig'), labels = c('prior','posterior','expected information gain'))) %>%
+  ggplot(aes(x=coefficient,fill=test_part, color=test_part))+
+  geom_histogram( alpha=0.6, position = 'identity', bins=100) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#146464", "#404080")) +
+  labs(x='coefficient (a.u.)', y='number of players')+
+  theme(legend.position=c(0.10,0.85)) +
+  scale_x_continuous(limits=c(-2,5)) +
+  facet_wrap(~term, nrow=3)+
+  # scale_x_reverse() +
+  theme_classic();
+
+ggsave('../docs/figures/E4coefs.png',width=5,height=4.5)
+```
+
+All three terms had a positive effect in both conditions. Prior probability (base rate) had a stronger effect in pretend games (`r apa_print(E4.model_coefficients %>% dplyr::select(subj_id,test_part,prior)%>%spread(test_part,prior)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`). Hit posterior probability showed no such difference, and had a similar effect on players' decisions in both conditions (`r apa_print(E4.model_coefficients %>% dplyr::select(subj_id,test_part,post)%>%spread(test_part,post)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`). Finally, expected information gain had a weaker effect in pretend games (`r apa_print(E4.model_coefficients %>% dplyr::select(subj_id,test_part,eig)%>%spread(test_part,eig)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`).
+
+```{r hangman-load-coefficients-orth, echo=FALSE}
+
+#get list of subjects
+
+#initialize
+E4.model_coefficients_orth_raw <- data.frame()
+
+#fill the array
+for (i_subj in 1:length(E4.subjects)) {
+  E4.model_coefficients_orth_raw <- E4.model_coefficients_orth_raw %>%
+    rbind(read.csv(sprintf('../analysis/model_fits/E4/subj%d_orth.csv',i_subj)) %>%
+            mutate(subj_id=E4.subjects[i_subj]) %>%
+            dplyr::select(subj_id,term,estimate))
+}
+
+# Organize in a more convenient form
+# non-pretend dataframe
+
+E4.np_orth_coefficients <- E4.model_coefficients_orth_raw %>% 
+  group_by(subj_id) %>% 
+  summarize(test_part = 'nonpretend',
+            prior = estimate[term == 'coef_prior'],
+            post = estimate[term == 'coef_post'],
+            eig = estimate[term == 'coef_eig'])
+
+E4.p_orth_coefficients <- E4.model_coefficients_orth_raw %>% 
+  group_by(subj_id) %>% 
+  summarize(test_part='pretend',
+            prior = estimate[term == 'coef_prior'] +
+              estimate[term == 'coef_prior_delta'],
+            post = estimate[term == 'coef_post'] +
+              estimate[term == 'coef_post_delta'],
+            eig = estimate[term == 'coef_eig'] +
+              estimate[term == 'coef_eig_delta'])
+
+E4.model_coefficients_orth <- E4.np_orth_coefficients %>%
+  rbind(E4.p_orth_coefficients)
+```
+
+
+
+
+Given colinearity between model predictors, we suspected that the effects of expected information gain may be driven by posterior probability effects.  To isolate unique contributions of prior probability and expected information gain, we repeated the same analysis, but this time serially orthogonalizing the features (in the order [posterior, prior, expected information gain], and using the Gram Schmidt algorithm) prior to fitting the multinomial regression model. This time, expected information gain had no significant effect on decision in non-pretend (`r  apa_print(E4.model_coefficients_orth%>%filter(test_part=='nonpretend')%>%pull(eig)%>%t.test())$statistic`) and pretend games (`r  apa_print(E4.model_coefficients_orth%>%filter(test_part=='pretend')%>%pull(eig)%>%t.test())$statistic`), rendering it possible that the previously observed effects were confounded with prior and posterior probability. In contrast, both prior and posterior probability had a significant positive effect, with prior probability having a stronger effect in pretend games (`r apa_print(E4.model_coefficients_orth %>% dplyr::select(subj_id,test_part,prior)%>%spread(test_part,prior)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`).
+
+```{r hangman-coefficients_plot_orth, echo-FALSE, cache=TRUE, fig.width=10,fig.height=5}
+
+E4.model_coefficients_orth %>%
+  gather('term','coefficient',prior,post,eig) %>%
+  mutate(test_part = factor(test_part, levels=c('nonpretend','pretend'),
+                            labels=c('non-pretend','pretend')),
+         term = factor(term, levels = c('prior','post','eig'), labels = c('prior','posterior','expected information gain'))) %>%
+  ggplot(aes(x=coefficient,fill=test_part, color=test_part))+
+  geom_histogram( alpha=0.6, position = 'identity', bins=100) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#146464", "#404080")) +
+  labs(x='coefficient (a.u.)', y='number of players', title='Orthogonalized vectors')+
+  theme(legend.position=c(0.10,0.85)) +
+  scale_x_continuous(limits=c(-2,5)) +
+  facet_wrap(~term, nrow=3)+
+  # scale_x_reverse() +
+  theme_classic();
+
+ggsave('../docs/figures/E4coefs_orth.png',width=5,height=4.5)
+```
+
 ## Suppression or simulation?
 
 ```{r hangman-suppression-or-simulation}
