@@ -506,7 +506,7 @@ simulated_hits <- data.frame(click_number=1:25,mean_hit=colMeans(boards,na.rm=T)
 
 ### Hypothesis 3 (number of clicks)
 
-To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a median total click number of `r num_clicks_sim%>%median()`, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a median total click number of `r num_clicks_optimal_sim%>%median()`. Among our players, the median number of clicks was `r E2.median_clicks%>%pull(nonpretend)%>%median()` in both pretend and non-pretend games.
+To sink all ships, players had to click on at least 7 and at most 25 squares. A simulated player that clicks randomly had a mean total click number of `r num_clicks_sim%>%mean()%>%printnum()`, and a near-optimal greedy player that consistently selected the square with the highest objective probability of containing a ship had a mean total click number of `r num_clicks_optimal_sim%>%mean()%>%printnum()`. Among our players, the mean number of clicks was `r E2.median_clicks%>%pull(nonpretend)%>%mean()%>%printnum()` in non-pretend games and `r E2.median_clicks%>%pull(pretend)%>%mean()%>%printnum()` in pretend games.
 
 No significant difference in the total number of clicks was observed in the pretend-first group (`r E2.median_clicks%>%filter(!genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), but a significant difference was observed in the pretend-second group (`r E2.median_clicks%>%filter(genuine_first)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Note that the two effects point in opposite directions, reflecting a tendency to make fewer clicks in the second block of the game. Crucially, when focusing on the first block only, We observed no significant difference in the number of clicks between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend),E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`).
 
@@ -1138,7 +1138,7 @@ E2.judge_summary <- E2.judge_summary %>%
 
 ### Hypothesis 10 (judge-pretend relation)
 
-Pretense quality was quantified as the number of pretend games that were misclassified by other participants as non-pretend games, divided by the number of pretend games that were presented to other participants. Due to randomization, this denominator is different for different participants. We tested for a correlation between pretense quality and judge accuracy at the group level. To maximize statistical power, this hypothesis was tested on the pooled data from both groups of participants. We find no evidence for such a correlation (`r  apa_print(cor.test(E2.performance_df$judge_rate,E2.performance_df$pretend_rate))$full_result`). Furthermore, we find no significant correlation between participants' accuracy in detecting the pretender and their decision optimality in pretend games (measured as the mean rank posterior probability of their cell selections; `r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend))$full_result`), nor with the cost to optimality relative to non-pretend games (`r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend-E2.judge_summary$nonpretend))$full_result`).
+Pretense quality was quantified as the number of pretend games that were misclassified by other participants as non-pretend games, divided by the number of pretend games that were presented to other participants. Due to randomization, this denominator is different for different participants. We tested for a correlation between pretense quality and judge accuracy at the group level. To maximize statistical power, this hypothesis was tested on the pooled data from both groups of participants. We find no evidence for such a correlation (`r  apa_print(cor.test(E2.performance_df$judge_rate,E2.performance_df$pretend_rate, method='spearman'))$full_result`). Furthermore, we find no significant correlation between participants' accuracy in detecting the pretender and their decision optimality in pretend games (measured as the mean rank posterior probability of their cell selections; `r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend, method='spearman'))$full_result`), nor with the cost to optimality relative to non-pretend games (`r apa_print(cor.test(E2.judge_summary$judge,E2.judge_summary$pretend-E2.judge_summary$nonpretend, method='spearman'))$full_result`).
 
 ```{r battleship-h10-plot, echo-FALSE, cache=TRUE, fig.width=10,fig.height=5}
 
@@ -1567,9 +1567,6 @@ E4.time_per_click_number %>%
 
 ```
 
-### Hypothesis 3 (number of misses)
-
-The median number of misses was `r E4.median_misses%>%pull(nonpretend)%>%median()` in non-pretend games and `r E4.median_misses%>%pull(pretend)%>%median()` in pretend games. The difference between the two was significant among players that pretended in the first part (`r t.test(E4.median_misses%>%filter(!genuine_first)%>%pull(nonpretend)-E4.median_misses%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`), and among those that pretended in the second part (`r t.test(E4.median_misses%>%filter(genuine_first)%>%pull(nonpretend)-E4.median_misses%>%filter(genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`).
 
 ```{r hangman-h3-plot, echo-FALSE, cache=TRUE, fig.width=10,fig.height=5}
 
@@ -1882,6 +1879,13 @@ get_most_frequent_letter <- function(asked) {
 
 }
 
+get_optimal_letter <- function(posterior) {
+  
+  posterior = scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  return(LETTERS[which.max(posterior)])
+  
+}
+
 # E4.click_log_with_boards_random <- E4.click_log_with_boards %>%
 #   mutate(letter = get_random_letter(asked),
 #          p_click = get_p_letter(posterior,letter),
@@ -1895,6 +1899,14 @@ get_most_frequent_letter <- function(asked) {
 #          p_click_rank = get_p_letter_rank(posterior,letter),
 #          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
 #          test_part='most_frequent');
+
+# E4.click_log_with_boards_optimal <- E4.click_log_with_boards %>%
+#   mutate(letter = get_optimal_letter(posterior),
+#          p_click = get_p_letter(posterior,letter),
+#          p_click_rank = get_p_letter_rank(posterior,letter),
+#          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+#          test_part='most_frequent');
+
  
 # E4.letter_prob_click_log_with_boards <- E4.click_log %>%
 #   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,asked,click_number,letter,RT,hit_bin) %>%
@@ -1921,6 +1933,98 @@ get_most_frequent_letter <- function(asked) {
 
 load('E4.click_log_with_boards.RData') # this file includes all the above dataframes.
 
+```
+
+
+### Hypothesis 3 (number of misses)
+
+The mean number of misses was `r E4.median_misses%>%pull(nonpretend)%>%mean()` in non-pretend games and `r E4.median_misses%>%pull(pretend)%>%mean()` in pretend games. The difference between the two was significant among players that pretended in the first part (`r t.test(E4.median_misses%>%filter(!genuine_first)%>%pull(nonpretend)-E4.median_misses%>%filter(!genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`), and among those that pretended in the second part (`r t.test(E4.median_misses%>%filter(genuine_first)%>%pull(nonpretend)-E4.median_misses%>%filter(genuine_first)%>%pull(pretend))%>%apa_print()%>%'$'(statistic)`).
+
+```{r simulate_nclicks-hangman, echo=FALSE, cache=TRUE}
+
+## simulate number of clicks for random play
+
+words_and_categories <- E4.click_df %>%
+  group_by(word) %>%
+  summarise(category=category[1])
+
+mask_word <- function(word, asked) {
+# Replace non-space characters with underscores
+  pattern <- sprintf("[^[:space:]%s]", toupper(asked))
+  result_string <- gsub(pattern, "_", toupper(word))
+  return(result_string)
+}
+
+simulate_optimal_hangman <- function(word,category) {
+  #initialize
+  word_state <- mask_word(toupper(word),''); 
+  asked <- ''
+  nclicks <- 0;
+  nmisses <- 0;
+  
+  while (grepl('_',word_state) & nclicks<26) {
+    
+    posterior <- get_letter_posterior(toupper(word_state),toupper(asked),category);
+    posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE)
+    
+    best_shot = LETTERS[which.max(posterior)];
+    
+    #click on best shot
+    nclicks = nclicks+1;
+    asked = paste(asked,best_shot)
+    new_word_state = mask_word(word,asked)
+    if (new_word_state==word_state) {
+      nmisses=nmisses+1;
+    }
+    word_state = new_word_state
+  }
+  
+  return(nmisses)
+  
+}
+
+
+
+simulated_optimal_hangman_games <- words_and_categories %>%
+  rowwise() %>%
+  mutate(nmisses=simulate_optimal_hangman(as.character(word),category))
+
+simulate_random_hangman <- function(word,category) {
+  #initialize
+  word_state <- mask_word(toupper(word),''); 
+  asked <- ''
+  nclicks <- 0;
+  nmisses <- 0;
+  
+  while (grepl('_',word_state) & nclicks<26) {
+    
+    
+    random_guess = sample(Filter(function(letter) !str_detect(asked, fixed(letter)), LETTERS),1)
+
+    #click on best shot
+    nclicks = nclicks+1;
+    asked = paste(asked,random_guess)
+    new_word_state = mask_word(word,asked)
+    if (new_word_state==word_state) {
+      nmisses=nmisses+1;
+    }
+    word_state = new_word_state
+  }
+  
+  return(nmisses)
+  
+}
+
+simulated_random_hangman_games <- data.frame()
+
+for (i in seq(500)) {
+  simulated_random_hangman_games <- rbind(simulated_random_hangman_games,
+                                          words_and_categories %>% 
+                                            sample_n(5) %>%
+                                            mutate(subj_id=i) %>%
+                                            rowwise() %>%
+                                            mutate(nmisses = simulate_random_hangman(word,category)))
+} 
 ```
 
 ```{r hangman-word-probabilities, echo=F}
@@ -2508,6 +2612,11 @@ E4.letter_choice_frequency <- E4.half_game_click_log %>%
   mutate(p=count/sum(count)) %>%
   complete(letter,fill=list(count=0,p=0)) %>%
   mutate(test_part=ifelse(test_part=='pretend_half_game','pretend','non-pretend'))
+
+E4.letter_choice_frequenc_wide <- E4.letter_choice_frequency %>%
+  dplyr::select(-count, -word_state) %>% 
+  spread(letter,p)
+
 
 E4.first_click_half_games <- E4.half_game_click_log %>%
   filter(click_number==1) %>%

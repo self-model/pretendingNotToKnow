@@ -101,6 +101,13 @@ groundhog.library(c(
 # exploratoryResults.Rmd, and all the scripts that are linked to from these 
 # documents). 
 load('../.RData')
+
+#color scheme
+colors <-  list()
+colors$p <- "#404080"
+colors$np <- "#69b3a2"
+colors$random <- 'gray'
+  colors$greedy <- 'black'
 ```
 
 # Introduction
@@ -108,17 +115,103 @@ load('../.RData')
 
 # Results 
 
-In two experiments, players played online versions of two information-seeking games: Battleship and Hangman. In these games, players' goal is to reveal an unknown world state (grid configuration in Battleship, a hidden word in Hangman) with as few steps (cell or letter selections) as possible. Critically, in addition to playing five games in their standard version, players also completed five pretend games in which the true world state was known to them all along, but their task was to behave as if it was not (see Fig. \@ref(fig:design)). We measured subjects' capacity to simulate a counterfactual knowledge state by comparing patterns of decisions and decision times in pretend and non-pretend games. Our full pre-registered results are available [online](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship.html). 
+In two experiments, players played online versions of two information-seeking games: Battleship (N=`r E2.df$subj_id%>%unique()%>%length()`) and Hangman (N=`r E4.df$subj_id%>%unique()%>%length()`). These games typically start in a state of ignorance, where players' goal is to reveal an unknown world state (grid configuration in Battleship, a hidden word in Hangman) with as few steps (cell or letter selections) as possible. Critically, in addition to playing five games in their standard version, players also completed five pretend games in which the true world state was known to them from the start, but their task was to behave as if it was not (see Fig. \@ref(fig:design)). We measured their capacity to simulate a counterfactual knowledge state of ignorance by comparing patterns of decisions and decision times in pretend and non-pretend games. Our full pre-registered results are available [online](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship.html). 
 
-As a first gross measure of pretense quality, we compared the total number of guesses in pretend and non-pretend games. Among Battleship players, the number of cell selections was similar in pretend (mean = `r E2.median_clicks%>%pull(pretend)%>%mean()`) and non-pretend games (mean = `r E2.median_clicks%>%pull(nonpretend)%>%mean()`), with no difference between the two conditions (`r t.test(E2.median_clicks%>%filter(genuine_first)%>%pull(nonpretend)-7,E2.median_clicks%>%filter(!genuine_first)%>%pull(pretend)-7)%>%apa_print()%>%'$'(statistic)`). In Hangman, pretenders tended to make slightly more letter guesses on average, controlling for word length (mean = `r E4.median_misses%>%pull(pretend)%>%mean()`) than did non-pretenders (mean = `r E4.median_misses%>%pull(nonpretend)%>%mean()`; `r t.test(E4.median_misses%>%filter(genuine_first)%>%pull(pretend),E4.median_misses%>%filter(!genuine_first)%>%pull(nonpretend))%>%apa_print()%>%'$'(statistic)`). 
+```{r battleship-design, echo=FALSE, fig.cap="Experimental Design in Exp. 1 (left) and 2 (right). In non-pretend games, players revealed ships by guessing cells in a grid (A) or revealed a word by guessing letters (E). In pretend games, we marked ship locations with a cross (B) and revealed the target word from the start (F), but asked players to play as if they didn't have access to this information. In half games (C and G), players continued the game from a given state, with the content of some cells and the position of some letters already revealed. Lastly, players watched replays of the games of previous players and guessed were pretend games (D and H).", out.width = '100%'}
+knitr::include_graphics("figures/methods.png")
+```
 
-Furthermore, the ten target words we used in Hangman differed in difficulty: some required more letter guesses than others, controlling for word length. Strikingly, pretenders were highly successful in making more letter guesses when attempting to reveal those words that would have been easier to guess had they been playing for real (`r cor.test(E4.misses_per_word$pretend, E4.misses_per_word$nonpretend,method='spearman')%>%apa_print()%>%'$'(full_result)`). This correlation provides a first clue of an impressive capacity to act in accordance with how one would have acted if they didn't know what they know.
+As a first gross measure of pretense quality, we compared the total number of guesses in pretend and non-pretend games. Among Battleship players, the number of cell selections was similar in pretend (mean = `r E2.median_clicks%>%pull(pretend)%>%mean()`) and non-pretend games (mean = `r E2.median_clicks%>%pull(nonpretend)%>%mean()`). In Hangman, pretenders tended to make about one additional letter guess on average than did non-pretenders, controlling for word length (pretend: `r E4.median_misses%>%pull(pretend)%>%mean()`; non-pretend: `r E4.median_misses%>%pull(nonpretend)%>%mean()`). Despite an overall bias in the number of guesses, pretend Hangman games provided evidence for a more impressive, item-specific alignment: pretenders were successful in making more letter guesses when attempting to reveal words that would have been easier to guess had they been playing for real (`r cor.test(E4.misses_per_word$pretend, E4.misses_per_word$nonpretend,method='spearman')%>%apa_print()%>%'$'(estimate)`). This correlation provides a first clue of a human capacity to act in accordance with a counterfactual knowledge state.
 
-Having established that pretenders were able to mimic the total number of guesses in standard games, we next turned to the content of pretend and non-pretend guesses. In order to directly compare pretend and non-pretend guesses for the same board state, Battleship players completed two half-games in which they were instructed to continue the game from a half-completed state. Hundreds of cell selections for the same board state revealed a strong correlation between the spatial distributions of pretend and non-pretend guesses (), confirming that pretenders were sensitive not only to the number of guesses they would have made had they been playing for real, but also to their content.
+```{r num-misses, echo=FALSE, fig.cap="Panels A and B: median number of misses Battleship and Hangman games, in non-pretend (green) and pretend (purple) games. For reference, the expected number of misses is also indicated for a fully random agent, and for a myopic agent that maximizes the probability of a hit. C: The median number of misses in Hangman for pretend and non-pretend games, as a function of the target word. ", out.width = '100%'}
 
-To further examine the decisional processes behind this strong alignment, we compared the degree to which pretend and non-pretend guesses made sense within the context of the game. We approximated guess rationality by calculating the probability that a guess will be successful (in revealing a ship or word letters) given available information, $p(hit(x_{i}))$, and the posterior probability that one should make a guess, assuming a uniform prior over cells or letters $P(x_{i})=\frac{p(hit(x_i))}{\sum_{j=1}^{k}p(hit(x_j))}$. Given this posterior map, it makes sense to guess cells or letters for which $P(x_{i})$ is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; @audinot2014optimal, Section 3.3]. In the non-pretend versions of both games, guesses were more rational than expected by chance (Battleship:, Hangman:). Despite being less rational than non-pretend guesses, pretend guesses were more rational than expected by chance (Battleship:, Hangman:). Critically, the same was true when restricting the analysis to unsuccessful guesses (Battleship:, Hangman:): even when missing ships or letters, pretend guesses made sense given the limited information players pretended to have.
+load('../analysis/simulated_hangman_games.RData')
+
+E2.random_mean_misses <- E2.random_click_df %>%
+           group_by(subj_id) %>%
+           summarise(num_misses=median(num_clicks)-7) %>%
+           pull(num_misses) %>%
+                  mean()
+
+E2.greedy_mean_misses <- E2.optimal_click_df %>%
+           group_by(subj_id) %>%
+           summarise(num_misses=median(num_clicks)-7) %>%
+           pull(num_misses) %>%
+                  mean()
+
+E4.random_mean_misses <- simulated_random_hangman_games %>% 
+  group_by(subj_id) %>%
+  summarise(num_misses=median(nmisses)) %>%
+  pull(num_misses) %>%
+  mean()
 
 
+E4.greedy_mean_misses <- simulated_optimal_hangman_games %>% 
+  pull(nmisses) %>%
+  mean()
+
+
+E2.click_df %>%
+  dplyr::select(subj_id,test_part, num_clicks) %>%
+  mutate(subj_id=as.character(subj_id)) %>%
+  # rbind(E2.optimal_click_df) %>%
+  # rbind(E2.random_click_df) %>%
+  mutate(test_part = factor(test_part, levels=c(
+    'nonpretend','pretend'), labels = c(
+    'non-pretend','pretend'))) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(num_misses=median(num_clicks)-7) %>%
+  ggplot(aes(x=num_misses,fill=test_part, color=test_part))+
+  scale_fill_manual(values=c(colors$np,colors$p, colors$random, colors$greedy)) +
+  scale_x_continuous(limits=c(-1,19), breaks=seq(0,18)) +
+  labs(x='median number of misses', y='number of players')+
+  theme(legend.position='none') +
+  theme_classic() +
+  geom_vline(xintercept = E2.greedy_mean_misses, color='black', linetype=2) + 
+  annotate("text", x = E2.greedy_mean_misses, y = 75, label = "Greedy", angle = 90, vjust = -1, size = 5)+
+  geom_vline(xintercept = E2.random_mean_misses, color='black', linetype=2) +
+  annotate("text", x = E2.random_mean_misses, y = 75, label = "Random", angle = 90, vjust = -1, size = 5)+
+  geom_bar(alpha=0.6, position = 'identity', color='black', size=0.5) +
+  theme(legend.pos='na')
+
+ggsave('figures/num_misses_E2.png',width=4.5, height=2.5)
+
+E4.click_df %>%
+  dplyr::select(subj_id,test_part, num_misses) %>%
+  mutate(subj_id=as.character(subj_id)) %>%
+  # rbind(E2.optimal_click_df) %>%
+  # rbind(E2.random_click_df) %>%
+  mutate(test_part = factor(test_part, levels=c(
+    'nonpretend','pretend'), labels = c(
+    'non-pretend','pretend'))) %>%
+  group_by(subj_id,test_part) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  ggplot(aes(x=num_misses,fill=test_part, color=test_part))+
+  scale_fill_manual(values=c(colors$np,colors$p, colors$random, colors$greedy)) +
+  scale_x_continuous(limits=c(-1,19), breaks=seq(0,18)) +
+  labs(x='median number of misses', y='number of players')+
+  theme(legend.position='none') +
+  theme_classic() +
+  geom_vline(xintercept = E4.greedy_mean_misses, color='black', linetype=2) + 
+  annotate("text", x = E4.greedy_mean_misses, y = 95, label = "Greedy", angle = 90, vjust = -1, size = 5)+
+  geom_vline(xintercept = E4.random_mean_misses, color='black', linetype=2) +
+  annotate("text", x = E4.random_mean_misses, y = 95, label = "Random", angle = 90, vjust = -1, size = 5)+
+  geom_bar(alpha=0.6, position = 'identity', color='black', size=0.5) +
+  theme(legend.pos='na')
+
+ggsave('figures/num_misses_E4.png',width=4.5, height=2.5)
+knitr::include_graphics("figures/num_misses.png")
+
+```
+Having established an alignment in the total number of guesses, we next turned to the content of pretend and non-pretend guesses. In order to directly compare pretend and non-pretend guesses for the same board state, Battleship players completed two half-games in which they were instructed to continue the game from a half-completed state. Hundreds of cell selections for the same board state revealed a strong correlation between the spatial distributions of pretend and non-pretend guesses (board A: $r=$ `r apa_print(cor_A_nonpretend)$table$estimate`, $p$ `r apa_print(cor_A_nonpretend)$table$p.value`; board B: $r=$ `r apa_print(cor_B_nonpretend)$table$estimate`, $p$ `r apa_print(cor_B_nonpretend)$table$p.value`), confirming that pretenders were sensitive not only to the number of guesses they would have made had they been playing for real, but also to their content.
+
+To further examine the decisional processes behind this strong alignment, we compared the degree to which pretend and non-pretend guesses made sense within the context of the game. When playing Battleship and Hangman, it makes sense to guess cells or letters for which the probability of hitting a ship or revealing a letter is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases, @audinot2014optimal, Section 3.3]. In the non-pretend versions of both games, guesses were more rational according to this measure than expected by chance (Battleship: `r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=nonpretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`, Hangman: `r E4.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=nonpretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Despite being less rational than non-pretend guesses, pretend guesses were also more rational than expected by chance (Battleship: `r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`, Hangman: `r E4.mean_P_click_rank_wide%>%pull(np_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`). Critically, the same was true when restricting the analysis to unsuccessful guesses (Battleship: `r E2.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`, Hangman: `r E4.mean_P_click_rank_misses_wide%>%pull(p_vs_r)%>%t.test()%>%apa_print%>%'$'(statistic)`): even when missing ships or letters, pretend guesses made sense given the limited information players pretended to have.
+
+Good pretense is a function not only of the number and content of players' decisions, but also of their timing. Here too, pretend games showed the same qualitative patterns as non-pretend games. Like non-pretenders, pretenders were faster in their successful guesses (Battleship: $\Delta_{non-pretend}=$ `r E2.RT_by_hit_lags %>% filter(test_part=='nonpretend')%>%pull(hit_diff)%>%median()%>%round()%>%abs()` ms, $\Delta_{pretend}=$ `r E2.RT_by_hit_lags %>% filter(test_part=='pretend')%>%pull(hit_diff)%>%median()%>%round()%>%abs()` ms;  Hangman: $\Delta_{non-pretend}=$ `r E4.RT_by_hit_lags %>% filter(test_part=='nonpretend')%>%pull(hit_diff)%>%median(na.rm=T)%>%round()%>%abs()` ms, $\Delta_{pretend}=$ `r E4.RT_by_hit_lags %>% filter(test_part=='pretend')%>%pull(hit_diff)%>%median(na.rm=T)%>%round()%>%abs()` ms) and slowed down immediately after a hit (Battleship: $\Delta_{non-pretend}=$ `r E2.RT_by_hit_lags %>% filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%median()%>%round()%>%abs()` ms, $\Delta_{pretend}=$ `r E2.RT_by_hit_lags %>% filter(test_part=='pretend')%>%pull(lag1_diff)%>%median()%>%round()%>%abs()` ms;  Hangman: $\Delta_{non-pretend}=$ `r E4.RT_by_hit_lags %>% filter(test_part=='nonpretend')%>%pull(lag1_diff)%>%median(na.rm=T)%>%round()%>%abs()` ms, $\Delta_{pretend}=$ `r E4.RT_by_hit_lags %>% filter(test_part=='pretend')%>%pull(lag1_diff)%>%median(na.rm=T)%>%round()%>%abs()` ms). Furthermore, decision uncertainty (quantified as the posterior entropy over cell or letter options) had a similar quadratic effect on decision time in both non-pretend and pretend versions of the games, with the slowest responses associated with mid-range levels of entropy (see Fig. ). 
+
+However impressive, this capacity for simulating a state of ignorance was not perfect. Most markedly, in their attempt to behave as if they didn't know the true state of the game, pretenders tended to follow rigid heuristics and rules, as evidenced by higher predictability of decision sequences across different games of the same player (quantified as the within-participant sequential guess entropy for clicks 1-5, see [online supplementary materials](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship-exploratory-results.html#within-participant-click-entropy)). In Hangman, a popular heuristic is to guess frequent letters such as vowels. We found that pretenders guessed more high-frequency letters than did non-pretenders, suggesting they relied more on this strategy. This limitation was especially evident in Hangman half-games, where players completed the game from a half-completed state. When asked to reveal the hidden fruit "_A_A_A", `r round(100*E4.first_click_half_games %>% filter(test_part=='nonpretend_half_game' & word %in% c('banana', 'papaya'))%>%pull(bananahand)%>%mean())`% of the non-pretenders guessed one of the letters 'B' or 'N'. Among pretenders who knew that the hidden word was BANANA, this preference was reduced to `r round(E4.letter_choice_frequenc_wide %>% filter(test_part=='pretend' & word=='banana') %>% pull('B') %>% mean()*100)`%). Importantly, half of the pretenders were given different information: they were told that the hidden word is the less prototypical fruit PAPAYA. Although good pretenders should simulate their behavior had they not known this information, only `r round(100*E4.first_click_half_games %>% filter(test_part=='pretend_half_game' & word =='papaya')%>%pull(bananahand)%>%mean())`% selected the letters 'B' or 'N', revealing that many pretenders were unable to predict that the first fruit that would come to their minds is BANANA, not PAPAYA. A similar pattern was observed for the prototypical body part word HA(ND) and its surprising counterpart HA(IR): when playing normally, `r round(100*E4.first_click_half_games %>% filter(test_part=='nonpretend_half_game' & word %in% c('hand', 'hair'))%>%pull(bananahand)%>%mean())`% of the players selected letters that are consistent with the prototypical option HAND. Pretenders for whom the word was HAND showed the same tendency (`r round(100*E4.first_click_half_games %>% filter(test_part=='pretend_half_game' & word =='hand')%>%pull(bananahand)%>%mean())`%), in contrast to only `r round(100*E4.first_click_half_games %>% filter(test_part=='pretend_half_game' & word =='hair')%>%pull(bananahand)%>%mean())`% of the pretenders who saw the word HAIR.  
+
+Finally, after performing pretend and non-pretend games, participants were presented with game replays of previous players and judged who was pretending and who was playing for real. In both games, pretense detection was at chance (Battleship: `r E2.judge_df%>%group_by(subj_id)%>%summarise(accuracy=sum(correct)*20)%>%pull(accuracy)%>%mean()%>%round()`%, Hangman: `r round(E4.judge_summary_df$accuracy%>%mean()*100)`). Moreover, we find no sign of a correlation between pretense quality (measured as players' ability to trick judges to think they were not pretending) and pretense detection ability (measured as proportion correct; Battleship: `r apa_print(cor.test(E2.performance_df$judge_rate,E2.performance_df$pretend_rate, method='spearman'))$estimate`, Hangman: `r apa_print(cor.test(E4.performance_df$pretend_rate,E4.performance_df$judge_rate,method='spearman'))$estimate`), suggesting the two capacities rely on at least partly different cognitive processes.
 
 
 # Methods
