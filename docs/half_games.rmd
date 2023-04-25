@@ -27,6 +27,14 @@ boardB <- "NA,NA,NA,NA,0,NA,NA,0,NA,NA,NA,NA,NA,NA,0,NA,NA,1,0,NA,NA,NA,1,NA,1"
 posteriorB <- boardB%>%get_likelihood()%>%get_posterior();
 plot_posterior(posteriorB,'posteriorB');
 
+boardA <- "NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,1,0,0,NA,NA,0,NA,NA,1,1,NA,NA,NA"
+posteriorA <- boardA%>%get_likelihood();
+plot_posterior(posteriorA,'likelihoodA');
+
+boardB <- "NA,NA,NA,NA,0,NA,NA,0,NA,NA,NA,NA,NA,NA,0,NA,NA,1,0,NA,NA,NA,1,NA,1"
+posteriorB <- boardB%>%get_likelihood();
+plot_posterior(posteriorB,'likelihoodB');
+
 ```
 
 ```{r}
@@ -85,6 +93,9 @@ E2.half_game_click_log <- E2.half_game_click_log %>%
 
 ```{r}
 
+E2.half_game_board_A <- c(12,13,14,15,18,21,22)
+E2.half_game_board_B <- c(5,8,15,18,19,23,25)
+
 E2.half_game_first_clicks <- E2.half_game_click_log %>%
   filter(click_number==1) %>%
   group_by(i,j, grid_number,test_part) %>%
@@ -92,7 +103,9 @@ E2.half_game_first_clicks <- E2.half_game_click_log %>%
   ungroup() %>%
   complete(i,j,grid_number,test_part,fill=list(n=0)) %>%
   group_by(grid_number,test_part) %>%
-  mutate(n=n/sum(n), x=i*5+j);
+  mutate(n=n/sum(n), x=i*5+j) %>%
+  mutate(n = ifelse(grid_number=='A' & (i*5+j+1) %in% E2.half_game_board_A, NaN, n),
+         n = ifelse(grid_number=='B' & (i*5+j+1) %in% E2.half_game_board_B, NaN, n));
 
 p<- E2.half_game_first_clicks %>%
   ggplot(aes(x=j,y=i,fill=n)) +
@@ -168,5 +181,77 @@ cor_B_pretend_nonpretend <- cor.test(E2.half_game_first_clicks %>%
              E2.half_game_first_clicks %>%
              filter(test_part=='pretend_half_game' & grid_number=='B') %>% 
              pull(n))
+
+```
+
+```{r incorporating prior}
+
+E2.prior_all <- E2.click_log %>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+E2.prior_np <- E2.click_log %>%
+  filter(test_part=='nonpretend')%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+E2.prior_first <- E2.click_log %>%
+  filter(click_number==1)%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+E2.prior_first_np <- E2.click_log %>%
+  filter(click_number==1 & test_part=='nonpretend')%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+E2.prior_first5 <- E2.click_log %>%
+  filter(click_number<6)%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+E2.prior_first5np <- E2.click_log %>%
+  filter(click_number<6 & test_part=='nonpretend')%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+
+plot_prior <- function(prior,file_name) {
+  prior <- scan(text= prior, what = numeric(), sep="," , quiet = TRUE);
+  board_df <- data.frame(i=rep(c(1,2,3,4,5),each=5),j=rep(c(1,2,3,4,5),5),prior=prior);
+  p <- ggplot(board_df,aes(x=j,y=i,fill=prior)) +
+    geom_tile() +
+    coord_equal() +
+    scale_x_continuous(breaks=c()) +
+    scale_y_continuous(breaks=c(),trans='reverse') +
+    scale_fill_gradient(low='#649bc8',high='#c83237', na.value ='white')+
+    labs(x='',y='') +
+    theme_classic();
+  
+  ggsave(paste('figures/',file_name,'.png',sep=''),width=5,dpi=300);
+    ggsave(paste('figures/',file_name,'.svg',sep=''),width=5,dpi=300);
+  
+  return(p)
+
+}
+
+ p<- plot_prior(paste(E2.prior_all$p,collapse=','),'priorall');
+ p<- plot_prior(paste(E2.prior_np$p,collapse=','),'priornp');
+ p<- plot_prior(paste(E2.prior_first$p,collapse=','),'priorfirst');
+ p<- plot_prior(paste(E2.prior_first_np$p,collapse=','),'priorfirstnp');
+ p<- plot_prior(paste(E2.prior_first5$p,collapse=','),'priorfirst5');
+ p<- plot_prior(paste(E2.prior_first5np$p,collapse=','),'priorfirst5np');
 
 ```
