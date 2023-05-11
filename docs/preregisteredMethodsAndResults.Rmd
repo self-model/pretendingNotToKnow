@@ -2,22 +2,22 @@
 title             : "Pretending not to know: pre-registered analyses"
 shorttitle        : "Pretending not to know"
 
-author: 
-  - name          : "Matan Mazor"
-    affiliation   : "1"
-    corresponding : yes    # Define only one corresponding author
-    address       : "Malet St., London WC1E 7HX"
-    email         : "mtnmzor@gmail.com"
-  - name          : "Chaz Firestone"
-    affiliation   : "2"
-  - name          : "Ian Phillips"
-    affiliation   : "2"
-
-affiliation:
-  - id            : "1"
-    institution   : "Birkbeck, University of London"
-  - id            : "2"
-    institution   : "Johns Hopkins University"
+# author: 
+#   - name          : "Matan Mazor"
+#     affiliation   : "1"
+#     corresponding : yes    # Define only one corresponding author
+#     address       : "Malet St., London WC1E 7HX"
+#     email         : "mtnmzor@gmail.com"
+#   - name          : "Chaz Firestone"
+#     affiliation   : "2"
+#   - name          : "Ian Phillips"
+#     affiliation   : "2"
+# 
+# affiliation:
+#   - id            : "1"
+#     institution   : "Birkbeck, University of London"
+#   - id            : "2"
+#     institution   : "Johns Hopkins University"
 
 authornote: |
 
@@ -139,7 +139,7 @@ A more detailed description of the study procedure is provided in the study [pre
 
 ### Data analysis
 
-We used `r cite_r("r-references.bib")` for all our analyses.
+<!-- We used `r cite_r("r-references.bib")` for all our analyses. -->
 
 ## Results
 
@@ -686,6 +686,8 @@ E2.RT_by_hit_lags_long %>%
   theme_classic()
 
 ```
+
+
 ### Model based analysis
 
 Pretend games were similar to non pretend games in the total number of clicks --- but were they also similar in *where* participants clicked? More specifically, did cell selections in pretend games make sense given the limited information those participants pretended to have? To ask this, we approximated optimal behavior by calculating the probability that a ship is hidden in each cell given available information, $p(ship(x_{i}))$, and the posterior probability that one should click on a square, assuming a uniform prior over cells $P(x_{i})=\frac{p(Ship(x_i))}{\sum_{j=1}^{k}p(Ship(x_j))}$. Critically, in modeling pretend games we did not treat hints as part of this available information for extracting $p(ship(x_{i}))$, because an optimal player should ignore hints in choosing where to click next. Given this posterior map, a rational player should choose cells where $P(x_{i})$ is high [this behavior is not strictly optimal, but approximates optimal behavior in most cases; @audinot2014optimal, Section 3.3]. To quantify optimality, before each cell selection we computed the posterior probability map for all 'unknown' cells. Then, we ranked cells from high to low according to their posterior probability and recorded the rank of the chosen cell: a lower rank indicating more optimal behavior.
@@ -747,7 +749,7 @@ E2.mean_P_click_rank <- E2.click_log_with_boards %>%
   group_by(subj_id,test_part, genuine_first) %>%
   summarise(p_click_rank=mean(p_click_rank));
 
-E2.mean_P_click_rank_misses_only <- E2.click_log_with_boards %>%
+E2.mean_P_click_rank_misses <- E2.click_log_with_boards %>%
   rbind(E2.click_log_with_boards_optimal) %>%
   rbind(E2.click_log_with_boards_random) %>%
   rowwise() %>%
@@ -770,7 +772,7 @@ p<- E2.mean_P_click_rank %>%
 ggsave('figures/E2_pclick_rank.pdf',p)
 ggsave('figures/E2_pclick_rank.png',p,width=5,height=2,dpi=300)
 
-p<- E2.mean_P_click_rank_misses_only %>%
+p<- E2.mean_P_click_rank_misses %>%
     filter(test_part != 'optimal') %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
@@ -783,8 +785,8 @@ p<- E2.mean_P_click_rank_misses_only %>%
     # scale_x_reverse() +
     theme_classic();
 
-ggsave('figures/E2_pclick_rank_misses_only.pdf',p)
-ggsave('figures/E2_pclick_rank_misses_only.png',p,width=5,height=2,dpi=300)
+ggsave('figures/E2_pclick_rank_misses.pdf',p)
+ggsave('figures/E2_pclick_rank_misses.png',p,width=5,height=2,dpi=300)
 
 E2.num_irrational_clicks <- E2.click_log_with_boards %>%
   group_by(subj_id,test_part, genuine_first) %>%
@@ -817,7 +819,7 @@ ggsave('figures/E2_num_irrational_clicks.png',p,width=5,height=3,dpi=300)
 
 ### Hypothesis 7 (game optimality)
 
-The mean posterior rank of non-pretend cell selections was `r E2.mean_P_click_rank%>%filter(test_part=='nonpretend')%>%pull(p_click_rank)%>%mean()%>%printnum()` and significantly lower (more optimal) than that of a simulated random agent (`r E2.mean_P_click_rank%>%filter(test_part=='random')%>%pull(p_click_rank)%>%mean()%>%printnum()`, `r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=nonpretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Pretend games were significantly less optimal than non-pretend games (`r E2.mean_P_click_rank%>%filter(test_part=='pretend')%>%pull(p_click_rank)%>%mean()%>%printnum()`; pretend-first group: `r E2.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend-second group: `r E2.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), but still more optimal than those of a random agent (`r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Critically, the same pattern was observed when restricting analysis to cell selections that resulted in a miss (non-pretend - pretend: `r apa_print(t.test(E2.mean_P_click_rank_misses_only%>%filter(genuine_first&test_part=='nonpretend')%>%pull(p_click_rank), E2.mean_P_click_rank_misses_only%>%filter(!genuine_first&test_part=='pretend')%>%pull(p_click_rank)))$statistic`; pretend - random: `r E2.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). In other words, the optimality of pretend games relative to random cell selection was not merely due to the fact that pretenders clicked on ships more than expected by chance. Even when missing a ship, their cell selections made sense given the limited information they pretended to have.
+The mean posterior rank of non-pretend cell selections was `r E2.mean_P_click_rank%>%filter(test_part=='nonpretend')%>%pull(p_click_rank)%>%mean()%>%printnum()` and significantly lower (more optimal) than that of a simulated random agent (`r E2.mean_P_click_rank%>%filter(test_part=='random')%>%pull(p_click_rank)%>%mean()%>%printnum()`, `r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=nonpretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Pretend games were significantly less optimal than non-pretend games (`r E2.mean_P_click_rank%>%filter(test_part=='pretend')%>%pull(p_click_rank)%>%mean()%>%printnum()`; pretend-first group: `r E2.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`; pretend-second group: `r E2.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`), but still more optimal than those of a random agent (`r E2.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). Critically, the same pattern was observed when restricting analysis to cell selections that resulted in a miss (non-pretend - pretend: `r apa_print(t.test(E2.mean_P_click_rank_misses%>%filter(genuine_first&test_part=='nonpretend')%>%pull(p_click_rank), E2.mean_P_click_rank_misses%>%filter(!genuine_first&test_part=='pretend')%>%pull(p_click_rank)))$statistic`; pretend - random: `r E2.mean_P_click_rank_misses%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). In other words, the optimality of pretend games relative to random cell selection was not merely due to the fact that pretenders clicked on ships more than expected by chance. Even when missing a ship, their cell selections made sense given the limited information they pretended to have.
 
 ```{r battleship-h7-plot, echo-FALSE, cache=TRUE, fig.width=10,fig.height=5}
 
@@ -1905,7 +1907,7 @@ get_optimal_letter <- function(posterior) {
 #          p_click = get_p_letter(posterior,letter),
 #          p_click_rank = get_p_letter_rank(posterior,letter),
 #          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
-#          test_part='most_frequent');
+#          test_part='optimal');
 
  
 # E4.letter_prob_click_log_with_boards <- E4.click_log %>%
@@ -1924,12 +1926,23 @@ get_optimal_letter <- function(posterior) {
 #          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
 #          test_part='random');
 
-# save(E4.click_log_with_boards,
-#      E4.click_log_with_boards_random,
-#      E4.click_log_with_boards_most_frequent,
-#      E4.letter_prob_click_log_with_boards,
-#      E4.letter_prob_click_log_with_boards_random,
-#      file='E4.click_log_with_boards.RData')
+# E4.letter_prob_click_log_with_boards_optimal <- E4.letter_prob_click_log_with_boards %>%
+#   dplyr::select(subj_id,genuine_first,test_part,word,category,word_state,click_number,posterior) %>%
+#   left_join(E4.click_log_with_boards_optimal %>%
+#               ungroup()%>%
+#               dplyr::select(subj_id,word,click_number,letter,hit_bin),
+#             by=c('subj_id','word','click_number')) %>%
+#   mutate(p_click = get_p_letter(posterior,letter),
+#          p_click_rank = get_p_letter_rank(posterior,letter),
+#          hit_bin = tolower(letter) %in% strsplit(tolower(word),'')[[1]],
+#          test_part='optimal');
+
+# save(E4.click_log_with_boards, E4.click_log_with_boards_random,
+# E4.click_log_with_boards_most_frequent, E4.click_log_with_boards_optimal,
+# E4.letter_prob_click_log_with_boards,
+# E4.letter_prob_click_log_with_boards_random,
+# E4.letter_prob_click_log_with_boards_optimal,
+# file='E4.click_log_with_boards.RData')
 
 load('E4.click_log_with_boards.RData') # this file includes all the above dataframes.
 
@@ -2055,6 +2068,7 @@ save_word_probs <- function(word,word_state, asked, category) {
 
 E4.mean_P_click_rank <- E4.click_log_with_boards %>%
   rbind(E4.click_log_with_boards_random)%>%
+  rbind(E4.click_log_with_boards_optimal)%>%
   group_by(subj_id,test_part, genuine_first) %>%
   summarise(p_click_rank=mean(p_click_rank))
 
@@ -2065,7 +2079,11 @@ E4.mean_P_click_rank_wide <- E4.mean_P_click_rank %>%
          p_vs_np = pretend-nonpretend)
 
 E4.mean_letter_prob_P_click_rank <- E4.letter_prob_click_log_with_boards %>%
-  rbind(E4.click_log_with_boards_random)%>%
+  dplyr::select(subj_id,genuine_first, test_part,word,p_click_rank)%>%
+  rbind(E4.letter_prob_click_log_with_boards_random%>%
+    dplyr::select(subj_id,genuine_first, test_part,word,p_click_rank))%>%
+  rbind(E4.letter_prob_click_log_with_boards_optimal %>%
+    dplyr::select(subj_id,genuine_first, test_part,word,p_click_rank))%>%
   group_by(subj_id,test_part, genuine_first) %>%
   summarise(p_click_rank=mean(p_click_rank))
 
@@ -2079,7 +2097,7 @@ p<- E4.mean_P_click_rank %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
-    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725", 'black')) +
     labs(x='p(letter in word) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     facet_wrap(~genuine_first, nrow=2)+
@@ -2094,7 +2112,7 @@ p<- E4.mean_letter_prob_P_click_rank %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
-    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080",  "#FDE725", 'black')) +
     labs(x='p(letter) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     facet_wrap(~genuine_first, nrow=2)+
@@ -2106,6 +2124,7 @@ ggsave('figures/Hangman2/letter_prob_pclick_rank.png',p,width=5,height=3,dpi=300
 E4.mean_P_click_rank_misses <- E4.click_log_with_boards %>%
   filter(!hit_bin) %>%
   rbind(E4.click_log_with_boards_random %>%filter(!hit_bin))%>%
+  rbind(E4.click_log_with_boards_optimal %>%filter(!hit_bin))%>%
   group_by(subj_id,test_part, genuine_first) %>%
   summarise(p_click_rank=mean(p_click_rank))
 
@@ -2131,7 +2150,7 @@ p<- E4.mean_P_click_rank_misses %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
-    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", 'black')) +
     labs(x='p(letter in word) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     facet_wrap(~genuine_first, nrow=2)+
@@ -2144,7 +2163,7 @@ p<- E4.mean_letter_prob_P_click_rank_misses %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( alpha=0.6, position = 'identity', nbins=100) +
-    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", 'black')) +
     labs(x='p(letter) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     facet_wrap(~genuine_first, nrow=2)+
@@ -2183,7 +2202,7 @@ p <- E4.rank_misses_by_category %>% ggplot(
 ) + 
   geom_bar(position=position_dodge(),
            stat='identity', color='black')+
-    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", 'black')) +
   geom_errorbar(aes(ymin=p_rank-se, ymax=p_rank+se), width=.2,position=position_dodge(.9)) +
   labs(x='word',
        y='posterior rank')
@@ -2205,7 +2224,7 @@ E4.mean_P_click_rank %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( color="black", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", 'black')) +
     labs(x='p(letter in word) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     # facet_wrap(~genuine_first, nrow=2)+
@@ -2228,7 +2247,7 @@ E4.mean_letter_prob_P_click_rank %>%
     mutate(genuine_first = ifelse(genuine_first, 'non-pretend then pretend', 'pretend then non-pretend'))%>%
     ggplot(aes(x=p_click_rank,fill=test_part))+
     geom_histogram( color="black", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", 'black')) +
     labs(x='p(letter in English text) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
     # facet_wrap(~genuine_first, nrow=2)+
@@ -2604,7 +2623,7 @@ E4.half_game_click_log <- E4.half_game_click_log %>%
 
 E4.letter_choice_frequency <- E4.half_game_click_log %>%
   filter(click_number==1) %>%
-  dplyr::select(subj_id,test_part,word_state,letter) %>%
+  dplyr::select(subj_id,test_part,letter) %>%
   mutate(letter=factor(letter,levels=toupper(letters))) %>%
   group_by(letter,test_part,word) %>%
   summarise(count = n()) %>%
@@ -2614,7 +2633,7 @@ E4.letter_choice_frequency <- E4.half_game_click_log %>%
   mutate(test_part=ifelse(test_part=='pretend_half_game','pretend','non-pretend'))
 
 E4.letter_choice_frequenc_wide <- E4.letter_choice_frequency %>%
-  dplyr::select(-count, -word_state) %>% 
+  dplyr::select(-count) %>% 
   spread(letter,p)
 
 
@@ -2785,6 +2804,44 @@ attraction_test_p_first <- prop.test(
     E4.first_click_half_games %>% 
     filter(test_part=='pretend_half_game' & genuine_first=='False' & makes_sense & word %in% c('papaya','hair')) %>%
     nrow()))
+
+p <- E4.letter_choice_frequency %>% 
+  filter(test_part %in% c('pretend','non-pretend') & word %in% c('papaya','banana')) %>%
+  mutate(letter = ifelse(letter %in% c('B','N','P','Y'), letter, 'other')) %>%
+  mutate(letter = factor(letter, levels=c('B', 'N', 'P', 'Y','other')))%>%
+  group_by(test_part,word,letter) %>%
+  summarise(p=sum(p)) %>%
+  mutate(test_part = factor(test_part, levels=c('non-pretend','pretend'))) %>%
+  mutate(word = factor(word, levels=c('banana','papaya'), labels=c('BANANA','PAPAYA')))%>%
+  ggplot(aes(x=reorder(letter, desc(letter)),y=p, fill=reorder(word, desc(word)))) +
+  geom_bar(stat='identity', position='dodge') +
+  facet_grid(cols=vars(test_part)) +
+  theme_classic() +
+  scale_fill_manual(values=c("#f16154","#fed601")) +
+  labs(x='',y='frequency') +
+  coord_flip() +
+  theme(legend.pos='na')
+
+ggsave('figures/Hangman2/bananapapaya.png',p,width=4,height=1.8,dpi=300)
+
+p <- E4.letter_choice_frequency %>% 
+  filter(test_part %in% c('pretend','non-pretend') & word %in% c('hair','hand')) %>%
+  mutate(letter = ifelse(letter %in% c('N','D','I','R'), letter, 'other')) %>%
+  mutate(letter = factor(letter, levels=c('N', 'D', 'I', 'R','other')))%>%
+  group_by(test_part,word,letter) %>%
+  summarise(p=sum(p)) %>%
+  mutate(test_part = factor(test_part, levels=c('non-pretend','pretend'))) %>%
+  mutate(word = factor(word, levels=c('hand','hair'), labels=c('HAND','HAIR')))%>%
+  ggplot(aes(x=reorder(letter, desc(letter)),y=p, fill=reorder(word, desc(word)))) +
+  geom_bar(stat='identity', position='dodge') +
+  facet_grid(cols=vars(test_part)) +
+  theme_classic() +
+  scale_fill_manual(values=c("#9a3300","#f1c27d")) +
+  labs(x='',y='frequency') +
+  coord_flip() +
+  theme(legend.pos='na')
+
+ggsave('figures/Hangman2/handhair.png',p,width=4,height=1.8,dpi=300)
 
 ```
 

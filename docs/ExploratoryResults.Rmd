@@ -2,22 +2,22 @@
 title             : "Pretending not to know: exploratory analyses"
 shorttitle        : "Pretending not to know"
 
-author: 
-  - name          : "Matan Mazor"
-    affiliation   : "1"
-    corresponding : yes    # Define only one corresponding author
-    address       : "Malet St., London WC1E 7HX"
-    email         : "mtnmzor@gmail.com"
-  - name          : "Chaz Firestone"
-    affiliation   : "2"
-  - name          : "Ian Phillips"
-    affiliation   : "2"
-
-affiliation:
-  - id            : "1"
-    institution   : "Birkbeck, University of London"
-  - id            : "2"
-    institution   : "Johns Hopkins University"
+# author: 
+#   - name          : "Matan Mazor"
+#     affiliation   : "1"
+#     corresponding : yes    # Define only one corresponding author
+#     address       : "Malet St., London WC1E 7HX"
+#     email         : "mtnmzor@gmail.com"
+#   - name          : "Chaz Firestone"
+#     affiliation   : "2"
+#   - name          : "Ian Phillips"
+#     affiliation   : "2"
+# 
+# affiliation:
+#   - id            : "1"
+#     institution   : "Birkbeck, University of London"
+#   - id            : "2"
+#     institution   : "Johns Hopkins University"
 
 authornote: |
 
@@ -223,8 +223,75 @@ In the third column we plot the distribution of clicks for non-pretend players. 
 ```{r half-games, echo=FALSE, out.width = '100%', fig.cap = "Half games. First column: the two boards, as they appeared to pretenders. Second column: objective hit probability, given game state. Third and fourth columns: empirical click probabilities in non-pretend and pretend games, respectively."}
 knitr::include_graphics("figures/Half_games.png")
 ```
+## Heuristic use
 
-## Within-participant click entropy
+In Battleship, players sometimes have a fixed sequence of clicks that they follow, at least for the first moves. To quantify this, we plot the distribution of the first 5 clicks from all all games of a random subset of 100 players:
+
+```{r get-Battleship-prior, fig.cap="Distribution of the first 5 clicks in all games, from a subset of 100 random players"}
+
+set.seed(42)
+all_subjects <- E2.click_log$subj_id%>%unique();
+random100 <- all_subjects[sample(length(all_subjects),100)]
+
+E2.prior_first5 <- E2.click_log %>%
+  filter(click_number<6 & subj_id %in% random100)%>%
+  group_by(i,j)%>%
+  summarise(n=n()) %>%
+  mutate(p=n/sum(n),
+         flat_position = 1+i*5+j)
+
+ggplot(E2.prior_first5,aes(x=j,y=i,fill=p)) +
+  geom_tile() +
+  coord_equal() +
+  scale_x_continuous(breaks=c()) +
+  scale_y_continuous(breaks=c(),trans='reverse') +
+  scale_fill_gradient(low='#649bc8',high='#c83237', na.value ='white')+
+  labs(x='',y='') +
+  theme_classic() +
+  labs(title='click probability in Battleship')
+```
+
+As can be seen, subjects prefer to click on the diagonals, with a slight preference for the left hand side. We then asked how well aligned are players' clicks with this map in pretend and non-pretend games. For this analysis, we only used data from the remaining `r all_subjects%>%length()-random100%>%length()` players whose games were not used for generating the above map. 
+
+
+```{r battleship-prior-comparison}
+
+battleship_prior <- E2.prior_first5$p;
+
+get_p_heuristic_rank <- function(posterior, flat_position) {
+  posterior <- scan(text= posterior, what = numeric(), sep="," , quiet = TRUE);
+  prior = battleship_prior*posterior/posterior #to get rid of nans
+  rank_prior = rank(-prior)
+  return(rank_prior[flat_position])
+}
+
+E2.click_log_with_heuristic <- E2.click_log_with_boards %>%
+  rbind(E2.click_log_with_boards_optimal) %>%
+  rbind(E2.click_log_with_boards_random) %>%
+  rowwise() %>%
+  mutate(p_heuristic_rank = get_p_heuristic_rank(posterior,flat_position))
+
+E2.mean_P_heuristic_rank <- E2.click_log_with_heuristic %>%
+  filter(!(subj_id %in% random100))%>%
+  group_by(subj_id,test_part) %>%
+  summarise(p_heuristic_rank=mean(p_heuristic_rank))
+
+E2.mean_P_heuristic_rank %>%
+    filter(test_part != 'optimal') %>%
+    ggplot(aes(x=p_heuristic_rank,fill=test_part))+
+    geom_histogram( color="black", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='mean rank according to the above map', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    # facet_wrap(~genuine_first, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
+
+```
+
+We find no difference in this measure between pretend and non-pretend games (`r E2.mean_P_heuristic_rank%>%spread(test_part,p_heuristic_rank)%>%mutate(diff=nonpretend-pretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). In the next analysis we use a more sensitive, player-specific measure of players' tendency to follow a fixed heuristic, versus playing flexibly.
+
+## Within-participant sequential guess entropy
 
 ```{r, child=c('../analysis/clickEntropyBattleship.Rmd')}
 ```
@@ -511,20 +578,23 @@ Some words were more difficult to reveal. This required in players making more u
 ```{r hangman-correlation-plot}
 
 E4.misses_per_word %>%
-  ggplot(aes(x=nonpretend,y=pretend, label=word)) +
+  ggplot(aes(x=nonpretend,y=pretend, label=toupper(word))) +
   geom_abline(intercept=0,slope=1) +
   geom_point()+
   geom_text_repel()+
   coord_fixed(ratio=1)+
-  scale_x_continuous(limits=c(0,5.5), breaks=seq(0,5))+
-  scale_y_continuous(limits=c(0,5.5), breaks=seq(0,5)) +
+  scale_x_continuous(limits=c(0,5), breaks=seq(0,5))+
+  scale_y_continuous(limits=c(0,5), breaks=seq(0,5)) +
   theme(legend.position = 'none')+
   theme_bw() +
-  labs(title='number of misses')
+  labs(x='median number of misses: non-pretend',
+       y='median number of misses: pretend')
+
+ggsave('figures/E4_scatter_misses.png',width=3.5, height=3.5)
 
 ```
 
-## Within-participant click entropy
+## Within-participant sequential guess entropy
 
 ```{r, child=c('../analysis/clickEntropyHangman.Rmd')}
 ```
