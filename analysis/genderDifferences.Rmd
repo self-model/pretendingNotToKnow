@@ -1,0 +1,138 @@
+---
+title: "GenderDifferences"
+author: "Matan Mazor"
+date: "2023-05-16"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+# Load packages with groundhog
+library(groundhog)
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel', #for word scatterplots
+  'memoise' # for function memoization
+), '2022-12-01')
+
+# Load workspace (after running preregisteredMethodsAndResults.Rmd, 
+# exploratoryResults.Rmd, and all the scripts that are linked to from these 
+# documents). 
+load('../.RData')
+```
+
+## Load model coefficients
+
+```{r create-gender-dfs, echo=FALSE}
+
+E2.gender <- E2.export %>%
+  filter(status=='APPROVED') %>%
+  merge(E2.df %>%
+          mutate(participant_id=PROLIFIC_PID) %>%
+          dplyr::select(participant_number,participant_id,subj_id),by='participant_id') %>%
+  dplyr::select(subj_id,Sex) %>%
+  group_by(subj_id) %>%
+  summarise(sex=Sex[1]) %>%
+  rowwise()
+
+E4.gender <- E4.export %>%
+  filter(status=='APPROVED') %>%
+  merge(E4.df %>%
+          mutate(participant_id=PROLIFIC_PID) %>%
+          dplyr::select(participant_number,participant_id,subj_id),by='participant_id') %>%
+  dplyr::select(subj_id,Sex) %>%
+  group_by(subj_id) %>%
+  summarise(sex=Sex[1]) %>%
+  rowwise()
+```
+
+```{r p_click, echo-FALSE, cache=TRUE}
+
+E2.p_click_by_sex <- E2.p_click_summary %>%
+  merge(E2.gender) %>%
+  filter(sex %in% c('Female','Male'))
+
+E2.p_click_by_sex_summary <- E2.p_click_by_sex %>% 
+  group_by(test_part,sex) %>%
+  summarise(p_click=mean(p_click_rank))
+
+E4.p_click_by_sex <- E4.p_click_summary %>%
+  merge(E4.gender) %>%
+  filter(sex %in% c('Female','Male'))
+
+E4.p_click_by_sex_summary <- E4.p_click_by_sex %>% 
+  group_by(test_part,sex) %>%
+  summarise(p_click=mean(p_click_rank))
+
+apa_table(
+  E2.p_click_by_sex_summary
+  , caption = "p_click by gender in Battleship."
+  , escape = TRUE
+)
+
+apa_table(
+  E4.p_click_by_sex_summary
+  , caption = "p_click by gender in Hangman."
+  , escape = TRUE
+)
+```
+
+We find no differences between the two sexes in the posterior probability of a hit, in neither pretend nor non-pretend games.
+
+```{r hangman-halfgames, echo=F, cache=T}
+
+E4.first_guess_by_sex <- E4.first_click_half_games %>%
+  merge(E4.gender) %>%
+  filter(sex %in% c('Female','Male'))
+
+E4.papaya_by_sex <- E4.first_guess_by_sex %>%
+  filter(word=='papaya') %>%
+  group_by(test_part,sex) %>%
+  summarise(banana=mean(bananahand & makes_sense),
+            papaya = mean(!bananahand & makes_sense),
+            other = mean(!makes_sense))
+
+E4.hair_by_sex <- E4.first_guess_by_sex %>%
+  filter(word=='hair') %>%
+  group_by(test_part,sex) %>%
+  summarise(hand=mean(bananahand & makes_sense),
+            hair = mean(!bananahand & makes_sense),
+            other = mean(!makes_sense))
+
+apa_table(
+  E4.papaya_by_sex
+  , caption = "first click by gender in Hangman half games, when the target word is papaya. Showing proportion of guesses that are consistent with banana, papaya, or other."
+  , escape = TRUE
+)
+
+apa_table(
+  E4.hair_by_sex
+  , caption = "first click by gender in Hangman half games, when the target word is hair. Showing proportion of guesses that are consistent with hand, hair, or other."
+  , escape = TRUE
+)
+
+```
+
