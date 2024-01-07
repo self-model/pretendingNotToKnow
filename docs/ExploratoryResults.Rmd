@@ -579,7 +579,7 @@ Some words were more difficult to reveal. This required in players making more u
 
 E4.misses_per_word %>%
   ggplot(aes(x=nonpretend,y=pretend, label=toupper(word))) +
-  geom_abline(intercept=0,slope=1) +
+  geom_abline(intercept=0,slope=1, color='lightgray') +
   geom_point()+
   geom_text_repel()+
   coord_fixed(ratio=1)+
@@ -827,7 +827,7 @@ ggsave('figures/E4_pclick_rank_sim_only_misses_only.png',p,width=5,height=2,dpi=
 
 ```
 
-Among simulators, pretend games were significantly more optimal than non-pretend games (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`) even when restricting the analysis to letter selections that resulted in a miss (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`). Like in the full sapmle, simulators were more optimal when playing normally than when pretending (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`), also when focusing on misses (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`).
+Among simulators, pretend games were significantly more optimal than random (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`) even when restricting the analysis to letter selections that resulted in a miss (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-random)%>%pull(diff)%>%t.test())$full_result`). Like in the full sapmle, simulators were more optimal when playing normally than when pretending (`r apa_print(E4.sim.mean_P_click_rank%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`), also when focusing on misses (`r apa_print(E4.sim.mean_P_click_rank_misses_only%>%spread(test_part,p_click_rank)%>%mutate(diff=pretend-nonpretend)%>%pull(diff)%>%t.test())$full_result`).
 
 ### RT by outcome
 
