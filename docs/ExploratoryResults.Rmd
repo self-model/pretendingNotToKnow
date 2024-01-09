@@ -99,7 +99,7 @@ E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%uni
 
 E2.click_log <- readRDS('../experiments/Battleships2/data/batch1/click_log.Rda');
 
-load('E2.click_log_with_boards.RData')
+load('../experiments/Battleships2/data/batch1/click_log_with_boards.RData')
 
 ```
 
