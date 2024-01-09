@@ -4,7 +4,7 @@
 
 Matan Mazor 🙈, Chaz Firestone 🙉 & Ian Phillips 🙊
 
-<img src="docs/figures/methods2.png" alt="Experimental Design in Exp. 1 (upper panel) and 2 (lower panel). In non-pretend games, players revealed ships by guessing cells in a grid (A) or revealed a word by guessing letters (D). In pretend games, we marked ship locations with a cross (B) and revealed the target word from the start (E), but asked players to play as if they didn’t have this information. Lastly, players watched replays of the games of previous players and guessed which were pretend games (C and F)." width="500"/>
+<img src="docs/figures/methods2.png" alt="Experimental Design in Exp. 1 (upper panel) and 2 (lower panel). In non-pretend games, players revealed ships by guessing cells in a grid (A) or revealed a word by guessing letters (D). In pretend games, we marked ship locations with a cross (B) and revealed the target word from the start (E), but asked players to play as if they didn’t have this information. Lastly, players watched replays of the games of previous players and guessed which were pretend games (C and F)." width="700"/>
 
 A series of experiments looking at people's ability to pretend they don't know something.
 
@@ -42,4 +42,4 @@ protocol sum: c4929c7fe33df1b7b52f15c789d98eab30a9cee09a8121807a3c59e28e7430a4
 
 [relevant pre-registration lines of code](https://github.com/matanmazor/ignorance/blob/0015bfeb46b9b85e3e25304671d943335cca4a53/experiments/Hangman2/code/index.html#L772-L783)
 
-⚠️ Notice that the due to an error in the experimental code, only the second batch of Hangman participants was effectively time-locked. [See here](https://github.com/matanmazor/ignorance/blob/0015bfeb46b9b85e3e25304671d943335cca4a53/experiments/Hangman2/whyIsThereTwoOfEverything.txt). 
+⚠️ Notice that the due to an error in the experimental code, only the second batch of Hangman participants was effectively time-locked. [See here](https://github.com/matanmazor/ignorance/blob/0015bfeb46b9b85e3e25304671d943335cca4a53/experiments/Hangman2/whyIsThereTwoOfEverything.txt).
