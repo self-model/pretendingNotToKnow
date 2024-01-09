@@ -1,0 +1,245 @@
+session_id,participant_id,status,started_datetime,completed_date_time,time_taken,age,num_approvals,num_rejections,prolific_score,reviewed_at_datetime,entered_code,Country of Birth,Current Country of Residence,Employment Status,First Language,Nationality,Sex,Student Status
+62b48f100593217b0a377cde,6047ce1fc717c2078388a26c,APPROVED,04:35.3,35:27.5,1852.254,28,168,1,100,55:39.6,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,Yes
+62b49f01fe16f2d5ba4b2745,60130d613d3ca613b04d39bb,RETURNED,13:05.0,,850706.0933,22,539,0,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b49f250b8ab365fb4d832d,60674e08ad872b4cd378a9df,APPROVED,13:12.8,34:19.9,1267.042,55,859,1,100,57:02.7,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b4a072eb4b3c510db81758,5e58376293597e044d5af47a,APPROVED,18:45.6,34:15.6,930.041,39,2275,5,100,36:07.9,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62b4a11b64a86a64bcd4da15,5df4ed2eae7b303760a9d47c,APPROVED,21:35.8,44:23.8,1368.069,51,1698,1,100,57:02.2,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62b4a12ab02e03d1a426e21c,62a489a999690e9aaf9dc159,APPROVED,21:51.4,42:03.6,1212.133,61,63,1,99,57:02.1,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62b4b7a2337f5074658d241b,594a9305647e0600014f7c3d,APPROVED,57:38.2,10:35.0,776.785,33,2368,5,100,54:02.0,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62b4b7ba1585baf27a66175f,62b221c49bc98c02c5484b33,APPROVED,58:08.4,28:06.5,1798.111,34,18,0,100,54:02.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,Yes
+62b4b7c5da33114ef9abd26a,55c784b8fdf99b479e522427,RETURNED,58:21.1,,844390.0195,41,463,0,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b4b7d9dc9d9e3054464060,5aebb2f6aa05510001ff6561,APPROVED,58:36.2,28:27.9,1791.713,27,1129,9,99,54:03.9,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62b4b7da236c654361759cee,60fd07af32cee8d5283ae8fb,APPROVED,58:44.3,20:11.8,1287.524,19,89,0,100,54:04.3,49E292D8,United States,United States,Part-Time,English,United States,Female,Yes
+62b4b95039876f2f8a4b2777,5ef42ba59401801d9f859e2d,APPROVED,04:51.2,57:14.6,3143.328,39,1035,1,100,10:04.7,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62b4c4ef9c38c09ab6d4da1c,5f0632802b566a17e81a5f5f,APPROVED,54:27.6,09:42.3,914.659,52,2207,6,100,10:06.3,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62b4c4efc6dd12bb6ec247df,62a5735bb7e7a3d72e2dc1bd,RETURNED,54:25.8,,841025.3662,27,27,0,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b4c4f7b7250f8f238371d3,5d9eb6d611b7c400172aa975,APPROVED,54:36.9,15:34.1,1257.241,43,1873,4,100,10:06.7,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62b4c4ffc23359e97030f125,5ee517175fd9cf23b3b7b7ec,APPROVED,19:25.3,10:10.1,3044.754,26,2783,16,99,10:10.3,Manual Completion,United States,United States,Full-Time,English,United States,Male,No
+62b4c4ffe78cc21dcdfd523c,62b347618b52904682bf1ca7,APPROVED,55:24.5,11:40.6,976.103,19,56,0,100,10:08.7,49E292D8,United States,United States,Part-Time,English,United States,Male,Yes
+62b4c51f8577c418d48438c3,6108716bd7e84ed9917914ac,APPROVED,55:15.3,09:49.1,873.83,21,194,2,98,10:08.0,49E292D8,United States,United States,Part-Time,English,United States,Female,Yes
+62b4cad63c47ae4f91bba8d8,60fedcb021dbf70b52b0b750,APPROVED,19:37.9,36:22.1,1004.117,21,222,5,96,10:14.1,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62b4d1fbf0f3bb40b98d2419,60833ce5197d68cff9df1b83,APPROVED,50:07.1,13:03.7,1376.522,67,1761,6,100,21:48.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62b4d1fc87a76db0df30ae0a,55c43918fdf99b080551e044,APPROVED,50:58.0,15:17.9,1459.946,34,3153,0,100,21:49.4,49E292D8,United States,United States,Other,English,United States,Male,No
+62b4d1ffc52068a8ca10e79d,5c03217b1a20110001e979f0,APPROVED,50:07.6,19:43.5,1775.983,45,2783,15,99,21:48.5,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62b4d20052ca8df7774d8300,6175829c31cba7108908d548,RETURNED,50:08.1,,837683.2075,67,1465,3,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b4d200ec0515f9cbd95c6b,5b9845dfae52a00001482c02,APPROVED,50:11.8,09:15.2,1143.351,37,2967,8,100,10:16.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b4d3a0b06be6bd06bba8c7,5c6fb7c3c114eb00018b3154,RETURNED,07:04.3,,836667.0692,29,2504,4,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b4e46f0f49dc8521e0e69f,5ec4a156bc5aac3819ac52f2,APPROVED,11:12.8,38:36.2,1643.374,28,2787,9,99,27:51.0,49E292D8,United States,United States,Full-Time,English,United States,Male,Yes
+62b5375e87e94b8c2454ddf0,6101c5bffd584fdda7def135,APPROVED,02:38.7,17:48.5,909.853,20,821,4,100,27:51.8,49E292D8,United States,United States,Part-Time,English,United States,Female,Yes
+62b53766f8724a448477701a,628f83dc5398c04bac86f9e6,APPROVED,02:48.9,20:11.3,1042.414,37,364,0,100,27:52.8,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b5376c68c910dcca68d0c6,5e72e0d8adc903240ac70891,APPROVED,02:57.8,26:27.9,1410.065,57,2395,14,99,27:53.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b537860d223e1137cbdbea,62a0e1cae57335ec1e5bea37,APPROVED,03:23.0,21:33.2,1090.202,26,176,0,100,27:53.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b537a1c96c63634fd4da12,6296a7ccbfe7eb8f3287569e,APPROVED,03:48.6,22:44.5,1135.899,30,237,0,100,27:54.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b5c8a4b19febc512f5c5c7,5e2b0f49e0c1bf14ffba5b1b,APPROVED,24:37.7,52:24.6,1666.89,22,598,3,99,27:30.9,49E292D8,United States,United States,Other,English,United States,Female,Yes
+62b5c8db3d16a8c31a70467e,60fcd2e26a72c518d0b60738,APPROVED,23:25.1,34:24.3,659.261,45,1304,21,95,27:31.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b5c925899876112f47152c,5d4a41890e604c00011ade8b,APPROVED,24:37.9,04:56.8,2418.903,26,2952,0,100,27:31.0,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b5c92acf5063b6047d1f20,55b424e1fdf99b526efcf8d0,APPROVED,24:49.1,45:48.8,1259.755,40,2295,0,100,27:31.1,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62b5dd08f5c5bc3c2fdffc54,61037870224cbf560e7709e4,APPROVED,49:32.1,13:17.3,1425.263,30,1131,0,100,27:31.2,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62b5dd13850c402380ed0637,60fb383e30537b88f361934e,APPROVED,50:22.5,37:11.3,2808.776,47,1972,1,100,27:31.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b5dd31b67a75a4eaa89df0,5efcefeac4b0aa115037925a,APPROVED,50:09.2,08:31.3,1102.094,32,1510,13,97,27:31.3,49E292D8,Nigeria,United States,Other,English,United States,Female,No
+62b5dd4ac069dd80f59e33a7,60f6e261d3ae19349059a473,APPROVED,50:41.6,18:12.4,1650.817,40,1853,5,100,27:31.4,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b5dd4c6d3ce242846eada6,615dd0b0a024ba4f4b4f7c24,APPROVED,50:38.2,10:29.1,1190.951,43,1292,0,100,27:31.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b6320e496552cb928fa21c,5a9262251eda410001360b2c,APPROVED,52:14.6,49:16.2,3421.566,39,2710,1,100,27:31.5,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62b63239d138fa82f0f27add,5e3cddaa64dfd70d85a5ef3f,APPROVED,53:00.9,23:24.3,1823.395,40,2394,0,100,27:31.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b6323c39d9b1b1e6fcc552,61210b5c3f465c51a7f4166a,APPROVED,53:54.1,52:16.3,3502.207,37,1553,1,100,27:31.6,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b6324996ccd9f8a013ab1b,62740cf8e39eba1055ef571b,APPROVED,53:14.0,43:34.0,3020.066,50,423,3,99,27:31.7,49E292D8,Taiwan,United States,Part-Time,English,United States,Female,No
+62b63265c74bbfc45347155a,612fd3208d3decaf3ec80bcc,APPROVED,53:47.5,13:33.4,1185.874,47,1495,8,99,27:31.7,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62b693a0a3a4b92e622cdb88,604d8f415e948938fd60b536,APPROVED,48:32.6,39:24.0,3051.436,41,1566,3,100,27:31.8,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62b693bcdaacad6499fcc525,600e661d49a93a6ec48ebb45,APPROVED,57:38.1,55:11.3,3453.186,31,1708,0,100,27:31.9,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62b693c218f1ded4d39b90f6,5fbb2540b981f7c1e0fca5ff,APPROVED,49:06.4,13:59.2,1492.799,41,1828,2,100,27:31.9,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62b693ce9b7262c331a89df6,5fa4c21a04bc5912180291bc,TIMED-OUT,49:18.8,,722532.88,40,2175,4,100,,,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62b693de601b7229183414fb,603862f99e00971c55fe0874,APPROVED,49:35.7,25:48.2,2172.498,31,1624,3,100,27:32.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62b6a46ee65bdc9ed6a39e72,5eace152e25d6800091dd418,RETURNED,00:16.7,,718274.9877,43,1238,9,98,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62b6b42ae5109c82293fc260,62964d27c2b2866faa677493,APPROVED,07:22.4,22:04.4,881.974,33,257,1,100,27:32.0,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62bc383c401e84964e37772f,5a135875074b1900012527a9,APPROVED,32:12.8,43:03.2,650.415,46,3045,15,99,27:32.1,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62bc38565e1766238c866d6a,57dd186e6598aa0001992616,APPROVED,33:38.1,57:07.5,1409.379,34,3687,2,100,27:32.1,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bc385bed8aea16bd4f8dcf,5f7a28b8bedcf2112ebd1289,APPROVED,34:25.7,50:31.4,965.687,36,1808,3,100,27:32.2,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bc3889a7b85ae7deef834c,60fbed5d2532f7768e7b5a29,APPROVED,33:49.7,55:04.2,1274.54,51,1887,2,100,27:32.2,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc38b4d70d073cc5ef8362,62730c9848db9da9ff3bf670,APPROVED,34:17.0,56:32.1,1335.116,41,178,2,99,27:32.3,49E292D8,Russian Federation,United States,DATA EXPIRED,English,United States,Male,Yes
+62bc47a0d66489185cfa786f,61575f1257634f8182c29c16,APPROVED,37:52.4,55:25.0,1052.586,31,1887,3,100,27:32.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc47a903fdba1e398d4497,628277d1d5efc2ba7e3f96ed,APPROVED,38:01.3,57:01.0,1139.731,51,390,2,100,27:32.4,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc47af1fc1f10660e7ce70,62734ce38db73cd5bd81a36f,APPROVED,45:04.5,03:04.4,1079.895,44,432,0,100,27:32.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc47be6575e05618588a6e,5e9c8deb90dd470441c7f98e,APPROVED,38:24.7,02:16.1,1431.337,64,1603,15,98,27:32.5,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62bc47ca502f64f6e53f6520,628f76b86068bc13224921ce,APPROVED,38:40.6,55:22.4,1001.78,32,222,0,100,27:32.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc4edf48cb984f092b40cb,5e9ce0a46976671ceda6082a,APPROVED,12:27.8,27:46.8,918.958,39,1138,8,99,27:32.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc4eecbde653e40c023800,5d615f7632cfbd001b1b6dcb,APPROVED,09:04.0,29:24.1,1220.107,73,2903,5,100,27:32.7,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62bc4ef486235f85e2dd468c,5dc483cf74939e34e55c3619,APPROVED,09:08.9,25:07.4,958.491,72,3227,6,100,27:32.7,49E292D8,United States,United States,Part-Time,English,United States,Male,No
+62bc4ef7c27910327313e75e,58adfc6e7cf56d0001f931a2,APPROVED,09:15.1,38:14.1,1739.083,25,1648,9,99,27:32.8,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,Yes
+62bc4f02f7f8b49624adea8c,610817e75d1ed4e2f023f912,RETURNED,09:25.4,,346926.5575,32,1250,13,98,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bc51281f61c3c0c7369130,60f4e3ab507bbb123f866e88,APPROVED,18:44.4,34:59.6,975.156,37,1830,2,100,27:32.9,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62bc5c58d2460273e48d445e,58f3760092ac81000154f8af,APPROVED,06:21.4,19:47.7,806.24,29,3848,11,100,27:32.9,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc5c7bfa26daaecc00ba41,5d8d12f6d88e3a00142c9751,APPROVED,07:53.8,26:04.0,1090.193,36,2762,1,100,27:33.0,49E292D8,United States,United States,Part-Time,English,United States,Male,No
+62bc5c810321ae97f9f6b58c,5e8ccdf9b3423e07b04b4853,APPROVED,07:00.7,32:45.2,1544.503,45,150,0,100,27:33.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bc5c845a914f4b02fdcd0f,580a494da38f4a00012ebfdc,APPROVED,07:16.9,33:32.4,1575.463,26,416,1,100,27:33.1,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc5c8bce4ef3f4ea756054,5a7a1973000dab00018c3410,APPROVED,10:11.8,32:19.0,1327.189,34,1497,5,100,27:33.1,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc85645f60da5ae16f4fc9,5e2926d80beb030ede110e67,APPROVED,01:27.4,24:24.7,1377.32,49,2286,1,100,27:33.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bc8572c371adf04027bfc9,5fb3d71c3144730009fe4a7b,APPROVED,01:38.3,34:14.8,1956.54,52,1753,3,100,27:33.2,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bc857cd34242a2b2243e36,60eb1a7c95641da67ae7d611,APPROVED,01:56.2,32:20.5,1824.225,63,1663,7,99,27:33.3,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62bc858b6f18a859bac13f45,5ea0f8b65669f80008176bec,APPROVED,02:18.5,16:54.0,875.504,43,2643,7,100,27:33.4,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bc85940dce94d7c7c13f2c,5f92e6e89b8ab203b90d1325,APPROVED,02:17.3,14:40.4,743.103,35,832,2,100,27:33.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bcc9aa8928bff0fb0c3470,5d7ff85ffec5620017b07c40,APPROVED,52:47.1,11:10.0,1102.93,44,2094,13,99,27:33.5,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bcc9b1577c3d12a23b6568,60c57903a2db0249ed2779b1,APPROVED,53:50.8,10:23.9,993.145,31,1553,3,100,27:33.6,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62bcc9b2293d1b4c4d9f87cb,627432e762e042e1335bcf19,APPROVED,52:59.2,19:36.6,1597.414,44,321,2,100,27:33.7,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bcc9bd19a4a727d3b589d6,5e437d7404eaba215eafbd2a,APPROVED,53:05.3,06:31.7,806.338,39,1447,2,100,27:33.7,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bcc9bf57bd56412546b42b,62162ab583fc823e78c025e2,APPROVED,53:18.7,13:55.9,1237.265,59,767,0,100,27:33.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62bcd26531dc9a66e3c9709c,5ed559e5afbd830e2117ed55,APPROVED,29:59.2,49:50.4,1191.174,61,2791,1,100,27:33.8,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bcd2764905799db66f4f9c,5a78e410ae9a0b0001a97274,APPROVED,30:18.4,41:41.9,683.463,30,2264,2,100,27:33.9,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62bcd2775106dd1289201d0e,56f9364e895094000c8f4967,APPROVED,30:38.2,49:36.2,1137.992,38,4379,23,99,27:34.0,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bcd27dc79a3554eb13e74c,5e9b443223881d04be740737,APPROVED,30:21.5,48:51.5,1110.001,30,2825,1,100,27:34.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bcd28360a22d8aea0237f7,6151e70a336a52b8af712d41,APPROVED,30:33.2,00:05.7,1772.522,66,1659,2,100,27:34.1,49E292D8,Germany,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62bd8a129c35dd66fd67c306,5eac8b777b60c8129709fc10,APPROVED,33:45.5,51:00.7,1035.22,44,1606,15,98,27:34.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bd8a70bedcd62d3e57e774,5920b1f62b529b00013f3214,RETURNED,35:12.1,,266180.1742,58,1368,0,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bd8a83bae5e3d8676dc86f,601e13b872774f263d64acac,APPROVED,35:33.0,05:43.3,1810.264,33,1394,8,99,27:34.2,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bd8a8adf7fc13447a37088,6109482350367148ce0aa834,RETURNED,35:43.4,,266148.8464,27,1605,7,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bd8aa8d6e1bd9e0f45d95d,61151fdceebe67102a0983ad,APPROVED,36:08.3,57:47.1,1298.829,38,1352,0,100,27:34.4,49E292D8,United States,United States,Other,English,United States,Female,No
+62bd8b6035a3da2d2ade6a17,611ff6cc935b6de3fff0b896,APPROVED,39:30.0,00:44.1,1274.073,29,1502,7,99,27:34.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bd8e4541944b781248e899,5e12b8f31e2e589287ce63ae,APPROVED,51:39.3,20:19.8,1720.495,39,1155,6,99,27:34.5,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62bd9944604ff380ab43c866,628e3768a418a3b5d079e097,APPROVED,38:34.1,52:30.0,835.891,26,324,2,100,27:34.6,NOCODE,United States,United States,Other,English,United States,Male,Yes
+62bd995719673e469a7a768d,60bff9298f56d55c8ecd9adf,APPROVED,39:12.2,59:17.6,1205.487,31,1547,4,100,27:34.6,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bd9960bff474e5b5f8c306,5be08e69610cba000151f1f7,APPROVED,38:58.0,11:11.7,1933.697,26,1411,0,100,27:34.7,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bd996a07151986d7298340,59e7477e3e4b5a00016aa4d2,APPROVED,39:10.6,53:54.8,884.232,57,2660,4,100,27:34.9,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62bd9973bc29760e03af7685,5d8108c0a6d2bf001afdb2d9,APPROVED,39:17.8,57:16.1,1078.278,37,1154,1,100,27:35.0,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bd9ee2d1cf444b4b09648c,56ec9fa4f9ffc4000ac1941b,APPROVED,02:32.6,23:45.0,1272.439,34,656,2,100,27:35.1,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62bd9ef044839cdd80a82224,5d612ae16512d700159face7,APPROVED,02:40.8,48:01.2,2720.477,38,3044,6,100,27:35.2,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62bd9ef6802781a5a47a768c,58f0fca0d40252000192f201,RETURNED,02:48.4,,260923.9916,41,4464,4,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bd9f111f66f3d566980d8d,5e84bd7c34d5d9072128fac1,APPROVED,03:15.6,56:24.4,3188.805,35,943,2,100,27:35.2,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62bd9f14b1876b64678f8755,559744acfdf99b590e1e9299,APPROVED,05:19.9,22:09.5,1009.583,37,1049,4,100,27:35.4,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62bda41ce9c757e9e2c7b511,56435b83942576000a66eb5d,APPROVED,24:46.3,37:55.5,789.148,43,3853,14,100,27:35.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bda79da899f80e2ec7b4ec,5a381de00006450001bf2691,APPROVED,39:45.1,55:45.4,960.255,33,1646,4,100,27:35.6,49E292D8,United States,United States,Part-Time,English,United States,Male,No
+62bda7a1187005ab22f805d9,6095fc75ab1d101e060d808b,APPROVED,43:20.1,02:00.6,1120.54,37,1821,7,99,27:35.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bda7a6187005ab22f805da,5b954f10754b700001f06bf0,APPROVED,39:51.0,00:08.4,1217.466,46,2656,1,100,27:35.7,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62bda7a9c8813097b580285c,60de09f7dc5304e0c0f19485,APPROVED,39:56.1,59:23.5,1167.383,31,1153,11,98,27:35.8,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62bda7c95d668a6064f805d2,615f2b3f0eafbabe579b889a,APPROVED,40:47.3,13:59.4,1992.119,32,1853,26,95,27:35.8,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bdc0e9f81bee29eca370a5,62baf827477e9d1a60c5b66d,APPROVED,27:44.4,54:54.6,1630.259,22,50,0,100,30:38.1,137454,United States,United States,Full-Time,English,United States,Male,No
+62bdc0f784fa4c182332052b,600dd1ea271cf06201979123,RETURNED,38:00.8,,251611.7594,22,904,7,98,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bdc107ac28d6c681a82e98,610cb2e82784ac6af6469fc5,APPROVED,28:11.6,57:01.6,1729.998,28,919,2,100,30:38.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bdc111faaa5e2639af768c,6111234ac8cfa49e38acbfb4,APPROVED,28:19.7,45:46.1,1046.373,23,1250,0,100,30:38.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bdc11445c9bf9cd170ae70,60f838095603e27ca51820a7,APPROVED,28:42.8,48:13.0,1170.167,65,1472,4,100,30:38.3,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62bdc36a78d97b6ff9635b6a,5ff5f7ad932d56101bf7c90d,APPROVED,38:22.3,24:31.5,2769.158,47,1945,2,100,30:38.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62be1182455b6ab6e3240410,5b666901f7798c000182c01c,APPROVED,11:35.8,32:40.2,1264.417,38,2163,6,100,30:38.4,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62be11889b0cc1ab94a4a846,5d07ce1342a8400018a27494,APPROVED,11:39.5,26:34.5,895.009,24,813,8,98,30:38.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62be118bab207f2bd9cb9a01,600c63a5dfb7171357a02440,APPROVED,11:41.9,28:43.8,1021.988,25,1218,3,100,30:38.5,49E292D8,United States,United States,Full-Time,English,United States,Male,Yes
+62be118c9700a180a4e6d59f,56259489ed6e5a0005c80fde,APPROVED,11:40.8,25:33.3,832.558,36,3304,8,100,30:38.6,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62be118e6a9421fe428c1ab7,5a8b1ee2000dab00018cc7cd,APPROVED,12:08.1,30:28.0,1099.855,33,1468,0,100,30:38.6,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62be1998806f6c5fbc63677b,62852880d0adbe3f66b92efc,APPROVED,46:02.3,14:30.9,1708.599,31,333,0,100,30:38.7,49E292D8,United States,United States,Part-Time,English,United States,Male,Yes
+62be199bfbb32a8a93d89678,5ade0203066c510001d42abf,APPROVED,46:03.5,08:44.8,1361.297,41,2317,2,100,30:38.7,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62be19a03424108f2efb655b,5d8e258e7a33770016980d2b,APPROVED,46:10.1,00:23.0,852.916,31,824,0,100,30:38.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,Yes
+62be19b0016f531acbec72c6,60fba5becb0e782745f2c39c,APPROVED,46:28.4,07:51.5,1283.156,19,277,0,100,30:38.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,Yes
+62be19b94697b48437240409,60a55d4bb6bd9be6c95b89eb,APPROVED,46:35.8,17:00.5,1824.649,27,1387,3,100,30:38.9,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62be7b94e7841534a25b7813,5bc9f8b677740000016a08b5,APPROVED,44:04.3,58:03.0,838.706,47,2105,4,100,30:38.9,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62be7b994854a836cb8c1aa1,5ffe4c2a8f29264fb8cdd577,APPROVED,44:12.2,00:38.3,986.018,22,223,2,100,30:39.0,49E292D8,South Africa,United States,Full-Time,English,United States,Female,No
+62be7bc4dba021adc493847e,5ddd92855daaa6d095854780,APPROVED,44:54.4,23:32.8,2318.364,37,1720,15,98,30:39.0,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62be7bccbe33dae21c6bd8b8,6151e479b4ee16668948c7f2,APPROVED,45:12.1,07:06.7,1314.584,68,1432,3,100,30:39.1,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62be7bcccea4f5e79a6bd894,60f6e30863cdeb849cbeb338,APPROVED,45:05.6,40:03.2,3297.605,36,902,5,99,30:39.1,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62bed8226f02f9c6feccbe56,565bdfcec121fe0012fc3897,APPROVED,28:01.9,16:41.8,2919.894,28,101,0,100,30:39.2,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bed82c4f5f6997070f9647,5eb02a40b17a8c0868685d32,APPROVED,19:11.5,59:09.6,2398.152,46,2273,4,100,30:39.3,49E292D8,Italy,United States,Full-Time,English,United States,Female,No
+62bed8429ce69ed4223d3fd1,5cbf5b488be75a0016b49758,RETURNED,19:32.9,,180719.9122,44,2808,22,98,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bed86b7ed369f4635b5ce8,5c40e7d99d27f00001159a65,APPROVED,20:15.7,34:05.7,830.005,40,2423,7,99,30:39.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bed86c64fe7c04b2df52a7,5aa44687dbdb470001ef463f,APPROVED,20:17.3,41:04.9,1247.55,36,1925,4,100,30:39.4,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bed9b4dde0cd9ceb28e3d9,629e3f2e7aa7065ffef94278,APPROVED,25:59.6,49:03.6,1383.944,23,99,0,100,30:39.4,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62beea6fd257d687de826bb3,5d8a64630ffb9c001746ca2c,APPROVED,37:07.8,06:28.8,1761.033,63,3928,9,100,30:39.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62beea83913cbdad6e4585db,5b70ed4b99982e000145eb7b,APPROVED,37:29.3,17:49.2,2419.819,36,1179,6,99,30:39.5,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62beea86a0bf9cbad2b76e09,5d9c67b131544d00101daef1,APPROVED,37:32.1,58:32.0,1259.971,33,2668,8,100,30:39.6,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62beea8c5f279dae5c80e5a6,5c50c73cecd461000198fea1,APPROVED,37:34.8,53:40.5,965.709,30,3822,2,100,30:39.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62beea8fefc61ab1c1f1fa36,5d6349209b22da000117b1bd,APPROVED,37:39.2,51:48.2,848.998,39,1129,4,100,30:39.7,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62bef609a789f54dd15c21b9,5edfb0770fb0722aa3839b6d,APPROVED,26:38.7,45:48.2,1149.517,26,2404,0,100,30:39.7,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bef614a8038e57a018ab93,5dec8925be656d35d4005320,APPROVED,26:47.7,02:17.9,2130.279,58,1923,5,100,30:39.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bef6194957b8c2d5230968,5dd72efa82569a6d38e06854,APPROVED,26:49.9,49:36.8,1366.938,39,1442,8,99,30:39.9,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bef61dfadeb8cd227446c7,60885dc6571926117732b41e,APPROVED,26:56.5,45:18.4,1101.901,48,1358,1,100,30:39.9,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bef625e6610cd312826bb0,5e78bf026d9a62443b9d5b74,APPROVED,27:25.1,42:25.1,900.003,43,2572,15,99,30:40.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bf047e860a97439efdb9a0,610855e5402b0ab92c3a0759,APPROVED,28:17.2,48:45.9,1228.729,19,324,1,100,30:40.0,49E292D8,United States,United States,Due to start a new job within the next month,English,United States,Female,Yes
+62bf04b0cbf217d3bcf65af9,5c0727ff1d461400012b61ee,APPROVED,29:13.7,49:04.5,1190.824,53,2394,0,100,30:40.1,49E292D8,United States,United States,Other,English,United States,Female,No
+62bf04b24ba09a1ed0fd0492,5ba064c10d4416000157a224,APPROVED,29:19.9,43:24.7,844.745,31,1830,3,100,30:40.1,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62bf04c0c73f57888c790b3f,5e06ecd524f9390991997bb7,RETURNED,29:24.6,,169328.4421,27,2453,12,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bf04c1a8b63a3af104be30,60e5eceb989f38c746723024,APPROVED,29:28.3,21:52.6,3144.328,40,1698,0,100,30:40.2,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bf05e2a14b11c617f7a072,62bb31196b1faed16b34e914,APPROVED,34:12.4,54:34.3,1221.931,45,43,0,100,30:40.2,49E292D8,United States,United States,Other,English,United States,Male,No
+62bf470972267ff4b3c43d95,615bb35e52d50aa9a2ae6747,APPROVED,12:24.3,34:57.9,1353.657,43,1284,3,100,30:40.3,NOCODE,United States,United States,Part-Time,English,United States,Female,No
+62bf470a8a3fc73006ba139c,5dcf4136cf8e7e086ea019e4,APPROVED,12:14.3,32:05.1,1190.846,55,2667,10,100,30:40.3,49E292D8,United States,United States,Other,English,United States,Female,No
+62bf470bb861d243519c0b7a,5dbb9407e0a6e81863526af7,APPROVED,12:53.5,47:16.0,2062.447,35,1173,8,98,30:40.4,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bf470e0b17fab90a9c0b60,5b975addbb32a6000182d3e2,APPROVED,12:20.4,30:51.6,1111.191,30,891,7,97,30:40.5,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bf470e5fc0e5c47708a3a8,62b060e7ab53ddb4dc2b7eca,TIMED-OUT,12:27.3,,152345.8646,29,76,1,99,,,United States,United States,DATA EXPIRED,English,United States,Male,No
+62bf4e7d1e5107bf8b7433b3,60fda8f418c64ff072d22378,APPROVED,44:35.8,00:13.8,937.95,20,235,0,100,30:40.6,49E292D8,United States,United States,Part-Time,English,United States,Female,Yes
+62bf4e84b5d505f4fb230975,61081e56eef3ebeb3f9e684c,APPROVED,44:06.9,04:18.9,1212.061,22,196,0,100,30:40.7,49E292D8,United States,United States,Other,English,United States,Female,Yes
+62bf4e866c82856418f65b17,5f038dc85819b15b08840dfd,APPROVED,47:09.3,17:14.0,1804.706,25,1917,15,99,30:40.8,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bf4e87ea015dd5d3248d1a,5c3d07a85a994b0001c10bb2,APPROVED,45:07.5,18:29.2,2001.685,27,2686,0,100,30:40.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bf4eb02c3cee8055bd311a,5fc29e457497e203c3af6bb9,APPROVED,45:58.8,02:58.5,1019.725,35,1150,0,100,30:40.9,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,No
+62bf567a4be12e3fdb80e5a8,611b09935cd6e67f2b5e9ea2,APPROVED,18:07.3,40:18.9,1331.593,64,1424,7,99,30:41.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62bf567ae09e298c9125d4c2,5f0d2ad60ad0d6730c380b05,TIMED-OUT,18:02.5,,148410.722,49,1478,5,100,,,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,DATA EXPIRED
+62bf569eca20833a1eb183ae,5a9f566d777df2000160326c,APPROVED,18:41.8,34:52.8,970.995,41,1868,9,99,30:41.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bf56aafcf59222cf248cf5,5bf408f7f35e0c000101693a,APPROVED,19:46.0,22:02.4,3736.39,49,1814,7,99,30:41.1,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62bf56b25cd66cb326c43da3,5ee232f2b970662cfa352567,APPROVED,20:14.0,41:00.8,1246.828,34,2826,0,100,30:41.1,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62bf5958b2a1f106e4f7a05b,623534a4823206b94cd659b3,APPROVED,30:21.6,06:51.3,2189.643,21,693,4,100,30:41.2,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Male,Yes
+62bf611dc16b7068d3248d0c,607226ef2df05dd596a390f2,APPROVED,03:33.8,22:00.6,1106.807,40,553,1,100,30:41.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bf611f8893317dc677490f,5d41df0ca7b5800001a0341a,APPROVED,03:44.2,42:49.2,2345.019,60,433,1,100,30:41.3,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62bf612da3099a3fcdbc4cea,604914055ca718818c50d5a3,RETURNED,03:46.4,,145667.1724,20,180,1,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bf61310de953f0f85c21ae,61664d58d18ca2325a81008e,APPROVED,03:45.6,51:51.0,2885.446,27,902,3,100,30:41.4,49E292D8,United States,United States,Other,English,United States,Female,No
+62bf61364c4d8e174abc4cdb,61007ec7b65c2281b7a45058,RETURNED,03:52.7,,145660.9978,19,619,1,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62bf61feaf8871eb2034e96e,5fc6e3a0040c3f0e7cb45c8a,APPROVED,07:21.2,43:42.5,2181.258,32,1516,3,100,30:41.4,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62bf6271b3b3c6ce605c21ad,614c1267826bcb89bd92e726,APPROVED,09:10.6,14:58.6,3948.031,36,615,0,100,30:41.5,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62bf6766da4420914f74338f,629fa760fe340707d1dfd548,APPROVED,31:05.5,52:10.8,1265.353,31,194,0,100,30:41.6,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62c0252c70beaced2608a397,5f6e2f793c9b1032dbe72def,APPROVED,00:09.7,31:15.9,1866.159,41,1984,6,100,30:41.6,49E292D8,United States,United States,Full-Time,English,United States,Male,DATA EXPIRED
+62c0255c12638752255a24ef,57b60487e5b60d0001083aea,RETURNED,00:44.9,,95448.97545,37,2375,10,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c025649e7bd00e189ab3c3,6266b4ea9408fc167507d923,APPROVED,01:10.3,28:50.3,1659.964,49,637,1,100,30:41.8,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62c02564c1ac651b6eb76df8,5c1021a547d07800011a23de,APPROVED,00:57.8,17:47.6,1009.78,64,2401,1,100,30:42.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c02574a116371a86290162,6029acb673830e93bcc9230f,APPROVED,01:23.9,18:27.2,1023.334,71,2021,27,96,30:42.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c02b090e813465387446c3,5b6259be5256470001bd0c6d,APPROVED,24:57.5,41:48.7,1011.152,35,2847,0,100,30:42.1,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62c02b3bc37610ee74f77d5b,5d4254db5b2c430001418a3c,APPROVED,25:50.7,41:00.9,910.224,39,2754,1,100,30:42.1,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c02b3c48e9cff9db0cb331,58810bc97b21a60001758c8b,APPROVED,25:57.3,47:44.3,1307.018,59,1698,0,100,30:42.2,NOCODE,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62c02b474b0c1d3c51f69338,6138af26127651134a88842c,RETURNED,26:07.6,,93926.34738,53,987,3,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c02b56472634749a61c55b,601fc50f4b7f33504a02cd52,APPROVED,26:19.1,06:27.6,2408.515,44,860,19,95,30:42.2,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c02d0e77a985f7bcfdb983,5c3c7913b4f22c0001a0809c,APPROVED,33:39.5,50:48.5,1028.955,69,3590,6,100,30:42.3,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c032902f1cb9b13ff65aff,5eceed79840590300f53fa51,APPROVED,57:12.0,11:15.6,843.611,27,1737,6,99,30:42.4,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c080e561a96f3c4077491e,627e6d46440b9a1d01fb1d32,APPROVED,31:20.2,52:28.4,1268.181,38,294,0,100,21:36.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c08101878e15b92d25d4e8,5ed9c285b8c16356b385a97f,APPROVED,35:56.0,58:00.1,1324.049,69,2286,4,100,21:36.5,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62c08107104bf2e73bd961fe,622a42c21de0c55ba18a2acb,APPROVED,31:55.7,50:16.2,1100.48,60,603,0,100,21:36.5,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62c08107f94c45f77918ab6f,608f39d2c76e436967135846,APPROVED,31:59.3,03:42.9,1903.61,29,1337,3,100,21:36.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c08108104bf2e73bd961ff,608ca27f0fc273d395eb58bd,APPROVED,31:52.8,14:00.5,2527.673,64,1696,4,100,21:36.6,NOCODE,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c089f79a4724c6b304be3d,57dd1a741334540001170404,APPROVED,10:01.8,23:22.2,800.337,45,2338,9,99,21:36.7,NOCODE,United States,United States,Full-Time,English,United States,Male,No
+62c089f8f5603fc9235c219f,5c2c6e432c45d400014a35e3,RETURNED,10:00.3,,69693.73093,39,2849,5,100,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c089fc68482043e8f7a077,5f2e00fa9832d716737ae694,APPROVED,10:06.7,40:39.5,1832.84,40,1696,13,98,21:36.7,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c08a09f5603fc9235c21a2,5e373f33a42bce6daa55ea65,APPROVED,14:08.9,37:03.1,1374.131,68,2242,0,100,21:36.8,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c08a1d511cdaab4f290184,5deb3ffdf375c625fa83bac7,APPROVED,10:37.8,36:30.3,1552.561,24,1900,11,99,21:36.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,Yes
+62c08c9a6106e08388bbf428,629e7861db77361516171932,APPROVED,21:17.6,34:06.2,768.605,19,209,5,96,21:36.9,49E292D8,United States,United States,Full-Time,English,United States,Male,Yes
+62c09726f8e0828478c7ad0e,5e967eb28a7eb710a9e1fd94,APPROVED,06:18.6,35:59.0,1780.409,46,229,2,100,21:37.0,49E292D8,United States,United States,Full-Time,English,United States,Male,Yes
+62c0974645ada7f2f8bc4cc6,5cd8d86210887400182db201,APPROVED,06:46.6,37:36.7,1850.172,38,1792,7,99,21:37.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c0974e71071c572bbd30e9,5a02083e087f2e0001eadbdb,APPROVED,07:25.9,23:45.3,979.439,49,1789,2,100,21:37.1,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62c09753c339c11afb80e5b2,5e1f8fbfb202032c463f3e06,APPROVED,10:22.2,29:03.8,1121.602,61,2474,1,100,21:37.1,49E292D8,United States,United States,Other,English,United States,Female,No
+62c0975506b5d4870561c576,5fec06ae197628d566cdc782,APPROVED,07:05.6,25:54.1,1128.538,52,1289,2,100,21:37.2,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62c0a0434168c6574a826bd4,594ec90eca6e670001b2c184,APPROVED,45:10.9,00:06.5,895.52,28,2403,4,100,21:37.2,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c0a04d1f359348aae0315e,5bb31c670cb04c00014e8149,APPROVED,45:28.2,08:09.5,1361.374,31,52,0,100,21:37.3,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62c0a050b757d45b95f77d4a,60fdfd265d53f620ef2c3929,APPROVED,45:45.0,57:34.1,709.123,22,1328,2,100,21:37.3,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62c0a051a85aca9101f65b16,628555bb109cc99491b8f04b,APPROVED,45:21.2,07:09.1,1307.864,18,339,0,100,21:37.4,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c0a05c1c2e99c8f308ea19,5dd9f0e719eecb97dfab7b48,APPROVED,47:28.0,14:28.0,1620.039,46,3030,4,100,21:37.4,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c0a5f88eac7f6b2525d4be,597fe89a1b41a20001749f57,APPROVED,09:31.3,26:08.9,997.533,44,3831,3,100,21:37.5,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c0a5ff3d1e906049a2959c,60a30f9cd72ab8c6198d1bf6,APPROVED,09:37.5,28:35.3,1137.807,40,1420,2,100,21:37.5,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62c0a61a2aa33ac1edf7a04b,62965f9c95c876f1d91fc524,APPROVED,10:05.7,27:33.2,1047.477,43,86,0,100,21:37.6,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62c0a62664b8869623d96201,62be4da7b96f00d3a68c1a98,APPROVED,10:14.5,32:41.3,1346.748,51,26,0,100,21:37.7,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c0a6360353272b46d8a84b,5c5fc78e96dff400013607a5,APPROVED,10:33.9,32:40.1,1326.209,39,2282,2,100,21:37.7,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62c0ac52dbd7c7c1bfba139e,5ee933d3280cdb2bb68165b0,APPROVED,37:22.0,00:50.7,1408.628,36,2240,2,100,21:37.8,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,No
+62c0ac691f49d022bbc7ad18,5e176b2163c7a407ce2f02a1,APPROVED,37:01.5,55:53.4,1131.857,52,2703,2,100,21:37.8,49E292D8,United States,United States,Part-Time,English,United States,Female,No
+62c0ac8273b06aca45f7a060,5f50b1bbe29c992335098fb1,APPROVED,02/07/2022 20:40,05:54.6,1524.613,31,1535,2,100,21:37.9,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,No
+62c0ac9c2f4d974c2525d4ce,5db9a46ff8e3f9000f88cb85,APPROVED,38:13.9,01:49.7,1415.842,64,2221,5,100,21:37.9,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c0aca671a224b1b2bbf416,60ffae39406f5e4035c8dea0,RETURNED,39:19.2,,60735.2387,34,1522,8,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c0b35af4684e8db661c583,60734853295f4a6404bbf27f,APPROVED,06:36.4,37:28.1,1851.753,37,937,7,99,21:38.0,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c0b38677653669754585cf,60a6be72ccb15020f04ba501,APPROVED,07:31.8,23:21.7,949.92,28,111,0,100,21:38.0,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,Yes
+62c0b3a0a4e669989ac43d8d,6009eee6721c400d92d4cd39,APPROVED,07:48.8,31:56.9,1448.109,22,857,2,100,21:38.1,49E292D8,United States,United States,Unemployed (and job seeking),English,United States,Female,DATA EXPIRED
+62c0b3a3a4e669989ac43d8f,5fb2041681fe9376804e1249,APPROVED,09:54.9,26:10.8,975.938,40,2057,1,100,21:38.1,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c0b3a811253f636618ab63,62a012b3b15879c91278fb6a,APPROVED,07:55.1,30:07.7,1332.582,36,240,0,100,21:38.2,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c0b5372cca8925d8248cfb,5baa535fa3c9170001156197,RETURNED,14:31.7,,58622.725,32,2902,9,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c0b6742e09f73223290164,58642f4de16d530001b34622,RETURNED,29:48.1,,57706.34793,62,2944,14,99,,,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED,CONSENT REVOKED
+62c0b6a757064db4b8e0315d,6103664b32254e61282aaf0f,APPROVED,20:43.1,44:44.3,1441.147,25,772,2,100,21:38.2,49E292D8,United States,United States,Full-Time,English,United States,Female,Yes
+62c17ba05283ad009d790b35,60fce0fcf9abe7218c789734,APPROVED,21:07.0,42:56.4,1309.363,41,657,4,100,21:38.3,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,No
+62c17bb2c553954877c7acfc,62879b859698ba45e6afa90f,APPROVED,21:50.4,53:30.0,1899.612,67,129,0,100,21:38.4,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c17be870b55166c8fd0464,6273e8b5fdcdaed810eca006,APPROVED,22:20.3,37:03.8,883.529,48,344,2,100,21:38.4,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c17bf327d627364408ea23,5e65c5b41e30883349a25a61,APPROVED,22:55.2,45:21.4,1346.261,32,612,3,100,21:38.5,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Male,No
+62c17c0284089ae72c917285,5d4459c166881d001c4d5451,APPROVED,22:45.6,37:47.1,901.521,53,2335,12,99,21:38.5,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62c18285de26e2eaf69ebb5b,5e937e8e4d246b6b4162ae72,APPROVED,50:42.9,08:45.9,1083.014,33,3020,1,100,21:38.6,49E292D8,United States,United States,Full-Time,English,United States,Male,No
+62c18297bab23ddd025a24dc,629123291e21f234a2c06705,APPROVED,50:54.4,32:19.9,2485.471,34,250,3,99,21:38.6,49E292D8,United States,United States,DATA EXPIRED,English,United States,Male,DATA EXPIRED
+62c182ec822f852a6361c573,5fa8aa822e22ef7809425df9,APPROVED,52:12.5,27:00.0,2087.414,45,1216,13,98,21:38.7,49E292D8,China,United States,Unemployed (and job seeking),English,United States,Male,No
+62c183448f55002c54f6932f,6165dc0b1076bf012831f862,APPROVED,53:52.2,11:59.4,1087.206,52,46,1,99,21:38.7,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c183de7d37e388dd61c571,5e74f18520ab35040b41d526,APPROVED,56:21.1,18:40.4,1339.283,57,2252,4,100,21:38.8,NOCODE,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c18eb7526af5be2fbecc47,5c72f069cf5c4b000197cc30,APPROVED,45:48.2,01:55.6,967.409,37,1180,8,99,21:38.9,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c18eef8854d74815f6d0a3,558cdd7efdf99b0f1cc5f4c1,APPROVED,44:43.7,56:25.2,701.416,28,2636,14,99,21:39.0,49E292D8,United States,United States,DATA EXPIRED,English,United States,Female,DATA EXPIRED
+62c18f0502ab46927f5e6d0f,628f77c4d003ee884a5573fd,APPROVED,43:56.9,12:47.0,1730.071,54,150,0,100,21:39.0,49E292D8,United States,United States,Full-Time,English,United States,Female,No
+62c18f5f56c792781fa3156b,5c101f812a1a620001f04007,APPROVED,45:24.4,09:57.0,1472.657,67,1770,2,100,21:39.1,49E292D8,United States,United States,"Not in paid work (e.g. homemaker', 'retired or disabled)",English,United States,Female,No
+62c190520d794b0d3a308f71,5e2cdab5cd89c83002bf56de,APPROVED,49:30.6,13:57.8,1467.249,28,1482,2,100,21:39.1,49E292D8,United States,United States,Full-Time,English,United States,Female,No
