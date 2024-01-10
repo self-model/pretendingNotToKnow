@@ -310,11 +310,29 @@ E2.sd_num_clicks_relative_to_np <- E2.click_df %>%
   spread(test_part,sd_num_clicks) %>% 
   mutate(diff=nonpretend-pretend);
 
+p<- E2.click_df %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sd(num_clicks)) %>%
+  group_by(test_part)%>%
+  summarise(
+    mean=mean(sd_num_clicks),
+    se=se(sd_num_clicks)
+    ) %>%
+  ggplot(aes(x=test_part,
+             color=test_part,
+             y=mean))+
+  geom_point(size=10)+
+  geom_errorbar(aes(ymin=mean-se,ymax=mean+se),color='black')+
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  
+
+
 ```
 
 We quantified the within-subject variability in the number of misses in pretend and non-pretend games. This is a function of how similar games were to each other, within condition and within individual. The standard deviation in non-pretend games was on average `r E2.sd_num_clicks$nonpretend%>%mean()%>%printnum()`, and significantly higher than in pretend games (mean SD = `r E2.sd_num_clicks$pretend%>%mean()%>%printnum()`, `r apa_print(E2.sd_num_clicks$diff%>%t.test())$statistic`). In other words, pretend games were significantly more similar to each other, in number of guesses, than non-pretend games were to each other.
 
-Next, we asked whether pretend games were not only more similar among themselves, but also to the average non-pretend game, than were non-pretend games. We therefore replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$. Strikingly, we find that a typical pretend game was more similar, in number of misses, **to the average non-pretend game**, than was a typical non-pretend game (`r apa_print(E2.sd_num_clicks_relative_to_np$diff%>%t.test())$full_result`).
+<!-- Next, we asked whether pretend games were not only more similar among themselves, but also to the average non-pretend game, than were non-pretend games. We therefore replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$. Here, a typical pretend game was less similar, in number of misses, to the average non-pretend game, than was a typical non-pretend game (`r apa_print(E2.sd_num_clicks_relative_to_np$diff%>%t.test())$full_result`). -->
 
 ## Within-participant sequential guess entropy
 
@@ -335,6 +353,20 @@ E2.click_entropy_by_serial_position_summary %>%
   labs(x='click number', y='flexibility score (Shannon entropy)') +
   theme_classic() +
   scale_x_continuous(breaks=seq(20))
+
+p<- E2.click_entropy_by_serial_position_summary %>%
+    filter(test_part %in% c('pretend','nonpretend') & click_number<=8) %>%
+    ggplot(aes(x=click_number,y=mean_entropy,color=test_part,group=test_part)) +
+    geom_line() +
+    geom_ribbon(aes(ymax=mean_entropy+se_entropy,ymin=mean_entropy-se_entropy, fill=test_part),alpha=0.5) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", "black")) +
+    scale_color_manual(values=c("#69b3a2", "#404080", "black", "black")) +
+    labs(x='click number', y='') +
+    theme_classic() +
+    scale_x_continuous(breaks=seq(20))+
+  theme(legend.pos='na')
+
+ggsave('figures/Battleship2/sequential_guess_entropy.png',width=2.5,height=1.5,dpi=300)
 
 ```
 
@@ -650,7 +682,7 @@ E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty <- E4.click_df %
 ```
 Similar to Battleship, the within-subject standard deviation in number of misses in non-pretend games (`r E4.sd_num_misses$nonpretend%>%mean()%>%printnum()`) was on average significantly higher than in pretend games (mean SD = `r E4.sd_num_misses$pretend%>%mean()%>%printnum()`, `r apa_print(E4.sd_num_misses$diff%>%t.test())$statistic`). Here too, pretend games were significantly more similar to each other, in terms of number of misses, than non-pretend games.
 
-In order to test whether pretend games were more similar to the average non-pretend game than non-pretend games themselves, we first regressed out the effect of word on number of misses, since within-subject differences between the conditions can reflect the random assignment of words to conditions. We then replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$, as we did for Battleship. We again find that a typical pretend game was more similar, in number of misses (controlling for word difficulty), to the average pretend game, than was a typical non-pretend game (`r apa_print(E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty$diff%>%t.test())$full_result`). 
+<!-- In order to test whether pretend games were more similar to the average non-pretend game than non-pretend games themselves, we first regressed out the effect of word on number of misses, since within-subject differences between the conditions can reflect the random assignment of words to conditions. We then replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$, as we did for Battleship. We again find that a typical pretend game was less similar, in number of misses (controlling for word difficulty), to the average non-pretend game, than was a typical non-pretend game (`r apa_print(E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty$diff%>%t.test())$full_result`).  -->
 
 ## Within-participant sequential guess entropy
 
@@ -669,6 +701,20 @@ E4.click_entropy_by_serial_position_summary %>%
   labs(x='click number', y='flexibility score (Shannon entropy)') +
   theme_classic() +
   scale_x_continuous(breaks=seq(20))
+
+p<- E4.click_entropy_by_serial_position_summary %>%
+    filter(test_part %in% c('pretend','nonpretend') & click_number<=8) %>%
+    ggplot(aes(x=click_number,y=mean_entropy,color=test_part,group=test_part)) +
+    geom_line() +
+    geom_ribbon(aes(ymax=mean_entropy+se_entropy,ymin=mean_entropy-se_entropy, fill=test_part),alpha=0.5) +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725", "black")) +
+    scale_color_manual(values=c("#69b3a2", "#404080", "black", "black")) +
+    labs(x='click number', y='') +
+    theme_classic() +
+    scale_x_continuous(breaks=seq(20))+
+  theme(legend.pos='na')
+
+ggsave('figures/Hangman2/sequential_guess_entropy.png',width=2.5,height=1.5,dpi=300)
 
 ```
 
