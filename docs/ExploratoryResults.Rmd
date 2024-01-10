@@ -289,6 +289,33 @@ E2.mean_P_heuristic_rank %>%
 
 We find no difference in this measure between pretend and non-pretend games (`r E2.mean_P_heuristic_rank%>%spread(test_part,p_heuristic_rank)%>%mutate(diff=nonpretend-pretend)%>%pull(diff)%>%t.test()%>%apa_print()%>%'$'(statistic)`). In the next analysis we use a more sensitive, player-specific measure of players' tendency to follow a fixed heuristic, versus playing flexibly.
 
+## Variability in number of misses
+
+```{r battleship-num-misses-variability}
+
+E2.sd_num_clicks <- E2.click_df %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sd(num_clicks)) %>%
+  spread(test_part,sd_num_clicks) %>% 
+  mutate(diff=nonpretend-pretend);
+
+E2.sd_num_clicks_relative_to_np <- E2.click_df %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id)%>%
+  mutate(mean_nonpretend=mean(num_clicks[test_part=='nonpretend']),
+         squared_dist_to_mean = (num_clicks-mean_nonpretend)**2)%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sqrt(sum(squared_dist_to_mean)/(n()-1))) %>%
+  spread(test_part,sd_num_clicks) %>% 
+  mutate(diff=nonpretend-pretend);
+
+```
+
+We quantified the within-subject variability in the number of misses in pretend and non-pretend games. This is a function of how similar games were to each other, within condition and within individual. The standard deviation in non-pretend games was on average `r E2.sd_num_clicks$nonpretend%>%mean()%>%printnum()`, and significantly higher than in pretend games (mean SD = `r E2.sd_num_clicks$pretend%>%mean()%>%printnum()`, `r apa_print(E2.sd_num_clicks$diff%>%t.test())$statistic`). In other words, pretend games were significantly more similar to each other, in number of guesses, than non-pretend games were to each other.
+
+Next, we asked whether pretend games were not only more similar among themselves, but also to the average non-pretend game, than were non-pretend games. We therefore replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$. Strikingly, we find that a typical pretend game was more similar, in number of misses, **to the average non-pretend game**, than was a typical non-pretend game (`r apa_print(E2.sd_num_clicks_relative_to_np$diff%>%t.test())$full_result`).
+
 ## Within-participant sequential guess entropy
 
 ```{r, child=c('../analysis/clickEntropyBattleship.Rmd')}
@@ -589,6 +616,41 @@ E4.misses_per_word %>%
 ggsave('figures/E4_scatter_misses.png',width=3.5, height=3.5)
 
 ```
+
+## Variability in number of misses
+
+```{r hangman-num-misses-variability}
+
+E4.sd_num_misses <- E4.click_df %>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_misses=sd(num_misses)) %>%
+  spread(test_part,sd_num_misses) %>% 
+  mutate(diff=nonpretend-pretend);
+
+E4.sd_num_misses_relative_to_np <- E4.click_df %>%
+  group_by(subj_id)%>%
+  mutate(mean_nonpretend=mean(num_misses[test_part=='nonpretend']),
+         squared_dist_to_mean = (num_misses-mean_nonpretend)**2)%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sqrt(sum(squared_dist_to_mean)/(n()-1))) %>%
+  spread(test_part,sd_num_clicks) %>% 
+  mutate(diff=nonpretend-pretend);
+
+E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty <- E4.click_df %>%
+  group_by(word)%>%
+  mutate(num_misses_corrected=num_misses-mean(num_misses[test_part=='nonpretend']))%>%
+  group_by(subj_id)%>%
+  mutate(mean_nonpretend=mean(num_misses_corrected[test_part=='nonpretend']),
+         squared_dist_to_mean = (num_misses_corrected-mean_nonpretend)**2)%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sqrt(sum(squared_dist_to_mean)/(n()-1))) %>%
+  spread(test_part,sd_num_clicks) %>% 
+  mutate(diff=nonpretend-pretend);
+
+```
+Similar to Battleship, the within-subject standard deviation in number of misses in non-pretend games (`r E4.sd_num_misses$nonpretend%>%mean()%>%printnum()`) was on average significantly higher than in pretend games (mean SD = `r E4.sd_num_misses$pretend%>%mean()%>%printnum()`, `r apa_print(E4.sd_num_misses$diff%>%t.test())$statistic`). Here too, pretend games were significantly more similar to each other, in terms of number of misses, than non-pretend games.
+
+In order to test whether pretend games were more similar to the average non-pretend game than non-pretend games themselves, we first regressed out the effect of word on number of misses, since within-subject differences between the conditions can reflect the random assignment of words to conditions. We then replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$, as we did for Battleship. We again find that a typical pretend game was more similar, in number of misses (controlling for word difficulty), to the average pretend game, than was a typical non-pretend game (`r apa_print(E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty$diff%>%t.test())$full_result`). 
 
 ## Within-participant sequential guess entropy
 
