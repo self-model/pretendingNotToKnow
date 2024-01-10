@@ -550,11 +550,11 @@ E4.click_df <- E4.df %>%
   filter(trial_type=='Hangman')
 
 
-load('E4.click_log.RData')
+load('../experiments/Hangman2/data/E4.click_log.RData')
 
-load('E4.click_log_with_boards.RData') 
+load('../experiments/Hangman2/data/E4.click_log_with_boards.RData') 
 
-load('E4.judge_df.RData')
+load('../experiments/Hangman2/data/E4.judge_df.RData')
 
 ```
 
