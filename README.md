@@ -10,7 +10,7 @@ A series of experiments looking at people's ability to pretend they don't know s
 
 ## Data
 
-Raw data from all four experiments is available on the project's OSF repository: [osf.io/zma9b/](https://osf.io/zma9b/files/osfstorage/)
+Raw data from all four experiments is available on the project's OSF repository: [osf.io/zma9b/](https://osf.io/zma9b/files/osfstorage/) and, in a slightly more formatted form, on DRYAD: [doi:10.5061/dryad.kd51c5bdd](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bdd). a README file about the data strucure is available on DRYAD.
 
 ## Analysis Scripts
 
