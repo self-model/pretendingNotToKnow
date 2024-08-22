@@ -1415,9 +1415,9 @@ ggsave('figures/hangman2/num_misses_per_word.png',p,width=5,height=5,dpi=300)
 #   group_by(subj_id,word) %>%
 #   rowwise()
 
-# save(E4.click_log, file='E4.click_log.RData')
+# save(..experiments/Hangman2/data/E4.click_log, file='E4.click_log.RData')
 
-load('E4.click_log.RData')
+load('..experiments/Hangman2/data/E4.click_log.RData')
 ```
 
 ```{r hangman-total_time, echo=FALSE}
@@ -1952,9 +1952,9 @@ get_optimal_letter <- function(posterior) {
 # E4.letter_prob_click_log_with_boards,
 # E4.letter_prob_click_log_with_boards_random,
 # E4.letter_prob_click_log_with_boards_optimal,
-# file='E4.click_log_with_boards.RData')
+# file='../experiments/Hangman2/data/E4.click_log_with_boards.RData')
 
-load('E4.click_log_with_boards.RData') # this file includes all the above dataframes.
+load('../experiments/Hangman2/data/E4.click_log_with_boards.RData') # this file includes all the above dataframes.
 
 ```
 
@@ -2455,7 +2455,7 @@ word_used_for_nonpretend <- function(s, w) {
 #                                     ifelse(used_for_nonpretend,'nonpretend','new')))
 # )
 
-load('E4.judge_df.RData')
+load('../experiments/Hangman2/data/E4.judge_df.RData')
 
 E4.judge_summary_df <- E4.judge_df %>%
   group_by(subj_id) %>%
