@@ -1,0 +1,199 @@
+---
+title: "Judgment Based Analysis"
+output: html_document
+date: "2024-08-22"
+---
+
+```{r analysis-preferences, warning=F, message=F, echo=FALSE}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed, warning=F, message=F)
+
+# Load packages with groundhog
+library(groundhog)
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel' #for word scatterplots
+), '2023-12-01')
+
+# Load workspace (after running preregisteredMethodsAndResults.Rmd, 
+# exploratoryResults.Rmd, and all the scripts that are linked to from these 
+# documents). 
+load('../.RData')
+
+papaja::r_refs("r-references.bib")
+
+
+#color scheme
+colors <-  list()
+colors$p <- "#404080"
+colors$np <- "#69b3a2"
+colors$random <- 'gray'
+colors$greedy <- 'black'
+```
+
+## Construct a subj_id mapping
+
+```{r subj_id_map, warning=F, message=F, echo=FALSE}
+
+E2.subj_mapping <- E2.df %>% 
+  group_by(subj_id) %>%
+  summarise(jatos_id=subject_identifier[1])
+
+E4.subj_mapping <- E4.df %>% 
+  group_by(subj_id) %>%
+  summarise(jatos_id=subject_identifier[1])
+```
+
+## Organize games according to judgments
+
+```{r games_by_judgments, warning=F, message=F, echo=FALSE}
+
+# Transform the dataframe
+E2.judgment <- E2.judge_df %>%
+  # Create rows for cheat_player
+  mutate(player = cheat_player, judged_pretend = correct, judge=subj_id) %>%
+  select(player, grid_number, judged_pretend, judge) %>%
+  # Bind rows for genuine_player
+  bind_rows(
+    E2.judge_df %>%
+      mutate(player = genuine_player, judged_pretend = 1 - correct, judge=subj_id) %>%
+      select(player, grid_number, judged_pretend, judge)
+  ) %>%
+  arrange(grid_number, player, judged_pretend)%>%
+  rename(jatos_id=player) %>%
+  merge(E2.subj_mapping, by='jatos_id')
+
+E4.judgment <- E4.judge_df %>%
+  mutate(judged_pretend = ifelse(correct_response=='P',correct,1-correct)) %>%
+  select(player,word,judged_pretend, subj_id)%>%
+  rename(jatos_id=player,
+         judge=subj_id) %>%
+  merge(E4.subj_mapping, by='jatos_id')
+```
+
+## Merge with main dfs
+
+```{r merge_with_df, warning=F, message=F, echo=FALSE}
+
+E2.click_df_by_judgment <- E2.click_df %>% 
+  merge(E2.judgment, by=c('subj_id','grid_number')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
+E4.click_df_by_judgment <- E4.click_df %>% 
+  merge(E4.judgment, by=c('subj_id','word')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
+E2.click_log_with_boards_by_judgment <- E2.click_log_with_boards %>% 
+  merge(E2.judgment, by=c('subj_id','grid_number')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
+E4.click_log_with_boards_by_judgment <- E4.click_log_with_boards %>% 
+  merge(E4.judgment, by=c('subj_id','word')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
+```
+
+
+## Number of misses
+
+```{r num_misses, warning=F, message=F, echo=FALSE}
+
+E2.median_clicks_by_judgment  <- E2.click_df_by_judgment  %>%
+  group_by(judge,judged) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(judged,num_clicks)%>%
+  mutate(diff=pretend-nonpretend);
+
+p<- E2.click_df_by_judgment %>%
+    group_by(judged,judge)%>%
+    summarise(num_clicks=median(num_clicks))%>%
+    ggplot(aes(x=num_clicks,fill=judged))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='median number of clicks', y='number of judges')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+
+ggsave('../docs/figures/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+
+
+E4.median_clicks_by_judgment  <- E4.click_df_by_judgment  %>%
+  group_by(judge,judged) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(judged,num_clicks) %>%
+  mutate(diff=pretend-nonpretend);
+
+
+p<- E4.click_df_by_judgment %>%
+    group_by(judged,judge)%>%
+    summarise(num_clicks=median(num_clicks))%>%
+    ggplot(aes(x=num_clicks,fill=judged))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='median number of clicks', y='number of judges')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+
+ggsave('../docs/figures/judgment/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+```
+
+Games with fewer misses are more likely to be categorised as pretend games in Battleship (`r apa_print(t.test(E2.median_clicks_by_judgment%>%pull(diff)))$full_result`) but not in Hangman (`r apa_print(t.test(E4.median_clicks_by_judgment%>%pull(diff)))$full_result`).
+
+```{r merge_with_df, warning=F, message=F, echo=FALSE}
+
+E2.median_clicks_by_judgment  <- E2.click_df_by_judgment  %>%
+  group_by(subj_id,judged) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(judged,num_clicks);
+
+E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%unique();
+
+E2.median_clicks_by_judgment_filtered <- E2.click_df_by_judgment %>%
+  filter(!(subj_id %in% E2.lucky_pretenders))%>%
+  group_by(subj_id,judged, genuine_first) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(judged,num_clicks);
+
+p<- E2.click_df_by_judgment %>%
+    ggplot(aes(x=num_clicks,fill=judged))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='number of clicks', y='number of games')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+
+ggsave('../docs/figures/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+
+
+E4.median_clicks_by_judgment  <- E4.click_df_by_judgment  %>%
+  group_by(subj_id,judged) %>%
+  summarise(num_clicks=median(num_clicks)) %>%
+  spread(judged,num_clicks);
+
+
+p<- E4.click_df_by_judgment %>%
+    ggplot(aes(x=num_clicks,fill=judged))+
+    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='number of clicks', y='number of games')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic()
+
+ggsave('../docs/figures/judgment/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+```
