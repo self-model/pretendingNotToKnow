@@ -67,13 +67,13 @@ E4.subj_mapping <- E4.df %>%
 # Transform the dataframe
 E2.judgment <- E2.judge_df %>%
   # Create rows for cheat_player
-  mutate(player = cheat_player, judged_pretend = correct, judge=subj_id) %>%
-  select(player, grid_number, judged_pretend, judge) %>%
+  mutate(player = cheat_player, judged_pretend = correct, judge_id=subj_id) %>%
+  select(player, grid_number, judged_pretend, judge_id) %>%
   # Bind rows for genuine_player
   bind_rows(
     E2.judge_df %>%
-      mutate(player = genuine_player, judged_pretend = 1 - correct, judge=subj_id) %>%
-      select(player, grid_number, judged_pretend, judge)
+      mutate(player = genuine_player, judged_pretend = 1 - correct, judge_id=subj_id) %>%
+      select(player, grid_number, judged_pretend, judge_id)
   ) %>%
   arrange(grid_number, player, judged_pretend)%>%
   rename(jatos_id=player) %>%
@@ -83,7 +83,7 @@ E4.judgment <- E4.judge_df %>%
   mutate(judged_pretend = ifelse(correct_response=='P',correct,1-correct)) %>%
   select(player,word,judged_pretend, subj_id)%>%
   rename(jatos_id=player,
-         judge=subj_id) %>%
+         judge_id=subj_id) %>%
   merge(E4.subj_mapping, by='jatos_id')
 ```
 
@@ -107,6 +107,14 @@ E4.click_log_with_boards_by_judgment <- E4.click_log_with_boards %>%
   merge(E4.judgment, by=c('subj_id','word')) %>%
   mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
 
+E2.click_log_by_judgment <- E2.click_log %>% 
+  merge(E2.judgment, by=c('subj_id','grid_number')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
+E4.click_log_by_judgment <- E4.click_log %>% 
+  merge(E4.judgment, by=c('subj_id','word')) %>%
+  mutate(judged = ifelse(judged_pretend==1,'pretend','nonpretend'))
+
 ```
 
 
@@ -115,13 +123,13 @@ E4.click_log_with_boards_by_judgment <- E4.click_log_with_boards %>%
 ```{r num_misses, warning=F, message=F, echo=FALSE}
 
 E2.median_clicks_by_judgment  <- E2.click_df_by_judgment  %>%
-  group_by(judge,judged) %>%
+  group_by(judge_id,judged) %>%
   summarise(num_clicks=median(num_clicks)) %>%
   spread(judged,num_clicks)%>%
   mutate(diff=pretend-nonpretend);
 
 p<- E2.click_df_by_judgment %>%
-    group_by(judged,judge)%>%
+    group_by(judged,judge_id)%>%
     summarise(num_clicks=median(num_clicks))%>%
     ggplot(aes(x=num_clicks,fill=judged))+
     geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
@@ -134,14 +142,14 @@ ggsave('../docs/figures/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
 
 
 E4.median_clicks_by_judgment  <- E4.click_df_by_judgment  %>%
-  group_by(judge,judged) %>%
+  group_by(judge_id,judged) %>%
   summarise(num_clicks=median(num_clicks)) %>%
   spread(judged,num_clicks) %>%
   mutate(diff=pretend-nonpretend);
 
 
 p<- E4.click_df_by_judgment %>%
-    group_by(judged,judge)%>%
+    group_by(judged,judge_id)%>%
     summarise(num_clicks=median(num_clicks))%>%
     ggplot(aes(x=num_clicks,fill=judged))+
     geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
@@ -152,48 +160,309 @@ p<- E4.click_df_by_judgment %>%
 
 ggsave('../docs/figures/judgment/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
 ```
+## Number of misses, controlling for word
 
-Games with fewer misses are more likely to be categorised as pretend games in Battleship (`r apa_print(t.test(E2.median_clicks_by_judgment%>%pull(diff)))$full_result`) but not in Hangman (`r apa_print(t.test(E4.median_clicks_by_judgment%>%pull(diff)))$full_result`).
+```{r num_misses, warning=F, message=F, echo=FALSE}
 
-```{r merge_with_df, warning=F, message=F, echo=FALSE}
+E4.median_clicks_per_word <- E4.click_df %>%
+  group_by(word)%>%
+  summarise(med_clicks=median(num_clicks))
 
-E2.median_clicks_by_judgment  <- E2.click_df_by_judgment  %>%
-  group_by(subj_id,judged) %>%
-  summarise(num_clicks=median(num_clicks)) %>%
-  spread(judged,num_clicks);
 
-E2.lucky_pretenders <- E2.click_df%>%filter(num_clicks==7)%>%pull(subj_id)%>%unique();
+E4.corrected_clicks_by_judgment  <- E4.click_df_by_judgment  %>%
+  merge(E4.median_clicks_per_word,by='word')%>%
+  mutate(relative_clicks=num_clicks-med_clicks)%>%
+  group_by(judge_id,judged) %>%
+  summarise(num_clicks=median(relative_clicks)) %>%
+  spread(judged,num_clicks) %>%
+  mutate(diff=pretend-nonpretend);
 
-E2.median_clicks_by_judgment_filtered <- E2.click_df_by_judgment %>%
-  filter(!(subj_id %in% E2.lucky_pretenders))%>%
-  group_by(subj_id,judged, genuine_first) %>%
-  summarise(num_clicks=median(num_clicks)) %>%
-  spread(judged,num_clicks);
+E4.corrected_clicks_by_judgment_mean  <- E4.click_df_by_judgment  %>%
+  merge(E4.median_clicks_per_word,by='word')%>%
+  mutate(relative_clicks=num_clicks-med_clicks)%>%
+  group_by(judge_id,judged) %>%
+  summarise(num_clicks=mean(relative_clicks)) %>%
+  spread(judged,num_clicks) %>%
+  mutate(diff=pretend-nonpretend);
 
-p<- E2.click_df_by_judgment %>%
-    ggplot(aes(x=num_clicks,fill=judged))+
-    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080")) +
-    labs(x='number of clicks', y='number of games')+
+```
+No effect in Hangman even when controlling for average number of clicks per word (`r APA_print(E4.corrected_clicks_by_judgment$diff%>%t.test())$statistic`), but a weak effect in the opposite direction (such that longer games are judged to be pretend games) when using mean instead of median (which might actually make sense; `r APA_print(E4.corrected_clicks_by_judgment$diff%>%t.test())$statistic`).
+
+## Misses per word
+
+```{r num_misses, warning=F, message=F, echo=FALSE}
+
+
+E4.clicks_by_word_by_judgment  <- E4.click_df_by_judgment  %>%
+  group_by(word,judged) %>%
+  summarise(num_clicks=mean(num_clicks)) %>%
+  spread(judged,num_clicks) %>%
+  mutate(diff=pretend-nonpretend);
+
+E4.clicks_by_word_by_judgment %>%
+  ggplot(aes(x=nonpretend,y=pretend, label=word))+
+  geom_label()+
+  geom_abline(slope=1,intercept=0)+
+  labs(x='judged non-pretend',y='judged pretend')
+```
+
+The same effect to what we see when categorising based on true pretend/non-pretend, such that people are more likely to judge unusually short or long games as nonpretend games. 
+
+## Game duration
+
+```{r duration, warning=F, message=F, echo=FALSE}
+
+E2.duration_by_judgment <- E2.click_log_with_boards_by_judgment %>% 
+  group_by(judge_id,judged,grid_number) %>%
+  summarise(duration=sum(RT)) %>% 
+  group_by(judge_id,judged) %>% 
+  summarise(duration=median(duration)) %>% 
+  spread(judged,duration) %>%
+  mutate(diff=pretend-nonpretend)
+
+
+E4.duration_by_judgment <- E4.click_log_with_boards_by_judgment %>% 
+  group_by(judge_id,judged,word) %>%
+  summarise(duration=sum(RT)) %>% 
+  group_by(judge_id,judged) %>% 
+  summarise(duration=median(duration)) %>% 
+  spread(judged,duration) %>%
+  mutate(diff=pretend-nonpretend)
+
+```
+Long and short games were similarly likely to be categorised as pretend games in Battleship (`r apa_print(t.test(E2.duration_by_judgment%>%pull(diff)))$full_result`) and in Hangman (`r apa_print(t.test(E4.duration_by_judgment%>%pull(diff)))$full_result`).
+
+```{r RT_by_accuracy}
+
+N_perm <- 1000;
+bootstrap_error <- function(x, N_perm) {
+  N <- length(x)
+  medians = c();
+  for (i in 1:N_perm) {
+    medians = c(medians,sample(x,replace=TRUE,size=N)%>%median(., na.rm=T))
+  };
+  return(sd(medians))
+}
+
+
+
+E2.RT_by_lag1_by_judgment <- E2.click_log_by_judgment %>%
+  filter(click_number>1) %>%
+  group_by(judge_id,judged, lag1)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE) 
+
+
+E2.RT_by_lag1_by_judgment_wide <- E2.RT_by_lag1_by_judgment %>%
+  dplyr::select(judge_id,judged,lag1_diff) %>%
+  spread(judged,lag1_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E2.RT_by_hit_by_judgment <- E2.click_log_by_judgment %>%
+  filter(click_number>0) %>%
+  group_by(judge_id,judged,hit_bin)%>%
+  summarise(RT=median(RT))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+E2.RT_by_hit_by_judgment_wide <- E2.RT_by_hit_by_judgment %>%
+  dplyr::select(judge_id,judged,hit_diff) %>%
+  spread(judged,hit_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E2.RT_by_lead1_by_judgment <- E2.click_log_by_judgment %>%
+  group_by(judge_id,judged, lead1)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+E2.RT_by_lead1_by_judgment_wide <- E2.RT_by_lead1_by_judgment %>%
+  dplyr::select(judge_id,judged,lead1_diff) %>%
+  spread(judged,lead1_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E2.RT_by_hit_lags_by_judgment <-E2.RT_by_lag1_by_judgment %>%
+  merge(E2.RT_by_hit_by_judgment) %>%
+  merge(E2.RT_by_lead1_by_judgment) 
+
+
+E2.RT_by_hit_lags_long_by_judgment <- E2.RT_by_hit_lags_by_judgment %>%
+  gather("position","difference",c("lag1_diff", "hit_diff", "lead1_diff"))%>%
+  mutate(position = ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,-1))) %>%
+  dplyr::select(judge_id,judged,position,difference);
+
+p<- E2.RT_by_hit_lags_long_by_judgment %>% 
+  filter(position<2 & position > -2)%>%
+  group_by(judged,position) %>%
+  summarise(median_difference=median(difference),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  ggplot(aes(x=position,color=judged,fill=judged,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-1:1,labels=c('hit on next trial', 'hit on current trial', 'hit on previous trial'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='', y='RT effect (ms) of hit on trial t')+
+  theme_classic()
+
+ggsave('figures/judgment/E2_RT_by_lag.png',p,width=4, height=3.5, dpi=300)
+
+p
+
+E4.RT_by_lag1_by_judgment <- E4.click_log_by_judgment %>%
+  filter(click_number>1) %>%
+  group_by(judge_id,judged, lag1)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lag1,RT,sep='_') %>%
+  mutate(lag1_diff = lag1_TRUE-lag1_FALSE) 
+
+
+E4.RT_by_lag1_by_judgment_wide <- E4.RT_by_lag1_by_judgment %>%
+  dplyr::select(judge_id,judged,lag1_diff) %>%
+  spread(judged,lag1_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E4.RT_by_hit_by_judgment <- E4.click_log_by_judgment %>%
+  filter(click_number>0) %>%
+  group_by(judge_id,judged,hit_bin)%>%
+  summarise(RT=median(RT))  %>%
+  spread(hit_bin,RT,sep='_') %>%
+  mutate(hit_diff = hit_bin_TRUE-hit_bin_FALSE)
+
+E4.RT_by_hit_by_judgment_wide <- E4.RT_by_hit_by_judgment %>%
+  dplyr::select(judge_id,judged,hit_diff) %>%
+  spread(judged,hit_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E4.RT_by_lead1_by_judgment <- E4.click_log_by_judgment %>%
+  group_by(judge_id,judged, lead1)%>%
+  summarise(RT=median(RT))  %>%
+  spread(lead1,RT,sep='_') %>%
+  mutate(lead1_diff = lead1_TRUE-lead1_FALSE);
+
+E4.RT_by_lead1_by_judgment_wide <- E4.RT_by_lead1_by_judgment %>%
+  dplyr::select(judge_id,judged,lead1_diff) %>%
+  spread(judged,lead1_diff)%>%
+  mutate(diff=pretend-nonpretend)
+
+E4.RT_by_hit_lags_by_judgment <-E4.RT_by_lag1_by_judgment %>%
+  merge(E4.RT_by_hit_by_judgment) %>%
+  merge(E4.RT_by_lead1_by_judgment) 
+
+
+E4.RT_by_hit_lags_long_by_judgment <- E4.RT_by_hit_lags_by_judgment %>%
+  gather("position","difference",c("lag1_diff", "hit_diff", "lead1_diff"))%>%
+  mutate(position = ifelse(position=="lag1_diff",1,
+                                         ifelse(position=="hit_diff",0,-1))) %>%
+  dplyr::select(judge_id,judged,position,difference);
+
+p<- E4.RT_by_hit_lags_long_by_judgment %>% 
+  filter(position<2 & position > -2)%>%
+  group_by(judged,position) %>%
+  summarise(median_difference=median(difference, na.rm=T),
+            sem_difference=bootstrap_error(difference,N_perm)) %>%
+  ggplot(aes(x=position,color=judged,fill=judged,y=median_difference)) +
+  scale_fill_manual(values=c("#69b3a2", "#404080")) +
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  scale_x_continuous(breaks=-1:1,labels=c('hit on next trial', 'hit on current trial', 'hit on previous trial'))+
+  geom_abline(slope=0,intercept=0,linetype=3)+
+  geom_path(size=1)+
+  geom_ribbon(aes(ymin=median_difference-sem_difference,ymax=median_difference+sem_difference),alpha=0.3,show.legend=F)+
+  labs(fill=' ',x='', y='RT effect (ms) of hit on trial t')+
+  theme_classic()
+
+ggsave('figures/judgment/E4_RT_by_lag.png',p,width=4, height=3.5, dpi=300)
+
+p
+
+```
+
+No difference in the effect of current hit on RT between games that were judged to be pretend vs. non-pretend (`r apa_print(E2.RT_by_hit_by_judgment_wide$diff%>%t.test())$full_result`) in Battleship. Similar in Hangman (`r apa_print(E4.RT_by_hit_by_judgment_wide$diff%>%t.test())$full_result`).
+
+No difference in the effect of previous guess outcome on RT between games that were judged to be pretend vs. non-pretend (`r apa_print(E2.RT_by_lag1_by_judgment_wide$diff%>%t.test())$full_result`) in Battleship. Similar in Hangman (`r apa_print(E4.RT_by_lag1_by_judgment_wide$diff%>%t.test())$full_result`).
+
+No difference in the effect of next guess outcome on RT between games that were judged to be pretend vs. non-pretend (`r apa_print(E2.RT_by_lead1_by_judgment_wide$diff%>%t.test())$full_result`) in Battleship. Similar in Hangman (`r apa_print(E4.RT_by_lead1_by_judgment_wide$diff%>%t.test())$full_result`).
+
+### Model based analysis
+
+
+```{r battleship-p_click, echo = FALSE, cache=TRUE}
+
+
+
+E2.mean_P_click_rank_by_judgment <- E2.click_log_with_boards_by_judgment %>%
+  group_by(judge_id,judged) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+E2.mean_P_click_rank_misses_by_judgment <- E2.click_log_with_boards_by_judgment %>%
+  rowwise() %>%
+  filter(!hit_bin) %>%
+  group_by(judge_id,judged) %>%
+  summarise(p_click_rank=mean(p_click_rank));
+
+p<- E2.mean_P_click_rank_by_judgment %>%
+    ggplot(aes(x=p_click_rank,fill=judged))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
-    theme_classic()
+    # facet_wrap(~genuine_first, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
 
-ggsave('../docs/figures/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+ggsave('figures/judgment/E2_pclick_rank.pdf',p)
+ggsave('figures/judgement/E2_pclick_rank.png',p,width=5,height=2,dpi=300)
 
-
-E4.median_clicks_by_judgment  <- E4.click_df_by_judgment  %>%
-  group_by(subj_id,judged) %>%
-  summarise(num_clicks=median(num_clicks)) %>%
-  spread(judged,num_clicks);
-
-
-p<- E4.click_df_by_judgment %>%
-    ggplot(aes(x=num_clicks,fill=judged))+
-    geom_bar( color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080")) +
-    labs(x='number of clicks', y='number of games')+
+p<- E2.mean_P_click_rank_misses_by_judgment %>%
+    ggplot(aes(x=p_click_rank,fill=judged))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080", "#FDE725")) +
+    labs(x='p(ship in clicked square) - rank', y='number of players')+
     theme(legend.position=c(0.10,0.85)) +
-    theme_classic()
+    # facet_wrap(~genuine_first, nrow=2)+
+    # scale_x_reverse() +
+    theme_classic();
 
-ggsave('../docs/figures/judgment/judgment/E2_num_clicks.png',p,width=5,height=2, dpi=300)
+ggsave('figures/judgment/E2_pclick_rank_misses.pdf',p)
+ggsave('figures/judgement/E2_pclick_rank_misses.png',p,width=5,height=2,dpi=300)
+
+E2.num_irrational_clicks_by_judgment <- E2.click_log_with_boards_by_judgment %>%
+  group_by(judge_id,judged) %>%
+  summarise(nic=sum(p_click==0)/5);
+
+p<- E2.num_irrational_clicks_by_judgment %>%
+    ggplot(aes(x=nic,fill=judged))+
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    labs(x='mean number of irrational clicks per game', y='number of players')+
+    theme(legend.position=c(0.10,0.85)) +
+    theme_classic();
+
+ggsave('figures/judgement/E2_num_irrational_clicks.png',p,width=5,height=3,dpi=300)
+
+```
+
+
+Seems like people are judging irrational games as pretend much more.
+
+### Accuracy
+
+
+```{r accuracy, echo = FALSE, cache=TRUE}
+
+E2.judgment_summary <- E2.click_log_by_judgment %>% 
+  group_by(subj_id,grid_number) %>%
+  summarise(judged=as.factor(judged[1]),test_part=as.factor(test_part[1]))
+
+table(E2.judgment_summary$test_part,E2.judgment_summary$judged)
+
+E4.judgment_summary <- E4.click_log_by_judgment %>% 
+  group_by(subj_id,word) %>%
+  summarise(judged=as.factor(judged[1]),test_part=as.factor(test_part[1]))
+
+table(E4.judgment_summary$test_part,E4.judgment_summary$judged)
+
 ```
