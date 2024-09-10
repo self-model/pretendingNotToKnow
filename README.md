@@ -15,7 +15,7 @@ Raw data from all four experiments is available on the project's OSF repository:
 
 [All pre-registered analyses](https://github.com/matanmazor/ignorance/blob/main/docs/preregisteredMethodsAndResults.Rmd), [exploratory analyses](https://github.com/matanmazor/ignorance/blob/main/docs/ExploratoryResults.Rmd), and [the paper itself in a data-to-paper Rmarkdown format](https://github.com/matanmazor/ignorance/blob/main/docs/paper.Rmd) are available in the 'docs' subdirectory.
 
-The outputs of the scripts are available in gitbook format (both [preregistered](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship.html) and [exploratory](https://matanmazor.github.io/ignorance/docs/exp.-1-battleship-exploratory-results.html) analyses).
+The outputs of the scripts are available in gitbook format (both [preregistered](https://self-model.github.io/pretendingNotToKnow/docs/exp.-1-battleship.html) and [exploratory](https://self-model.github.io/pretendingNotToKnow/docs/exp.-1-battleship-exploratory-results.html) analyses).
 
 ## Experiment demos
 
