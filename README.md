@@ -21,7 +21,7 @@ The outputs of the scripts are available in gitbook format (both [preregistered]
 
 ## Experiment demos
 
-You can try [demos of the two experiments](https://matanmazor.github.io/ignorance/experiments/demos/pretend), as experienced by our participants.
+You can try [demos of the two experiments](https://self-model.github.io/pretendingNotToKnow/experiments/demos/pretend), as experienced by our participants.
 
 ## Pre-registration and pre-registration time-locking 🕝🔒
 
