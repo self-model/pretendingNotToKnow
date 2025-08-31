@@ -1,0 +1,241 @@
+---
+title             : "Interaction between test part and condition"
+shorttitle        : "Interaction between test part and condition"
+
+floatsintext      : no
+linenumbers       : yes
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : word_document
+---
+
+```{r global_options, include=FALSE}
+set.seed(42)
+knitr::opts_chunk$set(fig.crop = F, fig.pos = "tb", fig.path='figs/',
+                      echo=F, warning=F, cache=T, 
+                      message=F, sanitize = T, 
+                      fig.width = 10, fig.height = 5)
+```
+
+```{r, libraries, echo=FALSE, warning=FALSE, cache=F}
+
+library(groundhog)
+
+groundhog.library(c(
+  'png',
+  'grid',
+  'ggplot2',
+  'svglite',
+  'xtable',
+  'papaja',
+  'tidyverse',
+  'broom',
+  'cowplot',
+  'MESS', # for AUCs
+  'lsr', # for effect sizes
+  'pwr', # for power calculations
+  'brms', # for mixed effects modeling
+  'BayesFactor', # for Bayesian t test
+  'jsonlite', # parsing data from sort_trial
+  'caret', #for cross validation
+  'ggrepel', #for word scatterplots
+  'cocor' # differences between correlations
+), '2025-06-01')
+
+```
+
+```{r, load data}
+# Load workspace (after running preregisteredMethodsAndResults.Rmd, 
+# exploratoryResults.Rmd, and all the scripts that are linked to from these 
+# documents). 
+load('../.RData')
+```
+
+In both experiments, the order of pretend and non-pretend blocks was counterbalanced between participants. Here we ask whether differences between pretend and non-pretend effects are stronger in the first part of the experiment compared to the second part of the experiment. Overall, we find no significant interaction effects in any of our measures. Marginally significant effects appear for Hangman (a reduction of the effect of pretense on the number of misses and on click optimality between the first and the second parts), and in Battleship (a reduction of the effect of pretense on the effect of guess accuracy on decision time between the first and second parts). 
+
+## Number of clicks
+
+### Battleship: 
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on number of clicks:
+
+`r apa_print(t.test(E2.median_clicks_filtered %>% filter(genuine_first) %>% mutate(mean = (pretend+nonpretend)/2)%>%pull(mean),E2.median_clicks_filtered %>% filter(!genuine_first) %>% mutate(mean = (pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on number of misses:
+
+`r apa_print(t.test(E4.median_misses %>% filter(genuine_first) %>% mutate(mean = (pretend+nonpretend)/2)%>%pull(mean),E4.median_misses %>% filter(!genuine_first) %>% mutate(mean = (pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+A marginally significant effect was driven by a descriptively stronger tendency to underestimate the number of misses in the first part of the experiment (a contrast between pretend and non-pretend from the first part only: `r apa_print(t.test(E4.median_misses %>% filter(genuine_first) %>% mutate(mean = (nonpretend))%>%pull(mean),E4.median_misses %>% filter(!genuine_first) %>% mutate(mean = (pretend))%>%pull(mean)))$estimate`)) compared to the second part of the experiment (a contrast between pretend and non-pretend from the second part only: `r apa_print(t.test(E4.median_misses %>% filter(!genuine_first) %>% mutate(mean = (nonpretend))%>%pull(mean),E4.median_misses %>% filter(genuine_first) %>% mutate(mean = (pretend))%>%pull(mean)))$estimate`)).
+
+## Correlation in number of guesses: Hangman
+
+
+```{r, correlations in misses}
+
+E4.misses_per_word_gf <- E4.click_df %>%
+  filter(genuine_first) %>%
+  group_by(test_part,word) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  spread(test_part,num_misses)
+
+E4.misses_per_word_gs <- E4.click_df %>%
+  filter(!genuine_first) %>%
+  group_by(test_part,word) %>%
+  summarise(num_misses=median(num_misses)) %>%
+  spread(test_part,num_misses)
+```
+
+The Spearman correlation between the number of misses in pretend games and non-pretend games was `r cor(E4.misses_per_word_gf$pretend, E4.misses_per_word_gf$nonpretend,method='spearman')%>%printnum()` in the first part and `r cor(E4.misses_per_word_gs$pretend, E4.misses_per_word_gs$nonpretend,method='spearman')%>%printnum()` in the second part. The difference between the two correlations was not statistically significant in a Fisher z test (p>0.19).
+
+## Click optimality
+
+### Battleship:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on click optimality:
+
+`r apa_print(t.test(E2.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on click optimality:
+
+`r apa_print(t.test(E4.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+A marginally significant effect was driven by a descriptively bigger optimality cost for pretending in the first part of the experiment (a contrast between pretend and non-pretend from the first part only: `r apa_print(t.test(E4.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%pull(nonpretend),E4.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%pull(pretend)))$estimate`)) compared to the second part of the experiment (a contrast between pretend and non-pretend from the second part only: `r apa_print(t.test(E4.mean_P_click_rank%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%pull(nonpretend),E4.mean_P_click_rank%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%pull(pretend)))$estimate`)).
+
+## Click optimality: misses only
+
+### Battleship:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on click optimality when restricting the analysis to misses only:
+
+`r apa_print(t.test(E2.mean_P_click_rank_misses_only%>%filter(genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.mean_P_click_rank_misses_only%>%filter(!genuine_first)%>%spread(test_part,p_click_rank)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on click optimality when restricting the analysis to misses only:
+
+`r apa_print(t.test(E4.mean_P_click_rank_misses_wide%>%filter(genuine_first)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.mean_P_click_rank_misses_wide%>%filter(!genuine_first)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+## Effect of ship completion: Battleship
+
+```{r pneighbour, echo=FALSE, message= F, warning=F}
+source('../analysis/pneighbour.R')
+```
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the effect of sinking the submarine on the probability of checking whether a size-2 patrol boat is a submarine:
+
+`r apa_print(t.test(E2.pneighbour_wide%>%filter(genuine_first_nonpretend)%>%mutate(mean=(diff_pretend+diff_nonpretend)/2)%>%pull(mean),E2.pneighbour_wide%>%filter(!genuine_first_nonpretend)%>%mutate(mean=(diff_pretend+diff_nonpretend)/2)%>%pull(mean)))$full_result`
+
+## Effect of guess accuracy on decision time
+
+### Battleship:
+#### Previous guess:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the effect of the accuracy of the previous guess on the time taken to make the next one:
+
+`r apa_print(t.test(E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+A marginally significant effect was driven by a descriptively stronger effect in the first part of the experiment (a contrast between pretend and non-pretend from the first part only: `r apa_print(t.test(E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(nonpretend),E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(pretend)))$estimate`) compared to the second part of the experiment (`r apa_print(t.test(E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(nonpretend),E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(pretend)))$estimate`). Here, the effect in the second part of the experiment was not significant (`r apa_print(t.test(E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(nonpretend),E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%pull(pretend)))$statistic`).
+
+#### Current guess:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the difference in RT between accurate and inaccurate guesses:
+
+`r apa_print(t.test(E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+A marginally significant effect was driven by a descriptively stronger effect in the first part of the experiment (a contrast between pretend and non-pretend from the first part only: `r apa_print(t.test(E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%pull(nonpretend),E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%pull(pretend)))$estimate`) compared to the second part of the experiment (`r apa_print(t.test(E2.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%pull(nonpretend),E2.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%pull(pretend)))$estimate`). 
+
+### Hangman:
+#### Previous guess:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the effect of the accuracy of the previous guess on the time taken to make the next one:
+
+`r apa_print(t.test(E4.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,lag1_diff,test_part)%>%spread(test_part,lag1_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+#### Current guess:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the difference in RT between accurate and inaccurate guesses:
+
+`r apa_print(t.test(E4.RT_by_hit_lags %>% filter(genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.RT_by_hit_lags %>% filter(!genuine_first) %>% dplyr::select(subj_id,hit_diff,test_part)%>%spread(test_part,hit_diff)%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+## Effect of uncertainty on decision time
+
+### Battleship:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the quadratic effect of uncertainty on decision time:
+
+`r apa_print(t.test(E2.RT_by_entropy_coefs_wide %>% filter(genuine_first & term=='entropy_squared')%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.RT_by_entropy_coefs_wide %>% filter(!genuine_first & term=='entropy_squared')%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the quadratic effect of uncertainty on decision time:
+
+`r apa_print(t.test(E4.RT_by_entropy_coefs_wide %>% filter(genuine_first & term=='entropy_squared')%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.RT_by_entropy_coefs_wide %>% filter(!genuine_first & term=='entropy_squared')%>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+## Standard deviation of number of misses
+
+```{r sd_misses, echo=FALSE, cache=TRUE}
+
+sd_misses_df <- E2.click_df %>%
+  dplyr::select(genuine_first, subj_id,test_part, num_clicks) %>%
+  mutate(subj_id=as.character(subj_id)) %>%
+  # rbind(E2.optimal_click_df) %>%
+  # rbind(E2.random_click_df) %>%
+  mutate(test_part = factor(test_part, levels=c(
+    'nonpretend','pretend'), labels = c(
+    'non-pretend','pretend'))) %>%
+  group_by(subj_id,genuine_first, test_part) %>%
+  summarise(sd_misses=sd(num_clicks)) %>%
+  mutate(game='Battleship') %>%
+  rbind(
+    E4.click_df %>%
+  dplyr::select(genuine_first, subj_id,test_part, num_misses) %>%
+  mutate(subj_id=as.character(subj_id)) %>%
+  # rbind(E2.optimal_click_df) %>%
+  # rbind(E2.random_click_df) %>%
+  mutate(test_part = factor(test_part, levels=c(
+    'nonpretend','pretend'), labels = c(
+    'non-pretend','pretend'))) %>%
+  group_by(subj_id,genuine_first, test_part) %>%
+  summarise(sd_misses=sd(num_misses)) %>%
+    mutate(game='Hangman')
+  )
+```
+
+### Battleship:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the inter-game variability in the number of misses:
+
+`r apa_print(t.test(sd_misses_df %>% filter(genuine_first&game=='Battleship')%>%group_by(subj_id)%>%summarise(mean=mean(sd_misses))%>%pull(mean),sd_misses_df %>% filter(!genuine_first&game=='Battleship')%>%group_by(subj_id)%>%summarise(mean=mean(sd_misses))%>%pull(mean)))$full_result`
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the inter-game variability in the number of misses:
+
+`r apa_print(t.test(sd_misses_df %>% filter(genuine_first&game=='Hangman')%>%group_by(subj_id)%>%summarise(mean=mean(sd_misses))%>%pull(mean),sd_misses_df %>% filter(!genuine_first&game=='Hangman')%>%group_by(subj_id)%>%summarise(mean=mean(sd_misses))%>%pull(mean)))$full_result`
+
+## Shannon entropy of decisions
+
+### Battleship:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the Shannon entropy of participants' guesses (averaged across guesses 1-6):
+
+`r apa_print(t.test(E2.entropy_summary %>% spread(test_part,entropy) %>% merge(E2.first_click_log%>%dplyr::select(subj_id,genuine_first)) %>% filter(genuine_first) %>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E2.entropy_summary %>% spread(test_part,entropy) %>% merge(E2.first_click_log%>%dplyr::select(subj_id,genuine_first)) %>% filter(!genuine_first) %>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+
+### Hangman:
+
+No interaction between test part (first/second) and condition (pretend/non-pretend) on the Shannon entropy of participants' guesses (averaged across guesses 1-6):
+
+`r apa_print(t.test(E4.entropy_summary %>% spread(test_part,entropy) %>% merge(E4.median_clicks%>%dplyr::select(subj_id,genuine_first)) %>% filter(genuine_first) %>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean),E4.entropy_summary %>% spread(test_part,entropy) %>% merge(E4.median_clicks%>%dplyr::select(subj_id,genuine_first)) %>% filter(!genuine_first) %>%mutate(mean=(pretend+nonpretend)/2)%>%pull(mean)))$full_result`
+
+

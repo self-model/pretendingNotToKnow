@@ -36,7 +36,8 @@ tablelist         : no
 footnotelist      : no
 
 classoption       : "man"
-output            : bookdown::gitbook
+output            : word_document
+
 bibliography: references.bib
 ---
 
@@ -70,7 +71,7 @@ groundhog.library(c(
   'jsonlite', # parsing data from sort_trial
   'caret', #for cross validation
   'ggrepel' #for word scatterplots
-), '2022-12-01')
+), '2025-06-01')
 
 ```
 
@@ -311,6 +312,7 @@ E2.sd_num_clicks_relative_to_np <- E2.click_df %>%
   mutate(diff=nonpretend-pretend);
 
 p<- E2.click_df %>%
+  mutate(test_part=factor(test_part,labels=c('non-pretend','pretend')))%>%
   filter(!(subj_id %in% E2.lucky_pretenders))%>%
   group_by(subj_id,test_part, genuine_first) %>%
   summarise(sd_num_clicks=sd(num_clicks)) %>%
@@ -322,10 +324,17 @@ p<- E2.click_df %>%
   ggplot(aes(x=test_part,
              color=test_part,
              y=mean))+
-  geom_point(size=10)+
-  geom_errorbar(aes(ymin=mean-se,ymax=mean+se),color='black')+
+  geom_point(size=6)+
+  geom_errorbar(aes(ymin=mean-se,ymax=mean+se),color='black', width=0.3)+
   scale_color_manual(values=c("#69b3a2", "#404080")) +
+  labs(x="",y="")+
+  theme(legend.pos='na')+
+  theme_classic()+
+  scale_y_continuous(limits=c(0,2.8))+
+  theme(legend.pos='na')
   
+ggsave('figures/Battleship2/num_guess_sd.png',p,width=2.5,height=1.5,dpi=300)
+
 
 
 ```
@@ -380,7 +389,7 @@ We reasoned that this tendency to rigidly follow a pre-defined plan may underlie
 
 ```{r battleship-suppression-or-simulation}
 
-E2.debrief_labeled <- read.csv('..\\experiments\\Battleships2\\data\\debrief.csv',na.strings=c(""," ","NA")) %>%
+E2.debrief_labeled <- read.csv('../experiments/Battleships2/data/debrief.csv',na.strings=c(""," ","NA")) %>%
   dplyr::select(-subj_id) %>%
   merge(E2.debrief <- E2.df %>%
           filter(!is.na(responses) & is.na(test_part)) %>%
@@ -566,8 +575,8 @@ Visual inspection reveals similar temporal profiles in both groups (the higher s
 
 ```{r hangman-load, warning=FALSE}
 
-E4.df <- read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch2.csv',na.strings=c(""," ","NA")) %>%
-  rbind(read.csv('..\\experiments\\Hangman2\\data\\jatos_results_batch1.csv',na.strings=c(""," ","NA"))) %>%
+E4.df <- read.csv('../experiments/Hangman2/data/jatos_results_batch2.csv',na.strings=c(""," ","NA")) %>%
+  rbind(read.csv('../experiments/Hangman2/data/jatos_results_batch1.csv',na.strings=c(""," ","NA"))) %>%
   mutate(subj_id = paste(as.character(participant_number),substr(PROLIFIC_PID,1,5),sep='')) %>%
   mutate(subj_id = factor(subj_id)) %>%
   # the dash is breaking r
@@ -679,7 +688,31 @@ E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty <- E4.click_df %
   spread(test_part,sd_num_clicks) %>% 
   mutate(diff=nonpretend-pretend);
 
+p<- E4.click_df %>%
+  mutate(test_part=factor(test_part,levels=c('nonpretend','pretend'),labels=c('non-pretend','pretend')))%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(sd_num_clicks=sd(num_misses)) %>%
+  group_by(test_part)%>%
+  summarise(
+    mean=mean(sd_num_clicks),
+    se=se(sd_num_clicks)
+    ) %>%
+  ggplot(aes(x=test_part,
+             color=test_part,
+             y=mean))+
+  geom_point(size=6)+
+  geom_errorbar(aes(ymin=mean-se,ymax=mean+se),color='black', width=0.3)+
+  scale_color_manual(values=c("#69b3a2", "#404080")) +
+  labs(x="",y="")+
+  theme(legend.pos='na')+
+  theme_classic()+
+  scale_y_continuous(limits=c(0,2.8))+
+  theme(legend.pos='na')
+  
+ggsave('figures/Hangman2/num_guess_sd.png',p,width=2.5,height=1.5,dpi=300)
+
 ```
+
 Similar to Battleship, the within-subject standard deviation in number of misses in non-pretend games (`r E4.sd_num_misses$nonpretend%>%mean()%>%printnum()`) was on average significantly higher than in pretend games (mean SD = `r E4.sd_num_misses$pretend%>%mean()%>%printnum()`, `r apa_print(E4.sd_num_misses$diff%>%t.test())$statistic`). Here too, pretend games were significantly more similar to each other, in terms of number of misses, than non-pretend games.
 
 <!-- In order to test whether pretend games were more similar to the average non-pretend game than non-pretend games themselves, we first regressed out the effect of word on number of misses, since within-subject differences between the conditions can reflect the random assignment of words to conditions. We then replaced the $\mu_{pretend}$ in the standard deviation formula with $\mu_{non-pretend}$: $\sigma'=\sqrt{\frac{1}{N}\Sigma_{i=1}^{N} (x_{i}-\mu_{non-pretend})^2}$, as we did for Battleship. We again find that a typical pretend game was less similar, in number of misses (controlling for word difficulty), to the average non-pretend game, than was a typical non-pretend game (`r apa_print(E4.sd_num_misses_relative_to_np_controlling_for_word_difficulty$diff%>%t.test())$full_result`).  -->
@@ -865,7 +898,7 @@ ggsave('../docs/figures/E4coefs_orth.png',width=5,height=4.5)
 ```{r hangman-suppression-or-simulation}
 
 
-E4.debrief_labeled <- read.csv('..\\experiments\\Hangman2\\data\\debrief.csv',na.strings=c(""," ","NA"))
+E4.debrief_labeled <- read.csv('../experiments/Hangman2/data/debrief.csv',na.strings=c(""," ","NA"))
 
 E4.simulators <- E4.debrief_labeled %>%
   filter(simulation==1 & suppression==0) %>%
@@ -1004,6 +1037,48 @@ E4.sim.RT_by_hit_lags_by_condition <- E4.RT_by_hit_lags_long %>%
 ```
 
 The simulators group showed a similar temporal profile to that of the entire sample. Specifically, in pretend games, cell selections that resulted in a hit were faster than those that resulted in a miss (`r apa_print(E4.RT_by_hit_lags %>% filter(test_part=='pretend' & as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators))%>%pull(hit_diff)%>%t.test())$full_result`), and cell selections that followed a hit were slower than those that followed a miss (`r apa_print(E4.RT_by_hit_lags %>% filter(test_part=='pretend' & as.numeric(substr(subj_id,1,3)) %in% c(E4.simulators))%>%pull(lag1_diff)%>%t.test())$full_result`).
+
+### The letter frequency heuristic
+
+In this analysis, we asked whether pretenders are doing more than guessing frequent letters such as vowels. We therefore compared behaviour in pretend and non-pretend games to the behaviour of an agent that selects the most frequent letter among the ones that were not selected so far. By focusing our analysis on misses only (that is, selections of letters that are not in the target word), we ensured that any observed advantage in real players' behaviour is not simply due to making more correct guesses.
+
+```{r hangman-letter-freuqency}
+
+E4.misses_with_simulations <- E4.click_log_with_boards %>%
+  filter(!hit_bin)%>%
+  rbind(E4.click_log_with_boards_random %>%
+          filter(!hit_bin)) %>%
+  rbind(E4.click_log_with_boards_most_frequent %>%
+          filter(!hit_bin))
+
+
+E4.nic <- E4.misses_with_simulations%>%
+  group_by(subj_id,test_part, genuine_first) %>%
+  summarise(nic=sum(p_click>0)/n()*100) 
+
+E4.nic %>%
+  group_by(test_part) %>%
+  mutate(test_part=factor(test_part,
+                          levels=c('random','nonpretend','pretend','most_frequent'),
+                          labels=c('random','non-pretend','pretend','most frequent'))) %>%
+  summarise(p_irrational=mean(nic),
+            sep_irrational=se(nic)) %>%
+  ggplot(aes(x=test_part,y=p_irrational, fill=test_part))+
+  geom_bar(stat="identity", color="black",
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=p_irrational-sep_irrational, ymax=p_irrational+sep_irrational), width=.2,
+                position=position_dodge(.9)) +
+  labs(x='',y='% errors that make sense') +
+  scale_fill_manual(values=c("#FDE725", "#69b3a2", "#404080", "#E88567")) +
+  theme_classic()+
+  theme(legend.position='na')
+
+ggsave('figures/forPresentation/hangman_rational.png',width=5,height=3,dpi=300)
+
+
+```
+
+Our dependent measure was the proportion of guesses that "make sense", that is, that are consistent with the board state and the word category. Pretend guesses made more sense according to this measure than what we would expect if people were only guessing the most frequent letters (difference in percentage of sensible errors between pretend and heuristic behaviour: `r apa_print(E4.nic %>% spread(test_part,nic) %>% mutate(diff=pretend- most_frequent)%>%pull(diff)%>%t.test())$full_result`).
 
 \newpage
 
