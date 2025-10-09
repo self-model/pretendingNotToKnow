@@ -19,6 +19,12 @@ Raw data from all four experiments is available on the project's OSF repository:
 
 The outputs of the scripts are available in gitbook format (both [preregistered](https://self-model.github.io/pretendingNotToKnow/docs/exp.-1-battleship.html) and [exploratory](https://self-model.github.io/pretendingNotToKnow/docs/exp.-1-battleship-exploratory-results.html) analyses).
 
+To reproduce the paper, follow these steps:
+
+1) The scripts use the R [groundhog package](https://cran.r-project.org/web/packages/groundhog/index.html) for version control. This package needs to be installed. The package also requires that the scripts are run on R version 4.2.2 ("Innocent and Trusting"). It should be possible to run it on newer versions, but then the calls to groundhog.library would need to specify a more recent date. 
+
+2) The scripts should be run in the order 'preregisteredMethodsAndResults.Rmd','exploratoryResults.Rmd', and only then 'paper.Rmd'. The reason is that the first two scripts save their output as RData files, which the third scripts reads. All scripts can be found in the 'docs' folder.
+
 ## Experiment demos
 
 You can try [demos of the two experiments](https://self-model.github.io/pretendingNotToKnow/experiments/demos/pretend), as experienced by our participants.

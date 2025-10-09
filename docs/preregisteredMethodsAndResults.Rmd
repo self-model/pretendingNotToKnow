@@ -45,10 +45,14 @@ set.seed(42)
 knitr::opts_chunk$set(fig.crop = F, fig.pos = "tb", fig.path='figs/',
                       echo=F, warning=F, cache=T, 
                       message=F, sanitize = T, 
-                      fig.width = 10, fig.height = 5)
+                      fig.width = 10, fig.height = 5,
+                      dev = "ragg_png", dpi = 300, fig.width = 6, fig.height = 4)
+
 ```
 
 ```{r, libraries, echo=FALSE, warning=FALSE, cache=F}
+
+# Run on R 4.2.2 ("Innocent and Trusting")
 
 library(groundhog)
 
@@ -69,8 +73,10 @@ groundhog.library(c(
   'BayesFactor', # for Bayesian t test
   'jsonlite', # parsing data from sort_trial
   'caret', #for cross validation
-  'ggrepel' #for word scatterplots
+  'ggrepel', #for word scatterplots
+  'ragg' # for png
 ), '2022-12-01')
+
 
 ```
 
@@ -1379,8 +1385,8 @@ ggsave('figures/hangman2/num_misses_per_word.png',p,width=5,height=5,dpi=300)
 #                                               "t",
 #                                               "click_number",
 #                                               "genuine_first"))))
-
-
+# 
+# 
 # for (row in 1:nrow(E4.click_df)) {
 # 
 #     subject_click_log <- data.frame(fromJSON(E4.click_df[row, ]$click_log)) %>%
@@ -1401,8 +1407,8 @@ ggsave('figures/hangman2/num_misses_per_word.png',p,width=5,height=5,dpi=300)
 # 
 #     E4.click_log <- rbind(E4.click_log, subject_click_log);
 # }
-
-
+# 
+# 
 # E4.click_log <- E4.click_log %>%
 #   relocate(subj_id, .before = letter) %>%
 #   relocate(genuine_first, .before = letter) %>%
@@ -1415,9 +1421,8 @@ ggsave('figures/hangman2/num_misses_per_word.png',p,width=5,height=5,dpi=300)
 #   group_by(subj_id,word) %>%
 #   rowwise()
 
-# save(..experiments/Hangman2/data/E4.click_log, file='E4.click_log.RData')
+load('../experiments/Hangman2/data/E4.click_log.RData')
 
-load('..experiments/Hangman2/data/E4.click_log.RData')
 ```
 
 ```{r hangman-total_time, echo=FALSE}
@@ -2913,6 +2918,13 @@ E4.first_click_half_games %>%
   theme_classic()+
   facet_grid(col=vars(word_class))+
   labs(y='(consistent with BANANA/HAND)/(cons. with something)')
+
+```
+
+
+```{r save data, echo-FALSE}
+
+save.image(file = file.path(getwd(), "prereg_results.RData"))
 
 ```
 
