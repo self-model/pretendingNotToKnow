@@ -10,7 +10,27 @@ A series of experiments looking at people's ability to pretend they don't know s
 
 ## Data
 
-Raw data from all four experiments is available on the project's OSF repository: [osf.io/zma9b/](https://osf.io/zma9b/files/osfstorage/).
+Raw data from all four experiments is available in the "experiments" subdirectory. 
+
+### Battleship: 
+
+Under experiments/Battleship2/data:
+- debrief.csv records participants' responses to the debriefing question.
+- under experiments/Battleship2/data/batch1:
+- prolific_export_batch1.csv records demographic data
+- jatos_results_batch1.csv records experimental data.
+- jatos_results_batch1_readme.txt includes an explanation of each column in jatos_results_batch1.csv
+- bonus.csv records participants' bonuses
+- Click_log and Click_log_with_boards are preprocessed data from the experiments themselves.
+
+### Hangman: 
+
+Under experiments/Hangman2/data:
+- debrief.csv records participants' responses to the debriefing question.
+- prolific_export1.csv to rolific_export6.csv  records demographic data
+- jatos_results_batch1.csv and jatos_results_batch2.csv record experimental data from the two batches of participants.
+- jatos_results_batch1_readme.txt includes an explanation of each column in the above files
+- E4.click_log and E4.click_log_with_boards and E4.judge_df are preprocessed data from the experiments themselves, which can be generated with the analysis code. 
 
 ## Analysis Scripts
 
